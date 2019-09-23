@@ -9,8 +9,8 @@ const TIMINGS: &'static str = "https://api.wmata.com/Rail.svc/json/jStationTimes
 pub const STATION_TO_STATION: &'static str =
     "https://api.wmata.com/Rail.svc/json/jSrcStationToDstStationInfo";
 
-pub struct Station {
-    pub api_key: String,
+pub struct Station<'a> {
+    pub api_key: &'a str,
     pub station_code: StationCode,
 }
 

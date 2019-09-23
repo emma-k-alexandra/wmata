@@ -1,10 +1,13 @@
 use std::error;
 use std::fmt;
 
+pub mod responses;
+pub mod tests;
+
 pub const STATIONS: &'static str = "https://api.wmata.com/Rail.svc/json/jStations";
 
-pub struct Line {
-    pub api_key: String,
+pub struct Line<'a> {
+    pub api_key: &'a str,
     pub line_code: LineCode,
 }
 

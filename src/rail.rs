@@ -4,7 +4,11 @@ use serde_json;
 pub mod responses;
 pub mod tests;
 
-use super::line::{LineCode, STATIONS};
+use super::line::{
+    LineCode, 
+    STATIONS,
+    responses as line_responses
+};
 use super::station::{StationCode, STATION_TO_STATION};
 
 const LINES: &'static str = "https://api.wmata.com/Rail.svc/json/jLines";
@@ -59,7 +63,7 @@ impl Rail<'_> {
 
     pub fn stations<F>(&self, line: Option<LineCode>, completion: F)
     where
-        F: FnOnce(responses::Stations) -> (),
+        F: FnOnce(line_responses::Stations) -> (),
     {
         let mut response = reqwest::Client::new().get(STATIONS);
 
@@ -74,7 +78,7 @@ impl Rail<'_> {
             .text()
             .expect("Text failed");
 
-        let json: responses::Stations = serde_json::from_str(&response).expect("from_str failed");
+        let json: line_responses::Stations = serde_json::from_str(&response).expect("from_str failed");
 
         completion(json);
     }
