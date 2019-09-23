@@ -6,7 +6,7 @@ const INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationI
 const PARKING_INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationParking";
 const PATH: &'static str = "https://api.wmata.com/Rail.svc/json/jPath";
 const TIMINGS: &'static str = "https://api.wmata.com/Rail.svc/json/jStationTimes";
-const STATION_TO_STATION: &'static str =
+pub const STATION_TO_STATION: &'static str =
     "https://api.wmata.com/Rail.svc/json/jSrcStationToDstStationInfo";
 
 pub struct Station {
