@@ -98,14 +98,14 @@ impl Rail<'_> {
     {
         let mut response = reqwest::Client::new().get(STATION_TO_STATION);
 
-        let mut query: Vec<(&str, &str)> = vec![];
+        let mut query: Vec<(String, String)> = vec![];
 
         if let Some(station_code) = from_station {
-            query.push(("FromStationCode", station_code.to_string()));
+            query.push(("FromStationCode".to_string(), station_code.to_string()));
         }
 
         if let Some(station_code) = to_destination_station {
-            query.push(("ToStationCode", station_code.to_string()));
+            query.push(("ToStationCode".to_string(), station_code.to_string()));
         }
 
         response = response.query(&query);
