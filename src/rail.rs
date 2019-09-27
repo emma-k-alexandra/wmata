@@ -1,15 +1,13 @@
 use reqwest;
+use serde::Deserialize;
 use serde_json;
 
 pub mod responses;
 pub mod tests;
 
-use super::line::{
-    LineCode, 
-    STATIONS,
-    responses as line_responses
-};
-use super::station::{StationCode, STATION_TO_STATION};
+use crate::error::{responses as error_responses, Error as WMATAError};
+use crate::line::{responses as line_responses, LineCode, STATIONS};
+use crate::station::{responses as station_responses, StationCode, STATION_TO_STATION};
 
 const LINES: &'static str = "https://api.wmata.com/Rail.svc/json/jLines";
 const ENTRANCES: &'static str = "https://api.wmata.com/Rail.svc/json/jStationEntrances";
@@ -24,46 +22,55 @@ pub struct Rail<'a> {
     pub api_key: &'a str,
 }
 
+impl<'a> Rail<'a> {
+    fn serialize<T>(response: &'a str) -> Result<T, WMATAError>
+    where
+        T: Deserialize<'a>,
+    {
+        serde_json::from_str::<T>(&response).or_else(|_| {
+            match serde_json::from_str::<error_responses::Error>(&response) {
+                Ok(json) => Err(WMATAError::new(json.message.to_string())),
+                Err(err) => Err(WMATAError::new(err.to_string())),
+            }
+        })
+    }
+}
+
 impl Rail<'_> {
     pub fn lines<F>(&self, completion: F)
     where
-        F: FnOnce(responses::Lines) -> (),
+        F: FnOnce(Result<responses::Lines, WMATAError>) -> (),
     {
-        let response = reqwest::Client::new()
-            .get(LINES)
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::Lines = serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json);
+        completion(
+            reqwest::Client::new()
+                .get(LINES)
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<responses::Lines>(&response)),
+        );
     }
 
     pub fn entrances<F>(&self, latitude: f64, longitude: f64, radius: f64, completion: F)
     where
-        F: FnOnce(responses::StationEntrances) -> (),
+        F: FnOnce(Result<responses::StationEntrances, WMATAError>) -> (),
     {
-        let response = reqwest::Client::new()
-            .get(ENTRANCES)
-            .query(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)])
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::StationEntrances =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json);
+        completion(
+            reqwest::Client::new()
+                .get(ENTRANCES)
+                .query(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<responses::StationEntrances>(&response)),
+        );
     }
 
     pub fn stations<F>(&self, line: Option<LineCode>, completion: F)
     where
-        F: FnOnce(line_responses::Stations) -> (),
+        F: FnOnce(Result<line_responses::Stations, WMATAError>) -> (),
     {
         let mut response = reqwest::Client::new().get(STATIONS);
 
@@ -71,16 +78,14 @@ impl Rail<'_> {
             response = response.query(&[("LineCode", line_code.to_string())]);
         }
 
-        let response = response
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: line_responses::Stations = serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json);
+        completion(
+            response
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<line_responses::Stations>(&response)),
+        );
     }
 
     pub fn station<F>(
@@ -89,7 +94,7 @@ impl Rail<'_> {
         to_destination_station: Option<StationCode>,
         completion: F,
     ) where
-        F: FnOnce(responses::StationToStationInfos) -> (),
+        F: FnOnce(Result<station_responses::StationToStationInfos, WMATAError>) -> (),
     {
         let mut response = reqwest::Client::new().get(STATION_TO_STATION);
 
@@ -105,79 +110,69 @@ impl Rail<'_> {
 
         response = response.query(&query);
 
-        let response = response
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::StationToStationInfos =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json)
+        completion(
+            response
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| {
+                    Rail::serialize::<station_responses::StationToStationInfos>(&response)
+                }),
+        );
     }
 
     pub fn positions<F>(&self, completion: F)
     where
-        F: FnOnce(responses::TrainPositions) -> (),
+        F: FnOnce(Result<responses::TrainPositions, WMATAError>) -> (),
     {
-        let response = reqwest::Client::new()
-            .get(POSITIONS)
-            .query(&[("contentType", "json")])
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::TrainPositions =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json)
+        completion(
+            reqwest::Client::new()
+                .get(POSITIONS)
+                .query(&[("contentType", "json")])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<responses::TrainPositions>(&response)),
+        );
     }
 
     pub fn routes<F>(&self, completion: F)
     where
-        F: FnOnce(responses::StandardRoutes) -> (),
+        F: FnOnce(Result<responses::StandardRoutes, WMATAError>) -> (),
     {
-        let response = reqwest::Client::new()
-            .get(ROUTES)
-            .query(&[("contentType", "json")])
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::StandardRoutes =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json)
+        completion(
+            reqwest::Client::new()
+                .get(ROUTES)
+                .query(&[("contentType", "json")])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<responses::StandardRoutes>(&response)),
+        );
     }
 
     pub fn circuits<F>(&self, completion: F)
     where
-        F: FnOnce(responses::TrackCircuits) -> (),
+        F: FnOnce(Result<responses::TrackCircuits, WMATAError>) -> (),
     {
-        let response = reqwest::Client::new()
-            .get(CIRCUITS)
-            .query(&[("contentType", "json")])
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::TrackCircuits =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json)
+        completion(
+            reqwest::Client::new()
+                .get(CIRCUITS)
+                .query(&[("contentType", "json")])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<responses::TrackCircuits>(&response)),
+        );
     }
 
     pub fn elevator_and_escalator_incidents<F>(&self, station: Option<StationCode>, completion: F)
     where
-        F: FnOnce(responses::ElevatorAndEscalatorIncidents) -> (),
+        F: FnOnce(Result<responses::ElevatorAndEscalatorIncidents, WMATAError>) -> (),
     {
         let mut response = reqwest::Client::new().get(ELEVATOR_AND_ESCALATOR_INCIDENTS);
 
@@ -185,22 +180,21 @@ impl Rail<'_> {
             response = response.query(&[("StationCode", station_code.to_string())]);
         }
 
-        let response = response
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::ElevatorAndEscalatorIncidents =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json)
+        completion(
+            response
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| {
+                    Rail::serialize::<responses::ElevatorAndEscalatorIncidents>(&response)
+                }),
+        );
     }
 
     pub fn incidents<F>(&self, station: Option<StationCode>, completion: F)
     where
-        F: FnOnce(responses::RailIncidents) -> (),
+        F: FnOnce(Result<responses::RailIncidents, WMATAError>) -> (),
     {
         let mut response = reqwest::Client::new().get(INCIDENTS);
 
@@ -208,16 +202,13 @@ impl Rail<'_> {
             response = response.query(&[("StationCode", station_code.to_string())]);
         }
 
-        let response = response
-            .header("api_key", self.api_key)
-            .send()
-            .expect("Send failed")
-            .text()
-            .expect("Text failed");
-
-        let json: responses::RailIncidents =
-            serde_json::from_str(&response).expect("from_str failed");
-
-        completion(json)
+        completion(
+            response
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| WMATAError::new(err.to_string()))
+                .and_then(|response| Rail::serialize::<responses::RailIncidents>(&response)),
+        );
     }
 }

@@ -1,6 +1,9 @@
 use std::error;
 use std::fmt;
 
+pub mod responses;
+pub mod tests;
+
 const NEXT_TRAINS: &'static str = "https://api.wmata.com/StationPrediction.svc/json/GetPrediction";
 const INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationInfo";
 const PARKING_INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationParking";

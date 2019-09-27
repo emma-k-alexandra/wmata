@@ -7,7 +7,7 @@ fn test_lines() {
         api_key: "9e38c3eab34c4e6c990828002828f5ed",
     };
 
-    rail.lines(|x| assert_eq!(x.lines.len(), 6));
+    rail.lines(|response| assert_eq!(response.unwrap().lines.len(), 6));
 }
 
 #[test]
@@ -16,7 +16,7 @@ fn test_entrances() {
         api_key: "9e38c3eab34c4e6c990828002828f5ed",
     };
 
-    rail.entrances(1.0, 1.0, 1.0, |x| assert_eq!(x.entrances.len(), 0));
+    rail.entrances(1.0, 1.0, 1.0, |x| assert_eq!(x.unwrap().entrances.len(), 0));
 }
 
 #[test]
@@ -25,7 +25,7 @@ fn test_stations() {
         api_key: "9e38c3eab34c4e6c990828002828f5ed",
     };
 
-    rail.stations(Some(LineCode::Red), |x| assert_eq!(x.stations.len(), 27));
+    rail.stations(Some(LineCode::Red), |x| assert_eq!(x.unwrap().stations.len(), 27));
 }
 
 #[test]
@@ -34,7 +34,7 @@ fn test_all_stations() {
         api_key: "9e38c3eab34c4e6c990828002828f5ed",
     };
 
-    rail.stations(None, |x| assert_eq!(x.stations.len(), 95));
+    rail.stations(None, |x| assert_eq!(x.unwrap().stations.len(), 95));
 }
 
 #[test]
@@ -44,7 +44,7 @@ fn test_station() {
     };
 
     rail.station(Some(StationCode::A01), Some(StationCode::A02), |x| {
-        assert_eq!(x.station_to_station_infos.len(), 1);
+        assert_eq!(x.unwrap().station_to_station_infos.len(), 1);
     });
 }
 
@@ -55,7 +55,7 @@ fn test_station_one_station() {
     };
 
     rail.station(Some(StationCode::A01), None, |x| {
-        assert_eq!(x.station_to_station_infos.len(), 93);
+        assert_eq!(x.unwrap().station_to_station_infos.len(), 93);
     });
 }
 
@@ -66,7 +66,7 @@ fn test_station_no_stations() {
     };
 
     rail.station(None, None, |x| {
-        assert_eq!(x.station_to_station_infos.len(), 8922);
+        assert_eq!(x.unwrap().station_to_station_infos.len(), 8922);
     });
 }
 
@@ -85,7 +85,7 @@ fn test_routes() {
         api_key: "9e38c3eab34c4e6c990828002828f5ed",
     };
 
-    rail.routes(|x| assert_eq!(x.standard_routes.len(), 14));
+    rail.routes(|x| assert_eq!(x.unwrap().standard_routes.len(), 14));
 }
 
 #[test]
@@ -94,7 +94,7 @@ fn test_circuits() {
         api_key: "9e38c3eab34c4e6c990828002828f5ed",
     };
 
-    rail.circuits(|x| assert_eq!(x.track_circuits.len(), 3486));
+    rail.circuits(|x| assert_eq!(x.unwrap().track_circuits.len(), 3486));
 }
 
 #[test]
