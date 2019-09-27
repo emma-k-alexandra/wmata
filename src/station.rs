@@ -1,7 +1,7 @@
 use std::{fmt, error, str::FromStr};
 
 pub mod responses;
-pub mod tests;
+mod tests;
 
 const NEXT_TRAINS: &'static str = "https://api.wmata.com/StationPrediction.svc/json/GetPrediction";
 const INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationInfo";

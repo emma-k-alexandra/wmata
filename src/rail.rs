@@ -1,11 +1,10 @@
 use reqwest;
-use serde::Deserialize;
-use serde_json;
 
 pub mod responses;
-pub mod tests;
+mod tests;
 
-use crate::error::{responses as error_responses, Error as WMATAError};
+use crate::serialize;
+use crate::error::Error;
 use crate::line::{responses as line_responses, LineCode, STATIONS};
 use crate::station::{responses as station_responses, StationCode, STATION_TO_STATION};
 
@@ -22,24 +21,10 @@ pub struct Rail<'a> {
     pub api_key: &'a str,
 }
 
-impl<'a> Rail<'a> {
-    fn serialize<T>(response: &'a str) -> Result<T, WMATAError>
-    where
-        T: Deserialize<'a>,
-    {
-        serde_json::from_str::<T>(&response).or_else(|_| {
-            match serde_json::from_str::<error_responses::Error>(&response) {
-                Ok(json) => Err(WMATAError::new(json.message.to_string())),
-                Err(err) => Err(WMATAError::new(err.to_string())),
-            }
-        })
-    }
-}
-
 impl Rail<'_> {
     pub fn lines<F>(&self, completion: F)
     where
-        F: FnOnce(Result<responses::Lines, WMATAError>) -> (),
+        F: FnOnce(Result<responses::Lines, Error>) -> (),
     {
         completion(
             reqwest::Client::new()
@@ -47,14 +32,14 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<responses::Lines>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::Lines>(&response)),
         );
     }
 
     pub fn entrances<F>(&self, latitude: f64, longitude: f64, radius: f64, completion: F)
     where
-        F: FnOnce(Result<responses::StationEntrances, WMATAError>) -> (),
+        F: FnOnce(Result<responses::StationEntrances, Error>) -> (),
     {
         completion(
             reqwest::Client::new()
@@ -63,14 +48,14 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<responses::StationEntrances>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::StationEntrances>(&response)),
         );
     }
 
     pub fn stations<F>(&self, line: Option<LineCode>, completion: F)
     where
-        F: FnOnce(Result<line_responses::Stations, WMATAError>) -> (),
+        F: FnOnce(Result<line_responses::Stations, Error>) -> (),
     {
         let mut response = reqwest::Client::new().get(STATIONS);
 
@@ -83,8 +68,8 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<line_responses::Stations>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<line_responses::Stations>(&response)),
         );
     }
 
@@ -94,7 +79,7 @@ impl Rail<'_> {
         to_destination_station: Option<StationCode>,
         completion: F,
     ) where
-        F: FnOnce(Result<station_responses::StationToStationInfos, WMATAError>) -> (),
+        F: FnOnce(Result<station_responses::StationToStationInfos, Error>) -> (),
     {
         let mut response = reqwest::Client::new().get(STATION_TO_STATION);
 
@@ -115,16 +100,16 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
+                .map_err(|err| Error::new(err.to_string()))
                 .and_then(|response| {
-                    Rail::serialize::<station_responses::StationToStationInfos>(&response)
+                    serialize::<station_responses::StationToStationInfos>(&response)
                 }),
         );
     }
 
     pub fn positions<F>(&self, completion: F)
     where
-        F: FnOnce(Result<responses::TrainPositions, WMATAError>) -> (),
+        F: FnOnce(Result<responses::TrainPositions, Error>) -> (),
     {
         completion(
             reqwest::Client::new()
@@ -133,14 +118,14 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<responses::TrainPositions>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::TrainPositions>(&response)),
         );
     }
 
     pub fn routes<F>(&self, completion: F)
     where
-        F: FnOnce(Result<responses::StandardRoutes, WMATAError>) -> (),
+        F: FnOnce(Result<responses::StandardRoutes, Error>) -> (),
     {
         completion(
             reqwest::Client::new()
@@ -149,14 +134,14 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<responses::StandardRoutes>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::StandardRoutes>(&response)),
         );
     }
 
     pub fn circuits<F>(&self, completion: F)
     where
-        F: FnOnce(Result<responses::TrackCircuits, WMATAError>) -> (),
+        F: FnOnce(Result<responses::TrackCircuits, Error>) -> (),
     {
         completion(
             reqwest::Client::new()
@@ -165,14 +150,14 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<responses::TrackCircuits>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::TrackCircuits>(&response)),
         );
     }
 
     pub fn elevator_and_escalator_incidents<F>(&self, station: Option<StationCode>, completion: F)
     where
-        F: FnOnce(Result<responses::ElevatorAndEscalatorIncidents, WMATAError>) -> (),
+        F: FnOnce(Result<responses::ElevatorAndEscalatorIncidents, Error>) -> (),
     {
         let mut response = reqwest::Client::new().get(ELEVATOR_AND_ESCALATOR_INCIDENTS);
 
@@ -185,16 +170,16 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
+                .map_err(|err| Error::new(err.to_string()))
                 .and_then(|response| {
-                    Rail::serialize::<responses::ElevatorAndEscalatorIncidents>(&response)
+                    serialize::<responses::ElevatorAndEscalatorIncidents>(&response)
                 }),
         );
     }
 
     pub fn incidents<F>(&self, station: Option<StationCode>, completion: F)
     where
-        F: FnOnce(Result<responses::RailIncidents, WMATAError>) -> (),
+        F: FnOnce(Result<responses::RailIncidents, Error>) -> (),
     {
         let mut response = reqwest::Client::new().get(INCIDENTS);
 
@@ -207,8 +192,8 @@ impl Rail<'_> {
                 .header("api_key", self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
-                .map_err(|err| WMATAError::new(err.to_string()))
-                .and_then(|response| Rail::serialize::<responses::RailIncidents>(&response)),
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::RailIncidents>(&response)),
         );
     }
 }
