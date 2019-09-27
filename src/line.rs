@@ -1,5 +1,4 @@
-use std::error;
-use std::fmt;
+use std::{fmt, error, str::FromStr};
 
 pub mod responses;
 pub mod tests;
@@ -20,20 +19,24 @@ pub enum LineCode {
     Silver,
 }
 
-impl LineCode {
-    pub fn to_string<'a>(&self) -> &'a str {
+impl ToString for LineCode {
+    fn to_string(&self) -> String {
         match &self {
-            LineCode::Red => "RD",
-            LineCode::Blue => "BL",
-            LineCode::Yellow => "YL",
-            LineCode::Orange => "OR",
-            LineCode::Green => "GR",
-            LineCode::Silver => "SV",
+            LineCode::Red => "RD".to_string(),
+            LineCode::Blue => "BL".to_string(),
+            LineCode::Yellow => "YL".to_string(),
+            LineCode::Orange => "OR".to_string(),
+            LineCode::Green => "GR".to_string(),
+            LineCode::Silver => "SV".to_string(),
         }
     }
+}
 
-    pub fn from(string: &str) -> Result<LineCode, StringIsNotLineCodeError> {
-        match string {
+impl FromStr for LineCode {
+    type Err = StringIsNotLineCodeError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
             "RD" => Ok(LineCode::Red),
             "BL" => Ok(LineCode::Blue),
             "YL" => Ok(LineCode::Yellow),
@@ -42,16 +45,6 @@ impl LineCode {
             "SV" => Ok(LineCode::Silver),
             _ => Err(StringIsNotLineCodeError),
         }
-    }
-}
-
-pub trait ToLineCode {
-    fn to_line_code(&self) -> Result<LineCode, StringIsNotLineCodeError>;
-}
-
-impl ToLineCode for &str {
-    fn to_line_code(&self) -> Result<LineCode, StringIsNotLineCodeError> {
-        LineCode::from(&self)
     }
 }
 
