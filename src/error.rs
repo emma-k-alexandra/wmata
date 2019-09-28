@@ -18,10 +18,8 @@ impl fmt::Display for Error {
     }
 }
 
-// This is important for other errors to wrap this one.
 impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        // Generic error, underlying cause isn't tracked.
         None
     }
 }
