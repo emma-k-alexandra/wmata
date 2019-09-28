@@ -2,9 +2,9 @@ pub mod responses;
 mod tests;
 
 use crate::error::Error;
-use crate::line::LineCode;
-use crate::station::StationCode;
-use crate::urls::URLs;
+use crate::rail::line::LineCode;
+use crate::rail::station::StationCode;
+use crate::rail::urls::URLs;
 use std::str::FromStr;
 
 use reqwest;

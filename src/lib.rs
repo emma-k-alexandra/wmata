@@ -1,6 +1,4 @@
-pub mod client;
-pub mod line;
-pub mod station;
+pub mod bus;
+pub mod rail;
 
 pub mod error;
-mod urls;
