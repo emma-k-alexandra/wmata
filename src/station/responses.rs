@@ -41,6 +41,7 @@ pub struct RailPrediction {
     pub line: String,
     pub location_code: String,
     pub location_name: String,
+    #[serde(rename = "Min")]
     pub minutes: String,
 }
 

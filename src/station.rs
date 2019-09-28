@@ -15,12 +15,19 @@ const TIMINGS: &'static str = "https://api.wmata.com/Rail.svc/json/jStationTimes
 pub const STATION_TO_STATION: &'static str =
     "https://api.wmata.com/Rail.svc/json/jSrcStationToDstStationInfo";
 
-pub struct Station<'a> {
-    pub api_key: &'a str,
+pub struct Station {
+    pub api_key: String,
     pub station_code: StationCode,
 }
 
-impl Station<'_> {
+impl Station {
+    pub fn new(api_key: &str, station_code: StationCode) -> Self {
+        Station {
+            api_key: api_key.to_string(),
+            station_code: station_code,
+        }
+    }
+
     pub fn next_trains<F>(&self, completion: F)
     where
         F: FnOnce(Result<responses::RailPredictions, Error>) -> (),
@@ -28,7 +35,7 @@ impl Station<'_> {
         completion(
             reqwest::Client::new()
                 .get(&[NEXT_TRAINS, &self.station_code.to_string()].join("/"))
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -44,7 +51,7 @@ impl Station<'_> {
             reqwest::Client::new()
                 .get(INFORMATION)
                 .query(&[("StationCode", self.station_code.to_string())])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -60,7 +67,7 @@ impl Station<'_> {
             reqwest::Client::new()
                 .get(PARKING_INFORMATION)
                 .query(&[("StationCode", self.station_code.to_string())])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -79,7 +86,7 @@ impl Station<'_> {
                     ("FromStationCode", self.station_code.to_string()),
                     ("ToStationCode", to_station.to_string()),
                 ])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -95,7 +102,7 @@ impl Station<'_> {
             reqwest::Client::new()
                 .get(TIMINGS)
                 .query(&[("StationCode", self.station_code.to_string())])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
