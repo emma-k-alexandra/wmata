@@ -1,4 +1,4 @@
-use std::{fmt, error, str::FromStr};
+use std::{error, fmt, str::FromStr};
 
 pub mod responses;
 mod tests;

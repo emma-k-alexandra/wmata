@@ -1,12 +1,12 @@
-use reqwest;
-
 pub mod responses;
 mod tests;
 
-use crate::serialize;
 use crate::error::Error;
 use crate::line::{responses as line_responses, LineCode, STATIONS};
+use crate::serialize;
 use crate::station::{responses as station_responses, StationCode, STATION_TO_STATION};
+use reqwest;
+use std::str::FromStr;
 
 const LINES: &'static str = "https://api.wmata.com/Rail.svc/json/jLines";
 const ENTRANCES: &'static str = "https://api.wmata.com/Rail.svc/json/jStationEntrances";
@@ -17,11 +17,21 @@ const ELEVATOR_AND_ESCALATOR_INCIDENTS: &'static str =
     "https://api.wmata.com/Incidents.svc/json/ElevatorIncidents";
 const INCIDENTS: &'static str = "https://api.wmata.com/Incidents.svc/json/Incidents";
 
-pub struct Rail<'a> {
-    pub api_key: &'a str,
+pub struct Rail {
+    pub api_key: String,
 }
 
-impl Rail<'_> {
+impl FromStr for Rail {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Rail {
+            api_key: s.to_string(),
+        })
+    }
+}
+
+impl Rail {
     pub fn lines<F>(&self, completion: F)
     where
         F: FnOnce(Result<responses::Lines, Error>) -> (),
@@ -29,7 +39,7 @@ impl Rail<'_> {
         completion(
             reqwest::Client::new()
                 .get(LINES)
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -45,7 +55,7 @@ impl Rail<'_> {
             reqwest::Client::new()
                 .get(ENTRANCES)
                 .query(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -65,7 +75,7 @@ impl Rail<'_> {
 
         completion(
             response
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -97,7 +107,7 @@ impl Rail<'_> {
 
         completion(
             response
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -115,7 +125,7 @@ impl Rail<'_> {
             reqwest::Client::new()
                 .get(POSITIONS)
                 .query(&[("contentType", "json")])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -131,7 +141,7 @@ impl Rail<'_> {
             reqwest::Client::new()
                 .get(ROUTES)
                 .query(&[("contentType", "json")])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -147,7 +157,7 @@ impl Rail<'_> {
             reqwest::Client::new()
                 .get(CIRCUITS)
                 .query(&[("contentType", "json")])
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -167,7 +177,7 @@ impl Rail<'_> {
 
         completion(
             response
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))
@@ -189,7 +199,7 @@ impl Rail<'_> {
 
         completion(
             response
-                .header("api_key", self.api_key)
+                .header("api_key", &self.api_key)
                 .send()
                 .and_then(|mut response| response.text())
                 .map_err(|err| Error::new(err.to_string()))

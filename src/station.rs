@@ -1,7 +1,11 @@
-use std::{fmt, error, str::FromStr};
-
 pub mod responses;
 mod tests;
+
+use crate::error::Error;
+use crate::rail::Rail;
+use crate::serialize;
+use reqwest;
+use std::{error, fmt, str::FromStr};
 
 const NEXT_TRAINS: &'static str = "https://api.wmata.com/StationPrediction.svc/json/GetPrediction";
 const INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationInfo";
@@ -16,6 +20,102 @@ pub struct Station<'a> {
     pub station_code: StationCode,
 }
 
+impl Station<'_> {
+    pub fn next_trains<F>(&self, completion: F)
+    where
+        F: FnOnce(Result<responses::RailPredictions, Error>) -> (),
+    {
+        completion(
+            reqwest::Client::new()
+                .get(&[NEXT_TRAINS, &self.station_code.to_string()].join("/"))
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::RailPredictions>(&response)),
+        );
+    }
+
+    pub fn information<F>(&self, completion: F)
+    where
+        F: FnOnce(Result<responses::StationInformation, Error>) -> (),
+    {
+        completion(
+            reqwest::Client::new()
+                .get(INFORMATION)
+                .query(&[("StationCode", self.station_code.to_string())])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::StationInformation>(&response)),
+        )
+    }
+
+    pub fn parking_information<F>(&self, completion: F)
+    where
+        F: FnOnce(Result<responses::StationsParking, Error>) -> (),
+    {
+        completion(
+            reqwest::Client::new()
+                .get(PARKING_INFORMATION)
+                .query(&[("StationCode", self.station_code.to_string())])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::StationsParking>(&response)),
+        );
+    }
+
+    pub fn path<F>(&self, to_station: StationCode, completion: F)
+    where
+        F: FnOnce(Result<responses::PathBetweenStations, Error>) -> (),
+    {
+        completion(
+            reqwest::Client::new()
+                .get(PATH)
+                .query(&[
+                    ("FromStationCode", self.station_code.to_string()),
+                    ("ToStationCode", to_station.to_string()),
+                ])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::PathBetweenStations>(&response)),
+        )
+    }
+
+    pub fn timings<F>(&self, completion: F)
+    where
+        F: FnOnce(Result<responses::StationTimings, Error>) -> (),
+    {
+        completion(
+            reqwest::Client::new()
+                .get(TIMINGS)
+                .query(&[("StationCode", self.station_code.to_string())])
+                .header("api_key", self.api_key)
+                .send()
+                .and_then(|mut response| response.text())
+                .map_err(|err| Error::new(err.to_string()))
+                .and_then(|response| serialize::<responses::StationTimings>(&response)),
+        );
+    }
+
+    pub fn to_station<F>(&self, station: StationCode, completion: F)
+    where
+        F: FnOnce(Result<responses::StationToStationInfos, Error>) -> (),
+    {
+        self.api_key.parse::<Rail>().unwrap().station(
+            Some(self.station_code),
+            Some(station),
+            completion,
+        )
+    }
+}
+
+#[derive(Copy, Clone)]
 pub enum StationCode {
     A01,
     A02,
@@ -213,7 +313,6 @@ impl ToString for StationCode {
             StationCode::N04 => "N04".to_string(),
             StationCode::N06 => "N06".to_string(),
         }
-
     }
 }
 
