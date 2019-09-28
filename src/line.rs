@@ -1,7 +1,7 @@
-use std::{error, fmt, str::FromStr};
-
 pub mod responses;
 mod tests;
+
+use std::{error, fmt, str::FromStr};
 
 pub struct Line<'a> {
     pub api_key: &'a str,

@@ -20,75 +20,57 @@ impl Station {
         }
     }
 
-    pub fn next_trains<F>(&self, completion: F)
-    where
-        F: FnOnce(Result<responses::RailPredictions, Error>) -> (),
-    {
-        completion(
-            request_and_deserialize::<responses::RailPredictions, [(); 0]>(
-                &self.api_key,
-                &[URLs::NextTrains.to_string(), self.station_code.to_string()].join("/"),
-                None,
-            ),
-        );
+    pub fn next_trains(&self) -> Result<responses::RailPredictions, Error> {
+        request_and_deserialize::<responses::RailPredictions, [(); 0]>(
+            &self.api_key,
+            &[URLs::NextTrains.to_string(), self.station_code.to_string()].join("/"),
+            None,
+        )
     }
 
-    pub fn information<F>(&self, completion: F)
-    where
-        F: FnOnce(Result<responses::StationInformation, Error>) -> (),
-    {
-        completion(request_and_deserialize(
+    pub fn information(&self) -> Result<responses::StationInformation, Error> {
+        request_and_deserialize(
             &self.api_key,
             &URLs::Information.to_string(),
             Some(&[("StationCode", self.station_code.to_string())]),
-        ));
+        )
     }
 
-    pub fn parking_information<F>(&self, completion: F)
-    where
-        F: FnOnce(Result<responses::StationsParking, Error>) -> (),
-    {
-        completion(request_and_deserialize(
+    pub fn parking_information(&self) -> Result<responses::StationsParking, Error> {
+        request_and_deserialize(
             &self.api_key,
             &URLs::ParkingInformation.to_string(),
             Some(&[("StationCode", self.station_code.to_string())]),
-        ));
+        )
     }
 
-    pub fn path<F>(&self, to_station: StationCode, completion: F)
-    where
-        F: FnOnce(Result<responses::PathBetweenStations, Error>) -> (),
-    {
-        completion(request_and_deserialize(
+    pub fn path(&self, to_station: StationCode) -> Result<responses::PathBetweenStations, Error> {
+        request_and_deserialize(
             &self.api_key,
             &URLs::Path.to_string(),
             Some(&[
                 ("FromStationCode", self.station_code.to_string()),
                 ("ToStationCode", to_station.to_string()),
             ]),
-        ));
+        )
     }
 
-    pub fn timings<F>(&self, completion: F)
-    where
-        F: FnOnce(Result<responses::StationTimings, Error>) -> (),
-    {
-        completion(request_and_deserialize(
+    pub fn timings(&self) -> Result<responses::StationTimings, Error> {
+        request_and_deserialize(
             &self.api_key,
             &URLs::Timings.to_string(),
             Some(&[("StationCode", self.station_code.to_string())]),
-        ));
+        )
     }
 
-    pub fn to_station<F>(&self, station: StationCode, completion: F)
-    where
-        F: FnOnce(Result<responses::StationToStationInfos, Error>) -> (),
-    {
-        self.api_key.parse::<Rail>().unwrap().station(
-            Some(self.station_code),
-            Some(station),
-            completion,
-        )
+    pub fn to_station(
+        &self,
+        station: StationCode,
+    ) -> Result<responses::StationToStationInfos, Error> {
+        self.api_key
+            .parse::<Rail>()
+            .unwrap()
+            .station(Some(self.station_code), Some(station))
     }
 }
 
