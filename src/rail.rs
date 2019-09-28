@@ -3,9 +3,8 @@ mod tests;
 
 use crate::error::Error;
 use crate::line::{responses as line_responses, LineCode, STATIONS};
-use crate::serialize;
+use crate::request_and_deserialize;
 use crate::station::{responses as station_responses, StationCode, STATION_TO_STATION};
-use reqwest;
 use std::str::FromStr;
 
 const LINES: &'static str = "https://api.wmata.com/Rail.svc/json/jLines";
@@ -36,51 +35,39 @@ impl Rail {
     where
         F: FnOnce(Result<responses::Lines, Error>) -> (),
     {
-        completion(
-            reqwest::Client::new()
-                .get(LINES)
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<responses::Lines>(&response)),
-        );
+        completion(request_and_deserialize::<responses::Lines, [(); 0]>(
+            &self.api_key,
+            LINES,
+            None,
+        ));
     }
 
     pub fn entrances<F>(&self, latitude: f64, longitude: f64, radius: f64, completion: F)
     where
         F: FnOnce(Result<responses::StationEntrances, Error>) -> (),
     {
-        completion(
-            reqwest::Client::new()
-                .get(ENTRANCES)
-                .query(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)])
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<responses::StationEntrances>(&response)),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            ENTRANCES,
+            Some(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)]),
+        ));
     }
 
     pub fn stations<F>(&self, line: Option<LineCode>, completion: F)
     where
         F: FnOnce(Result<line_responses::Stations, Error>) -> (),
     {
-        let mut response = reqwest::Client::new().get(STATIONS);
+        let mut query = vec![];
 
         if let Some(line_code) = line {
-            response = response.query(&[("LineCode", line_code.to_string())]);
+            query.push(("LineCode", line_code.to_string()));
         }
 
-        completion(
-            response
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<line_responses::Stations>(&response)),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            STATIONS,
+            Some(&query),
+        ));
     }
 
     pub fn station<F>(
@@ -91,119 +78,87 @@ impl Rail {
     ) where
         F: FnOnce(Result<station_responses::StationToStationInfos, Error>) -> (),
     {
-        let mut response = reqwest::Client::new().get(STATION_TO_STATION);
-
-        let mut query: Vec<(String, String)> = vec![];
+        let mut query = vec![];
 
         if let Some(station_code) = from_station {
-            query.push(("FromStationCode".to_string(), station_code.to_string()));
+            query.push(("FromStationCode", station_code.to_string()));
         }
 
         if let Some(station_code) = to_destination_station {
-            query.push(("ToStationCode".to_string(), station_code.to_string()));
+            query.push(("ToStationCode", station_code.to_string()));
         }
 
-        response = response.query(&query);
-
-        completion(
-            response
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| {
-                    serialize::<station_responses::StationToStationInfos>(&response)
-                }),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            STATION_TO_STATION,
+            Some(&query),
+        ));
     }
 
     pub fn positions<F>(&self, completion: F)
     where
         F: FnOnce(Result<responses::TrainPositions, Error>) -> (),
     {
-        completion(
-            reqwest::Client::new()
-                .get(POSITIONS)
-                .query(&[("contentType", "json")])
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<responses::TrainPositions>(&response)),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            POSITIONS,
+            Some(&[("contentType", "json")]),
+        ));
     }
 
     pub fn routes<F>(&self, completion: F)
     where
         F: FnOnce(Result<responses::StandardRoutes, Error>) -> (),
     {
-        completion(
-            reqwest::Client::new()
-                .get(ROUTES)
-                .query(&[("contentType", "json")])
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<responses::StandardRoutes>(&response)),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            ROUTES,
+            Some(&[("contentType", "json")]),
+        ))
     }
 
     pub fn circuits<F>(&self, completion: F)
     where
         F: FnOnce(Result<responses::TrackCircuits, Error>) -> (),
     {
-        completion(
-            reqwest::Client::new()
-                .get(CIRCUITS)
-                .query(&[("contentType", "json")])
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<responses::TrackCircuits>(&response)),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            CIRCUITS,
+            Some(&[("contentType", "json")]),
+        ))
     }
 
     pub fn elevator_and_escalator_incidents<F>(&self, station: Option<StationCode>, completion: F)
     where
         F: FnOnce(Result<responses::ElevatorAndEscalatorIncidents, Error>) -> (),
     {
-        let mut response = reqwest::Client::new().get(ELEVATOR_AND_ESCALATOR_INCIDENTS);
+        let mut query = vec![];
 
         if let Some(station_code) = station {
-            response = response.query(&[("StationCode", station_code.to_string())]);
+            query.push(("StationCode", station_code.to_string()));
         }
 
-        completion(
-            response
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| {
-                    serialize::<responses::ElevatorAndEscalatorIncidents>(&response)
-                }),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            ELEVATOR_AND_ESCALATOR_INCIDENTS,
+            Some(&query),
+        ));
     }
 
     pub fn incidents<F>(&self, station: Option<StationCode>, completion: F)
     where
         F: FnOnce(Result<responses::RailIncidents, Error>) -> (),
     {
-        let mut response = reqwest::Client::new().get(INCIDENTS);
+        let mut query = vec![];
 
         if let Some(station_code) = station {
-            response = response.query(&[("StationCode", station_code.to_string())]);
+            query.push(("StationCode", station_code.to_string()));
         }
 
-        completion(
-            response
-                .header("api_key", &self.api_key)
-                .send()
-                .and_then(|mut response| response.text())
-                .map_err(|err| Error::new(err.to_string()))
-                .and_then(|response| serialize::<responses::RailIncidents>(&response)),
-        );
+        completion(request_and_deserialize(
+            &self.api_key,
+            INCIDENTS,
+            Some(&query),
+        ));
     }
 }
