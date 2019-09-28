@@ -3,41 +3,41 @@ use super::*;
 
 #[test]
 fn test_lines() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(rail.lines().unwrap().lines.len(), 6);
+    assert_eq!(client.lines().unwrap().lines.len(), 6);
 }
 
 #[test]
 fn test_entrances() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(rail.entrances(1.0, 1.0, 1.0).unwrap().entrances.len(), 0);
+    assert_eq!(client.entrances(1.0, 1.0, 1.0).unwrap().entrances.len(), 0);
 }
 
 #[test]
 fn test_stations() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        rail.stations(Some(LineCode::Red)).unwrap().stations.len(),
+        client.stations_on(Some(LineCode::Red)).unwrap().stations.len(),
         27
     );
 }
 
 #[test]
 fn test_all_stations() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(rail.stations(None).unwrap().stations.len(), 95);
+    assert_eq!(client.stations_on(None).unwrap().stations.len(), 95);
 }
 
 #[test]
 fn test_station() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        rail.station(Some(StationCode::A01), Some(StationCode::A02))
+        client.from_station_to(Some(StationCode::A01), Some(StationCode::A02))
             .unwrap()
             .station_to_station_infos
             .len(),
@@ -47,10 +47,10 @@ fn test_station() {
 
 #[test]
 fn test_station_one_station() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        rail.station(Some(StationCode::A01), None)
+        client.from_station_to(Some(StationCode::A01), None)
             .unwrap()
             .station_to_station_infos
             .len(),
@@ -60,10 +60,10 @@ fn test_station_one_station() {
 
 #[test]
 fn test_station_no_stations() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        rail.station(None, None)
+        client.from_station_to(None, None)
             .unwrap()
             .station_to_station_infos
             .len(),
@@ -73,51 +73,96 @@ fn test_station_no_stations() {
 
 #[test]
 fn test_positions() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(rail.positions().is_ok());
+    assert!(client.positions().is_ok());
 }
 
 #[test]
 fn test_routes() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(rail.routes().unwrap().standard_routes.len(), 14);
+    assert_eq!(client.routes().unwrap().standard_routes.len(), 14);
 }
 
 #[test]
 fn test_circuits() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(rail.circuits().unwrap().track_circuits.len(), 3486);
+    assert_eq!(client.circuits().unwrap().track_circuits.len(), 3486);
 }
 
 #[test]
 fn test_elevator_and_escalator_incidents() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(rail
-        .elevator_and_escalator_incidents(Some(StationCode::A01))
+    assert!(client
+        .elevator_and_escalator_incidents_at(Some(StationCode::A01))
         .is_ok());
 }
 
 #[test]
 fn test_all_elevator_and_escalator_incidents() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(rail.elevator_and_escalator_incidents(None).is_ok());
+    assert!(client.elevator_and_escalator_incidents_at(None).is_ok());
 }
 
 #[test]
 fn test_incident() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(rail.incidents(Some(StationCode::A01)).is_ok());
+    assert!(client.incidents_at(Some(StationCode::A01)).is_ok());
 }
 
 #[test]
 fn test_all_incidents() {
-    let rail: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(rail.incidents(None).is_ok());
+    assert!(client.incidents_at(None).is_ok());
+}
+
+#[test]
+fn test_next_trains() {
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+
+    assert!(client.next_trains(StationCode::A01).is_ok());
+}
+
+#[test]
+fn test_information() {
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+
+    assert_eq!(client.station_information(StationCode::A01).unwrap().code, "A01");
+}
+
+#[test]
+fn test_parking_information() {
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+
+    assert_eq!(
+        client
+            .parking_information(StationCode::A01)
+            .unwrap()
+            .stations_parking
+            .len(),
+        0
+    );
+}
+
+#[test]
+fn test_path_to_station() {
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+
+    assert_eq!(
+        client.path_from(StationCode::A01, StationCode::A02).unwrap().path[1].distance_to_previous_station,
+        4178
+    );
+}
+
+#[test]
+fn test_timings() {
+    let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+
+    assert_eq!(client.timings(StationCode::A01).unwrap().station_times[0].code, "A01");
 }

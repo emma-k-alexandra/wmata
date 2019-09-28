@@ -1,4 +1,3 @@
-pub mod responses;
 mod tests;
 
 use std::{error, fmt, str::FromStr};

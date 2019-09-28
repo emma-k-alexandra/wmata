@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::{error, fmt};
 
-pub mod responses;
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Error {
     pub message: String,
