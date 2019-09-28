@@ -1,11 +1,4 @@
-mod tests;
-
 use std::{error, fmt, str::FromStr};
-
-pub struct Line<'a> {
-    pub api_key: &'a str,
-    pub line_code: LineCode,
-}
 
 pub enum LineCode {
     Red,

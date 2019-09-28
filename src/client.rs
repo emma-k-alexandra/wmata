@@ -15,12 +15,19 @@ pub struct Client {
     pub api_key: String,
 }
 
+// Constructor
+impl Client {
+    fn new(api_key: &str) -> Self {
+        Client {
+            api_key: api_key.to_string(),
+        }
+    }
+}
+
+// No Station or Line Codes
 impl Client {
     pub fn lines(&self) -> Result<responses::Lines, Error> {
-        self.request_and_deserialize::<responses::Lines, [(); 0]>(
-            &URLs::Lines.to_string(),
-            None,
-        )
+        self.request_and_deserialize::<responses::Lines, [(); 0]>(&URLs::Lines.to_string(), None)
     }
 
     pub fn entrances(
@@ -35,17 +42,28 @@ impl Client {
         )
     }
 
-    pub fn stations_on(&self, line: Option<LineCode>) -> Result<responses::Stations, Error> {
-        let mut query = vec![];
-
-        if let Some(line_code) = line {
-            query.push(("LineCode", line_code.to_string()));
-        }
-
-        self.request_and_deserialize(&URLs::Stations.to_string(), Some(&query))
+    pub fn positions(&self) -> Result<responses::TrainPositions, Error> {
+        self.request_and_deserialize(
+            &URLs::Positions.to_string(),
+            Some(&[("contentType", "json")]),
+        )
     }
 
-    pub fn from_station_to(
+    pub fn routes(&self) -> Result<responses::StandardRoutes, Error> {
+        self.request_and_deserialize(&URLs::Routes.to_string(), Some(&[("contentType", "json")]))
+    }
+
+    pub fn circuits(&self) -> Result<responses::TrackCircuits, Error> {
+        self.request_and_deserialize(
+            &URLs::Circuits.to_string(),
+            Some(&[("contentType", "json")]),
+        )
+    }
+}
+
+// These take StationCodes
+impl Client {
+    pub fn station_to_station(
         &self,
         from_station: Option<StationCode>,
         to_destination_station: Option<StationCode>,
@@ -60,31 +78,7 @@ impl Client {
             query.push(("ToStationCode", station_code.to_string()));
         }
 
-        self.request_and_deserialize(
-            &URLs::StationToStation.to_string(),
-            Some(&query),
-        )
-    }
-
-    pub fn positions(&self) -> Result<responses::TrainPositions, Error> {
-        self.request_and_deserialize(
-            &URLs::Positions.to_string(),
-            Some(&[("contentType", "json")]),
-        )
-    }
-
-    pub fn routes(&self) -> Result<responses::StandardRoutes, Error> {
-        self.request_and_deserialize(
-            &URLs::Routes.to_string(),
-            Some(&[("contentType", "json")]),
-        )
-    }
-
-    pub fn circuits(&self) -> Result<responses::TrackCircuits, Error> {
-        self.request_and_deserialize(
-            &URLs::Circuits.to_string(),
-            Some(&[("contentType", "json")]),
-        )
+        self.request_and_deserialize(&URLs::StationToStation.to_string(), Some(&query))
     }
 
     pub fn elevator_and_escalator_incidents_at(
@@ -116,28 +110,41 @@ impl Client {
         self.request_and_deserialize(&URLs::Incidents.to_string(), Some(&query))
     }
 
-    pub fn next_trains(&self, station_code: StationCode) -> Result<responses::RailPredictions, Error> {
+    pub fn next_trains(
+        &self,
+        station_code: StationCode,
+    ) -> Result<responses::RailPredictions, Error> {
         self.request_and_deserialize::<responses::RailPredictions, [(); 0]>(
             &[URLs::NextTrains.to_string(), station_code.to_string()].join("/"),
             None,
         )
     }
 
-    pub fn station_information(&self, station_code: StationCode) -> Result<responses::StationInformation, Error> {
+    pub fn station_information(
+        &self,
+        station_code: StationCode,
+    ) -> Result<responses::StationInformation, Error> {
         self.request_and_deserialize(
             &URLs::Information.to_string(),
             Some(&[("StationCode", station_code.to_string())]),
         )
     }
 
-    pub fn parking_information(&self, station_code: StationCode) -> Result<responses::StationsParking, Error> {
+    pub fn parking_information(
+        &self,
+        station_code: StationCode,
+    ) -> Result<responses::StationsParking, Error> {
         self.request_and_deserialize(
             &URLs::ParkingInformation.to_string(),
             Some(&[("StationCode", station_code.to_string())]),
         )
     }
 
-    pub fn path_from(&self, from_station: StationCode, to_station: StationCode) -> Result<responses::PathBetweenStations, Error> {
+    pub fn path_from(
+        &self,
+        from_station: StationCode,
+        to_station: StationCode,
+    ) -> Result<responses::PathBetweenStations, Error> {
         self.request_and_deserialize(
             &URLs::Path.to_string(),
             Some(&[
@@ -155,6 +162,20 @@ impl Client {
     }
 }
 
+// These take LineCodes
+impl Client {
+    pub fn stations_on(&self, line: Option<LineCode>) -> Result<responses::Stations, Error> {
+        let mut query = vec![];
+
+        if let Some(line_code) = line {
+            query.push(("LineCode", line_code.to_string()));
+        }
+
+        self.request_and_deserialize(&URLs::Stations.to_string(), Some(&query))
+    }
+}
+
+// Internal helper methods
 impl Client {
     fn request_and_deserialize<T, U>(&self, path: &str, query: Option<U>) -> Result<T, Error>
     where

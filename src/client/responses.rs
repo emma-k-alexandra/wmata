@@ -160,7 +160,6 @@ pub struct RailIncident {
     pub date_updated: String,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct StationToStationInfos {

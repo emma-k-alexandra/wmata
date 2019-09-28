@@ -2,6 +2,13 @@
 use super::*;
 
 #[test]
+fn test_constructor() {
+    let client = Client::new("9e38c3eab34c4e6c990828002828f5ed");
+
+    assert_eq!(client.api_key, "9e38c3eab34c4e6c990828002828f5ed");
+}
+
+#[test]
 fn test_lines() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
@@ -20,7 +27,11 @@ fn test_stations() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.stations_on(Some(LineCode::Red)).unwrap().stations.len(),
+        client
+            .stations_on(Some(LineCode::Red))
+            .unwrap()
+            .stations
+            .len(),
         27
     );
 }
@@ -37,7 +48,8 @@ fn test_station() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.from_station_to(Some(StationCode::A01), Some(StationCode::A02))
+        client
+            .station_to_station(Some(StationCode::A01), Some(StationCode::A02))
             .unwrap()
             .station_to_station_infos
             .len(),
@@ -50,7 +62,8 @@ fn test_station_one_station() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.from_station_to(Some(StationCode::A01), None)
+        client
+            .station_to_station(Some(StationCode::A01), None)
             .unwrap()
             .station_to_station_infos
             .len(),
@@ -63,7 +76,8 @@ fn test_station_no_stations() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.from_station_to(None, None)
+        client
+            .station_to_station(None, None)
             .unwrap()
             .station_to_station_infos
             .len(),
@@ -133,7 +147,10 @@ fn test_next_trains() {
 fn test_information() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(client.station_information(StationCode::A01).unwrap().code, "A01");
+    assert_eq!(
+        client.station_information(StationCode::A01).unwrap().code,
+        "A01"
+    );
 }
 
 #[test]
@@ -155,7 +172,11 @@ fn test_path_to_station() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.path_from(StationCode::A01, StationCode::A02).unwrap().path[1].distance_to_previous_station,
+        client
+            .path_from(StationCode::A01, StationCode::A02)
+            .unwrap()
+            .path[1]
+            .distance_to_previous_station,
         4178
     );
 }
@@ -164,5 +185,8 @@ fn test_path_to_station() {
 fn test_timings() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(client.timings(StationCode::A01).unwrap().station_times[0].code, "A01");
+    assert_eq!(
+        client.timings(StationCode::A01).unwrap().station_times[0].code,
+        "A01"
+    );
 }
