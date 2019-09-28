@@ -1,3 +1,10 @@
+pub mod line;
+pub mod rail;
+pub mod station;
+
+pub mod error;
+mod urls;
+
 use reqwest;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json;
@@ -34,10 +41,3 @@ where
         .map_err(|err| Error::new(err.to_string()))
         .and_then(deserialize)
 }
-
-pub mod line;
-pub mod rail;
-pub mod station;
-
-pub mod error;
-mod urls;

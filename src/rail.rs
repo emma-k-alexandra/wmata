@@ -1,11 +1,11 @@
 pub mod responses;
 mod tests;
 
+use crate::request_and_deserialize;
+use crate::urls::URLs;
 use crate::error::Error;
 use crate::line::{responses as line_responses, LineCode};
-use crate::request_and_deserialize;
 use crate::station::{responses as station_responses, StationCode};
-use crate::urls::URLs;
 use std::str::FromStr;
 
 pub struct Rail {

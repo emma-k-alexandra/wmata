@@ -1,10 +1,10 @@
 pub mod responses;
 mod tests;
 
-use crate::error::Error;
-use crate::rail::Rail;
 use crate::request_and_deserialize;
 use crate::urls::URLs;
+use crate::rail::Rail;
+use crate::error::Error;
 use std::{error, fmt, str::FromStr};
 
 pub struct Station {
