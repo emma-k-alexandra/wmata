@@ -2,19 +2,11 @@ pub mod responses;
 mod tests;
 
 use crate::error::Error;
-use crate::line::{responses as line_responses, LineCode, STATIONS};
+use crate::line::{responses as line_responses, LineCode};
 use crate::request_and_deserialize;
-use crate::station::{responses as station_responses, StationCode, STATION_TO_STATION};
+use crate::station::{responses as station_responses, StationCode};
+use crate::urls::URLs;
 use std::str::FromStr;
-
-const LINES: &str = "https://api.wmata.com/Rail.svc/json/jLines";
-const ENTRANCES: &str = "https://api.wmata.com/Rail.svc/json/jStationEntrances";
-const POSITIONS: &str = "https://api.wmata.com/TrainPositions/TrainPositions";
-const ROUTES: &str = "https://api.wmata.com/TrainPositions/StandardRoutes";
-const CIRCUITS: &str = "https://api.wmata.com/TrainPositions/TrackCircuits";
-const ELEVATOR_AND_ESCALATOR_INCIDENTS: &str =
-    "https://api.wmata.com/Incidents.svc/json/ElevatorIncidents";
-const INCIDENTS: &str = "https://api.wmata.com/Incidents.svc/json/Incidents";
 
 pub struct Rail {
     pub api_key: String,
@@ -37,7 +29,7 @@ impl Rail {
     {
         completion(request_and_deserialize::<responses::Lines, [(); 0]>(
             &self.api_key,
-            LINES,
+            &URLs::Lines.to_string(),
             None,
         ));
     }
@@ -48,7 +40,7 @@ impl Rail {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            ENTRANCES,
+            &URLs::Entrances.to_string(),
             Some(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)]),
         ));
     }
@@ -65,7 +57,7 @@ impl Rail {
 
         completion(request_and_deserialize(
             &self.api_key,
-            STATIONS,
+            &URLs::Stations.to_string(),
             Some(&query),
         ));
     }
@@ -90,7 +82,7 @@ impl Rail {
 
         completion(request_and_deserialize(
             &self.api_key,
-            STATION_TO_STATION,
+            &URLs::StationToStation.to_string(),
             Some(&query),
         ));
     }
@@ -101,7 +93,7 @@ impl Rail {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            POSITIONS,
+            &URLs::Positions.to_string(),
             Some(&[("contentType", "json")]),
         ));
     }
@@ -112,7 +104,7 @@ impl Rail {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            ROUTES,
+            &URLs::Routes.to_string(),
             Some(&[("contentType", "json")]),
         ))
     }
@@ -123,7 +115,7 @@ impl Rail {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            CIRCUITS,
+            &URLs::Circuits.to_string(),
             Some(&[("contentType", "json")]),
         ))
     }
@@ -140,7 +132,7 @@ impl Rail {
 
         completion(request_and_deserialize(
             &self.api_key,
-            ELEVATOR_AND_ESCALATOR_INCIDENTS,
+            &URLs::ElevatorAndEscalatorIncidents.to_string(),
             Some(&query),
         ));
     }
@@ -157,7 +149,7 @@ impl Rail {
 
         completion(request_and_deserialize(
             &self.api_key,
-            INCIDENTS,
+            &URLs::Incidents.to_string(),
             Some(&query),
         ));
     }

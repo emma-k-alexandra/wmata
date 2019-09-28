@@ -3,8 +3,6 @@ use std::{error, fmt, str::FromStr};
 pub mod responses;
 mod tests;
 
-pub const STATIONS: &str = "https://api.wmata.com/Rail.svc/json/jStations";
-
 pub struct Line<'a> {
     pub api_key: &'a str,
     pub line_code: LineCode,
@@ -21,7 +19,7 @@ pub enum LineCode {
 
 impl ToString for LineCode {
     fn to_string(&self) -> String {
-        match &self {
+        match self {
             LineCode::Red => "RD".to_string(),
             LineCode::Blue => "BL".to_string(),
             LineCode::Yellow => "YL".to_string(),

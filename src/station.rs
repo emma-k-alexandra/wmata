@@ -4,15 +4,8 @@ mod tests;
 use crate::error::Error;
 use crate::rail::Rail;
 use crate::request_and_deserialize;
+use crate::urls::URLs;
 use std::{error, fmt, str::FromStr};
-
-const NEXT_TRAINS: &str = "https://api.wmata.com/StationPrediction.svc/json/GetPrediction";
-const INFORMATION: &str = "https://api.wmata.com/Rail.svc/json/jStationInfo";
-const PARKING_INFORMATION: &str = "https://api.wmata.com/Rail.svc/json/jStationParking";
-const PATH: &str = "https://api.wmata.com/Rail.svc/json/jPath";
-const TIMINGS: &str = "https://api.wmata.com/Rail.svc/json/jStationTimes";
-pub const STATION_TO_STATION: &str =
-    "https://api.wmata.com/Rail.svc/json/jSrcStationToDstStationInfo";
 
 pub struct Station {
     pub api_key: String,
@@ -34,7 +27,7 @@ impl Station {
         completion(
             request_and_deserialize::<responses::RailPredictions, [(); 0]>(
                 &self.api_key,
-                &[NEXT_TRAINS, &self.station_code.to_string()].join("/"),
+                &[URLs::NextTrains.to_string(), self.station_code.to_string()].join("/"),
                 None,
             ),
         );
@@ -46,7 +39,7 @@ impl Station {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            INFORMATION,
+            &URLs::Information.to_string(),
             Some(&[("StationCode", self.station_code.to_string())]),
         ));
     }
@@ -57,7 +50,7 @@ impl Station {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            PARKING_INFORMATION,
+            &URLs::ParkingInformation.to_string(),
             Some(&[("StationCode", self.station_code.to_string())]),
         ));
     }
@@ -68,7 +61,7 @@ impl Station {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            PATH,
+            &URLs::Path.to_string(),
             Some(&[
                 ("FromStationCode", self.station_code.to_string()),
                 ("ToStationCode", to_station.to_string()),
@@ -82,7 +75,7 @@ impl Station {
     {
         completion(request_and_deserialize(
             &self.api_key,
-            TIMINGS,
+            &URLs::Timings.to_string(),
             Some(&[("StationCode", self.station_code.to_string())]),
         ));
     }
@@ -200,7 +193,7 @@ pub enum StationCode {
 
 impl ToString for StationCode {
     fn to_string(&self) -> String {
-        match &self {
+        match self {
             StationCode::A01 => "A01".to_string(),
             StationCode::A02 => "A02".to_string(),
             StationCode::A03 => "A03".to_string(),
