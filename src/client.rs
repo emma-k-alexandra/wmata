@@ -1,28 +1,18 @@
 pub mod responses;
 mod tests;
 
-use crate::request_and_deserialize;
-use crate::urls::URLs;
 use crate::error::Error;
 use crate::line::{responses as line_responses, LineCode};
+use crate::request_and_deserialize;
 use crate::station::{responses as station_responses, StationCode};
+use crate::urls::URLs;
 use std::str::FromStr;
 
-pub struct Rail {
+pub struct Client {
     pub api_key: String,
 }
 
-impl FromStr for Rail {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Rail {
-            api_key: s.to_string(),
-        })
-    }
-}
-
-impl Rail {
+impl Client {
     pub fn lines(&self) -> Result<responses::Lines, Error> {
         request_and_deserialize::<responses::Lines, [(); 0]>(
             &self.api_key,
@@ -128,5 +118,15 @@ impl Rail {
         }
 
         request_and_deserialize(&self.api_key, &URLs::Incidents.to_string(), Some(&query))
+    }
+}
+
+impl FromStr for Client {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Client {
+            api_key: s.to_string(),
+        })
     }
 }

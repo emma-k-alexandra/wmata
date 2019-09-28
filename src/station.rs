@@ -1,10 +1,10 @@
 pub mod responses;
 mod tests;
 
+use crate::client::Client;
+use crate::error::Error;
 use crate::request_and_deserialize;
 use crate::urls::URLs;
-use crate::rail::Rail;
-use crate::error::Error;
 use std::{error, fmt, str::FromStr};
 
 pub struct Station {
@@ -68,7 +68,7 @@ impl Station {
         station: StationCode,
     ) -> Result<responses::StationToStationInfos, Error> {
         self.api_key
-            .parse::<Rail>()
+            .parse::<Client>()
             .unwrap()
             .station(Some(self.station_code), Some(station))
     }
