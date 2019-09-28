@@ -6,12 +6,12 @@ use crate::rail::Rail;
 use crate::request_and_deserialize;
 use std::{error, fmt, str::FromStr};
 
-const NEXT_TRAINS: &'static str = "https://api.wmata.com/StationPrediction.svc/json/GetPrediction";
-const INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationInfo";
-const PARKING_INFORMATION: &'static str = "https://api.wmata.com/Rail.svc/json/jStationParking";
-const PATH: &'static str = "https://api.wmata.com/Rail.svc/json/jPath";
-const TIMINGS: &'static str = "https://api.wmata.com/Rail.svc/json/jStationTimes";
-pub const STATION_TO_STATION: &'static str =
+const NEXT_TRAINS: &str = "https://api.wmata.com/StationPrediction.svc/json/GetPrediction";
+const INFORMATION: &str = "https://api.wmata.com/Rail.svc/json/jStationInfo";
+const PARKING_INFORMATION: &str = "https://api.wmata.com/Rail.svc/json/jStationParking";
+const PATH: &str = "https://api.wmata.com/Rail.svc/json/jPath";
+const TIMINGS: &str = "https://api.wmata.com/Rail.svc/json/jStationTimes";
+pub const STATION_TO_STATION: &str =
     "https://api.wmata.com/Rail.svc/json/jSrcStationToDstStationInfo";
 
 pub struct Station {
@@ -23,7 +23,7 @@ impl Station {
     pub fn new(api_key: &str, station_code: StationCode) -> Self {
         Station {
             api_key: api_key.to_string(),
-            station_code: station_code,
+            station_code,
         }
     }
 

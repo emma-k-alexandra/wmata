@@ -3,7 +3,7 @@ use std::{error, fmt, str::FromStr};
 pub mod responses;
 mod tests;
 
-pub const STATIONS: &'static str = "https://api.wmata.com/Rail.svc/json/jStations";
+pub const STATIONS: &str = "https://api.wmata.com/Rail.svc/json/jStations";
 
 pub struct Line<'a> {
     pub api_key: &'a str,

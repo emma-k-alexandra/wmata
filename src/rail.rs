@@ -7,14 +7,14 @@ use crate::request_and_deserialize;
 use crate::station::{responses as station_responses, StationCode, STATION_TO_STATION};
 use std::str::FromStr;
 
-const LINES: &'static str = "https://api.wmata.com/Rail.svc/json/jLines";
-const ENTRANCES: &'static str = "https://api.wmata.com/Rail.svc/json/jStationEntrances";
-const POSITIONS: &'static str = "https://api.wmata.com/TrainPositions/TrainPositions";
-const ROUTES: &'static str = "https://api.wmata.com/TrainPositions/StandardRoutes";
-const CIRCUITS: &'static str = "https://api.wmata.com/TrainPositions/TrackCircuits";
-const ELEVATOR_AND_ESCALATOR_INCIDENTS: &'static str =
+const LINES: &str = "https://api.wmata.com/Rail.svc/json/jLines";
+const ENTRANCES: &str = "https://api.wmata.com/Rail.svc/json/jStationEntrances";
+const POSITIONS: &str = "https://api.wmata.com/TrainPositions/TrainPositions";
+const ROUTES: &str = "https://api.wmata.com/TrainPositions/StandardRoutes";
+const CIRCUITS: &str = "https://api.wmata.com/TrainPositions/TrackCircuits";
+const ELEVATOR_AND_ESCALATOR_INCIDENTS: &str =
     "https://api.wmata.com/Incidents.svc/json/ElevatorIncidents";
-const INCIDENTS: &'static str = "https://api.wmata.com/Incidents.svc/json/Incidents";
+const INCIDENTS: &str = "https://api.wmata.com/Incidents.svc/json/Incidents";
 
 pub struct Rail {
     pub api_key: String,

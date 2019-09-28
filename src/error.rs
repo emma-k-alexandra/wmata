@@ -10,7 +10,7 @@ pub struct Error {
 
 impl Error {
     pub fn new(message: String) -> Self {
-        Error { message: message }
+        Error { message }
     }
 }
 
