@@ -78,7 +78,14 @@ impl Client {
             query.push(("ToStationCode", station_code.to_string()));
         }
 
-        self.request_and_deserialize(&URLs::StationToStation.to_string(), Some(&query))
+        if query.len() > 0 {
+            self.request_and_deserialize(&URLs::StationToStation.to_string(), Some(&query))
+        } else {
+            self.request_and_deserialize::<responses::StationToStationInfos, [(); 0]>(
+                &URLs::StationToStation.to_string(),
+                None,
+            )
+        }
     }
 
     pub fn elevator_and_escalator_incidents_at(
@@ -91,10 +98,17 @@ impl Client {
             query.push(("StationCode", station_code.to_string()));
         }
 
-        self.request_and_deserialize(
-            &URLs::ElevatorAndEscalatorIncidents.to_string(),
-            Some(&query),
-        )
+        if query.len() > 0 {
+            self.request_and_deserialize(
+                &URLs::ElevatorAndEscalatorIncidents.to_string(),
+                Some(&query),
+            )
+        } else {
+            self.request_and_deserialize::<responses::ElevatorAndEscalatorIncidents, [(); 0]>(
+                &URLs::ElevatorAndEscalatorIncidents.to_string(),
+                None,
+            )
+        }
     }
 
     pub fn incidents_at(
@@ -171,7 +185,14 @@ impl Client {
             query.push(("LineCode", line_code.to_string()));
         }
 
-        self.request_and_deserialize(&URLs::Stations.to_string(), Some(&query))
+        if query.len() > 0 {
+            self.request_and_deserialize(&URLs::Stations.to_string(), Some(&query))
+        } else {
+            self.request_and_deserialize::<responses::Stations, [(); 0]>(
+                &URLs::Stations.to_string(),
+                None,
+            )
+        }
     }
 }
 
