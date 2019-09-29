@@ -29,4 +29,3 @@ impl error::Error for Error {
 pub struct ErrorResponse<'a> {
     pub message: &'a str,
 }
-
