@@ -23,3 +23,10 @@ impl error::Error for Error {
         None
     }
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct ErrorResponse<'a> {
+    pub message: &'a str,
+}
+

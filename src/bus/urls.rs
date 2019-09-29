@@ -6,7 +6,7 @@ pub enum URLs {
     PathDetails,
     RouteSchedule,
     NextBuses,
-    StopSchedule
+    StopSchedule,
 }
 
 impl ToString for URLs {
@@ -18,7 +18,9 @@ impl ToString for URLs {
             URLs::Positions => "https://api.wmata.com/Bus.svc/json/jBusPositions".to_string(),
             URLs::PathDetails => "https://api.wmata.com/Bus.svc/json/jRouteDetails".to_string(),
             URLs::RouteSchedule => "https://api.wmata.com/Bus.svc/json/jRouteSchedule".to_string(),
-            URLs::NextBuses => "https://api.wmata.com/NextBusService.svc/json/jPredictions".to_string(),
+            URLs::NextBuses => {
+                "https://api.wmata.com/NextBusService.svc/json/jPredictions".to_string()
+            }
             URLs::StopSchedule => "https://api.wmata.com/Bus.svc/json/jStopSchedul".to_string(),
         }
     }

@@ -5,14 +5,17 @@ use crate::error::Error;
 use crate::rail::line::LineCode;
 use crate::rail::station::StationCode;
 use crate::rail::urls::URLs;
+use crate::traits::{ApiKey, Fetch};
 use std::str::FromStr;
-
-use reqwest;
-use serde::{de::DeserializeOwned, Serialize};
-use serde_json;
 
 pub struct Client {
     pub api_key: String,
+}
+
+impl ApiKey for Client {
+    fn api_key(&self) -> &str {
+        &self.api_key
+    }
 }
 
 // Constructor
@@ -27,7 +30,7 @@ impl Client {
 // No Station or Line Codes
 impl Client {
     pub fn lines(&self) -> Result<responses::Lines, Error> {
-        self.request_and_deserialize::<responses::Lines, [(); 0]>(&URLs::Lines.to_string(), None)
+        self.fetch::<responses::Lines, [(); 0]>(&URLs::Lines.to_string(), None)
     }
 
     pub fn entrances(
@@ -36,25 +39,25 @@ impl Client {
         longitude: f64,
         radius: f64,
     ) -> Result<responses::StationEntrances, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::Entrances.to_string(),
             Some(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)]),
         )
     }
 
     pub fn positions(&self) -> Result<responses::TrainPositions, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::Positions.to_string(),
             Some(&[("contentType", "json")]),
         )
     }
 
     pub fn routes(&self) -> Result<responses::StandardRoutes, Error> {
-        self.request_and_deserialize(&URLs::Routes.to_string(), Some(&[("contentType", "json")]))
+        self.fetch(&URLs::Routes.to_string(), Some(&[("contentType", "json")]))
     }
 
     pub fn circuits(&self) -> Result<responses::TrackCircuits, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::Circuits.to_string(),
             Some(&[("contentType", "json")]),
         )
@@ -79,9 +82,9 @@ impl Client {
         }
 
         if !query.is_empty() {
-            self.request_and_deserialize(&URLs::StationToStation.to_string(), Some(&query))
+            self.fetch(&URLs::StationToStation.to_string(), Some(&query))
         } else {
-            self.request_and_deserialize::<responses::StationToStationInfos, [(); 0]>(
+            self.fetch::<responses::StationToStationInfos, [(); 0]>(
                 &URLs::StationToStation.to_string(),
                 None,
             )
@@ -99,12 +102,12 @@ impl Client {
         }
 
         if !query.is_empty() {
-            self.request_and_deserialize(
+            self.fetch(
                 &URLs::ElevatorAndEscalatorIncidents.to_string(),
                 Some(&query),
             )
         } else {
-            self.request_and_deserialize::<responses::ElevatorAndEscalatorIncidents, [(); 0]>(
+            self.fetch::<responses::ElevatorAndEscalatorIncidents, [(); 0]>(
                 &URLs::ElevatorAndEscalatorIncidents.to_string(),
                 None,
             )
@@ -121,14 +124,14 @@ impl Client {
             query.push(("StationCode", station_code.to_string()));
         }
 
-        self.request_and_deserialize(&URLs::Incidents.to_string(), Some(&query))
+        self.fetch(&URLs::Incidents.to_string(), Some(&query))
     }
 
     pub fn next_trains(
         &self,
         station_code: StationCode,
     ) -> Result<responses::RailPredictions, Error> {
-        self.request_and_deserialize::<responses::RailPredictions, [(); 0]>(
+        self.fetch::<responses::RailPredictions, [(); 0]>(
             &[URLs::NextTrains.to_string(), station_code.to_string()].join("/"),
             None,
         )
@@ -138,7 +141,7 @@ impl Client {
         &self,
         station_code: StationCode,
     ) -> Result<responses::StationInformation, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::Information.to_string(),
             Some(&[("StationCode", station_code.to_string())]),
         )
@@ -148,7 +151,7 @@ impl Client {
         &self,
         station_code: StationCode,
     ) -> Result<responses::StationsParking, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::ParkingInformation.to_string(),
             Some(&[("StationCode", station_code.to_string())]),
         )
@@ -159,7 +162,7 @@ impl Client {
         from_station: StationCode,
         to_station: StationCode,
     ) -> Result<responses::PathBetweenStations, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::Path.to_string(),
             Some(&[
                 ("FromStationCode", from_station.to_string()),
@@ -169,7 +172,7 @@ impl Client {
     }
 
     pub fn timings(&self, station_code: StationCode) -> Result<responses::StationTimings, Error> {
-        self.request_and_deserialize(
+        self.fetch(
             &URLs::Timings.to_string(),
             Some(&[("StationCode", station_code.to_string())]),
         )
@@ -186,47 +189,10 @@ impl Client {
         }
 
         if !query.is_empty() {
-            self.request_and_deserialize(&URLs::Stations.to_string(), Some(&query))
+            self.fetch(&URLs::Stations.to_string(), Some(&query))
         } else {
-            self.request_and_deserialize::<responses::Stations, [(); 0]>(
-                &URLs::Stations.to_string(),
-                None,
-            )
+            self.fetch::<responses::Stations, [(); 0]>(&URLs::Stations.to_string(), None)
         }
-    }
-}
-
-// Internal helper methods
-impl Client {
-    fn request_and_deserialize<T, U>(&self, path: &str, query: Option<U>) -> Result<T, Error>
-    where
-        T: DeserializeOwned,
-        U: Serialize + Sized,
-    {
-        fn deserialize<T>(response: String) -> Result<T, Error>
-        where
-            T: DeserializeOwned,
-        {
-            serde_json::from_str::<T>(&response).or_else(|_| {
-                match serde_json::from_str::<responses::Error>(&response) {
-                    Ok(json) => Err(Error::new(json.message.to_string())),
-                    Err(err) => Err(Error::new(err.to_string())),
-                }
-            })
-        }
-
-        let mut request = reqwest::Client::new().get(path);
-
-        if let Some(some_query) = query {
-            request = request.query(&some_query)
-        }
-
-        request
-            .header("api_key", &self.api_key)
-            .send()
-            .and_then(|mut response| response.text())
-            .map_err(|err| Error::new(err.to_string()))
-            .and_then(deserialize)
     }
 }
 
