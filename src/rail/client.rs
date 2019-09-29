@@ -78,7 +78,7 @@ impl Client {
             query.push(("ToStationCode", station_code.to_string()));
         }
 
-        if query.len() > 0 {
+        if !query.is_empty() {
             self.request_and_deserialize(&URLs::StationToStation.to_string(), Some(&query))
         } else {
             self.request_and_deserialize::<responses::StationToStationInfos, [(); 0]>(
@@ -98,7 +98,7 @@ impl Client {
             query.push(("StationCode", station_code.to_string()));
         }
 
-        if query.len() > 0 {
+        if !query.is_empty() {
             self.request_and_deserialize(
                 &URLs::ElevatorAndEscalatorIncidents.to_string(),
                 Some(&query),
@@ -185,7 +185,7 @@ impl Client {
             query.push(("LineCode", line_code.to_string()));
         }
 
-        if query.len() > 0 {
+        if !query.is_empty() {
             self.request_and_deserialize(&URLs::Stations.to_string(), Some(&query))
         } else {
             self.request_and_deserialize::<responses::Stations, [(); 0]>(
