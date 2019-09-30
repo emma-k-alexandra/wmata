@@ -6,6 +6,7 @@ use crate::rail::line::LineCode;
 use crate::rail::station::StationCode;
 use crate::rail::urls::URLs;
 use crate::traits::{ApiKey, Fetch};
+use crate::types::Empty;
 use std::str::FromStr;
 
 pub struct Client {
@@ -30,7 +31,7 @@ impl Client {
 // No Station or Line Codes
 impl Client {
     pub fn lines(&self) -> Result<responses::Lines, Error> {
-        self.fetch::<responses::Lines, [(); 0]>(&URLs::Lines.to_string(), None)
+        self.fetch::<responses::Lines, Empty>(&URLs::Lines.to_string(), None)
     }
 
     pub fn entrances(
@@ -73,18 +74,18 @@ impl Client {
     ) -> Result<responses::StationToStationInfos, Error> {
         let mut query = vec![];
 
-        if let Some(station_code) = from_station {
-            query.push(("FromStationCode", station_code.to_string()));
+        if let Some(from_station) = from_station {
+            query.push(("FromStationCode", from_station.to_string()));
         }
 
-        if let Some(station_code) = to_destination_station {
-            query.push(("ToStationCode", station_code.to_string()));
+        if let Some(to_destination_station) = to_destination_station {
+            query.push(("ToStationCode", to_destination_station.to_string()));
         }
 
         if !query.is_empty() {
             self.fetch(&URLs::StationToStation.to_string(), Some(&query))
         } else {
-            self.fetch::<responses::StationToStationInfos, [(); 0]>(
+            self.fetch::<responses::StationToStationInfos, Empty>(
                 &URLs::StationToStation.to_string(),
                 None,
             )
@@ -97,8 +98,8 @@ impl Client {
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
         let mut query = vec![];
 
-        if let Some(station_code) = station {
-            query.push(("StationCode", station_code.to_string()));
+        if let Some(station) = station {
+            query.push(("StationCode", station.to_string()));
         }
 
         if !query.is_empty() {
@@ -107,7 +108,7 @@ impl Client {
                 Some(&query),
             )
         } else {
-            self.fetch::<responses::ElevatorAndEscalatorIncidents, [(); 0]>(
+            self.fetch::<responses::ElevatorAndEscalatorIncidents, Empty>(
                 &URLs::ElevatorAndEscalatorIncidents.to_string(),
                 None,
             )
@@ -120,8 +121,8 @@ impl Client {
     ) -> Result<responses::RailIncidents, Error> {
         let mut query = vec![];
 
-        if let Some(station_code) = station {
-            query.push(("StationCode", station_code.to_string()));
+        if let Some(station) = station {
+            query.push(("StationCode", station.to_string()));
         }
 
         self.fetch(&URLs::Incidents.to_string(), Some(&query))
@@ -131,7 +132,7 @@ impl Client {
         &self,
         station_code: StationCode,
     ) -> Result<responses::RailPredictions, Error> {
-        self.fetch::<responses::RailPredictions, [(); 0]>(
+        self.fetch::<responses::RailPredictions, Empty>(
             &[URLs::NextTrains.to_string(), station_code.to_string()].join("/"),
             None,
         )
@@ -184,14 +185,14 @@ impl Client {
     pub fn stations_on(&self, line: Option<LineCode>) -> Result<responses::Stations, Error> {
         let mut query = vec![];
 
-        if let Some(line_code) = line {
-            query.push(("LineCode", line_code.to_string()));
+        if let Some(line) = line {
+            query.push(("LineCode", line.to_string()));
         }
 
         if !query.is_empty() {
             self.fetch(&URLs::Stations.to_string(), Some(&query))
         } else {
-            self.fetch::<responses::Stations, [(); 0]>(&URLs::Stations.to_string(), None)
+            self.fetch::<responses::Stations, Empty>(&URLs::Stations.to_string(), None)
         }
     }
 }
