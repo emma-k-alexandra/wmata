@@ -18,6 +18,18 @@ impl ApiKey for Client {
     }
 }
 
+// Constructor
+impl Client {
+    // This isn't actually dead code,
+    // but the compiler is very angry about it
+    #[allow(dead_code)]
+    fn new(api_key: &str) -> Self {
+        Client {
+            api_key: api_key.to_string(),
+        }
+    }
+}
+
 // These don't take Route IDs or Stop IDs
 impl Client {
     pub fn routes(&self) -> Result<responses::Routes, Error> {
@@ -28,7 +40,7 @@ impl Client {
         &self,
         latitude: Option<f64>,
         longitude: Option<f64>,
-        radius: Option<f64>,
+        radius: Option<u32>,
     ) -> Result<responses::Stops, Error> {
         let mut query = vec![];
 
@@ -59,7 +71,7 @@ impl Client {
         route: Option<RouteID>,
         latitude: Option<f64>,
         longitude: Option<f64>,
-        radius: Option<f64>,
+        radius: Option<u32>,
     ) -> Result<responses::BusPositions, Error> {
         let mut query = vec![];
 
@@ -82,7 +94,7 @@ impl Client {
         if !query.is_empty() {
             self.fetch(&URLs::Positions.to_string(), Some(&query))
         } else {
-            self.fetch::<responses::BusPositions, Empty>(&URLs::Routes.to_string(), None)
+            self.fetch::<responses::BusPositions, Empty>(&URLs::Positions.to_string(), None)
         }
     }
 
@@ -103,12 +115,12 @@ impl Client {
     pub fn path(
         &self,
         route: RouteID,
-        date: Option<String>,
+        date: Option<&str>,
     ) -> Result<responses::PathDetails, Error> {
         let mut query = vec![("RouteID", route.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date", date));
+            query.push(("Date", date.to_string()));
         }
 
         self.fetch(&URLs::PathDetails.to_string(), Some(&query))
@@ -117,13 +129,13 @@ impl Client {
     pub fn route_schedule(
         &self,
         route: RouteID,
-        date: Option<String>,
+        date: Option<&str>,
         including_variations: bool,
-    ) -> Result<responses::Routes, Error> {
+    ) -> Result<responses::RouteSchedule, Error> {
         let mut query = vec![("RouteID", route.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date", date));
+            query.push(("Date", date.to_string()));
         }
 
         if including_variations {
@@ -142,8 +154,8 @@ impl Client {
 
     pub fn stop_schedule(
         &self,
-        stop_id: String,
-        date: Option<String>,
+        stop_id: &str,
+        date: Option<&str>,
     ) -> Result<responses::StopSchedule, Error> {
         let mut query = vec![("StopID", stop_id)];
 

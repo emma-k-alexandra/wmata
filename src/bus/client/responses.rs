@@ -9,10 +9,11 @@ pub struct BusPositions {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct BusPosition {
+    pub block_number: String,
     pub date_time: String,
-    pub deviation: i32,
+    pub deviation: f64,
     #[serde(rename = "DirectionNum")]
-    pub direction_number: String,
+    pub direction_number: i32,
     pub direction_text: String,
     #[serde(rename = "Lat")]
     pub latitude: f64,
@@ -38,6 +39,7 @@ pub struct Routes {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Route {
+    #[serde(rename = "RouteID")]
     pub route_id: String,
     pub name: String,
     pub line_description: String,
@@ -65,6 +67,7 @@ pub struct Stop {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Incidents {
+    #[serde(rename = "BusIncidents")]
     pub incidents: Box<[Incident]>,
 }
 
@@ -169,4 +172,41 @@ pub struct StopRoutes {
     #[serde(rename = "Lon")]
     pub longitude: f64,
     pub routes: Box<[String]>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct RouteSchedule {
+    pub name: String,
+    #[serde(rename = "Direction0")]
+    pub direction_zero: Box<[RouteInfo]>,
+    #[serde(rename = "Direction1")]
+    pub direction_one: Box<[RouteInfo]>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct RouteInfo {
+    #[serde(rename = "RouteID")]
+    pub route_id: String,
+    #[serde(rename = "DirectionNum")]
+    pub direction_number: String,
+    pub trip_direction_text: String,
+    pub trip_headsign: String,
+    pub start_time: String,
+    pub end_time: String,
+    pub stop_times: Box<[StopInfo]>,
+    #[serde(rename = "TripID")]
+    pub trip_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct StopInfo {
+    #[serde(rename = "StopID")]
+    pub stop_id: String,
+    pub stop_name: String,
+    #[serde(rename = "StopSeq")]
+    pub stop_sequence: i32,
+    pub time: String,
 }

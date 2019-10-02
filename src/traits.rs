@@ -42,10 +42,10 @@ pub trait Deserializer {
     where
         T: DeserializeOwned,
     {
-        serde_json::from_str::<T>(&response).or_else(|_| {
+        serde_json::from_str::<T>(&response).or_else(|original_err| {
             match serde_json::from_str::<ErrorResponse>(&response) {
                 Ok(json) => Err(Error::new(json.message.to_string())),
-                Err(err) => Err(Error::new(err.to_string())),
+                Err(_) => Err(Error::new(original_err.to_string())),
             }
         })
     }

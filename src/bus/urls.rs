@@ -21,7 +21,7 @@ impl ToString for URLs {
             URLs::NextBuses => {
                 "https://api.wmata.com/NextBusService.svc/json/jPredictions".to_string()
             }
-            URLs::StopSchedule => "https://api.wmata.com/Bus.svc/json/jStopSchedul".to_string(),
+            URLs::StopSchedule => "https://api.wmata.com/Bus.svc/json/jStopSchedule".to_string(),
         }
     }
 }
