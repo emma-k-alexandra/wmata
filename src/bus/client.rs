@@ -23,7 +23,7 @@ impl Client {
     // This isn't actually dead code,
     // but the compiler is very angry about it
     #[allow(dead_code)]
-    fn new(api_key: &str) -> Self {
+    pub fn new(api_key: &str) -> Self {
         Client {
             api_key: api_key.to_string(),
         }
@@ -148,7 +148,7 @@ impl Client {
 
 // These take Stop IDs
 impl Client {
-    pub fn next_buses(&self, stop_id: String) -> Result<responses::Predictions, Error> {
+    pub fn next_buses(&self, stop_id: &str) -> Result<responses::Predictions, Error> {
         self.fetch(&URLs::NextBuses.to_string(), Some(&[("StopID", stop_id)]))
     }
 

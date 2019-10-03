@@ -23,7 +23,7 @@ impl ApiKey for Client {
 impl Client {
     // Again, not actually dead code
     #[allow(dead_code)]
-    fn new(api_key: &str) -> Self {
+    pub fn new(api_key: &str) -> Self {
         Client {
             api_key: api_key.to_string(),
         }
