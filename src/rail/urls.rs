@@ -1,3 +1,4 @@
+//! URLs of Rail-related endpoints
 pub enum URLs {
     NextTrains,
     Information,

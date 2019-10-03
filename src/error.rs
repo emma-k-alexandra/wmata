@@ -1,6 +1,8 @@
+//! Errors used throughout the crate.
 use serde::{Deserialize, Serialize};
 use std::{error, fmt};
 
+/// An error, generated from the WMATA API
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Error {
     pub message: String,
@@ -24,6 +26,7 @@ impl error::Error for Error {
     }
 }
 
+/// An error from the WMATA API
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct ErrorResponse<'a> {

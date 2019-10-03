@@ -1,3 +1,4 @@
+//! Tests for MetroRail Client
 #[cfg(test)]
 use super::*;
 

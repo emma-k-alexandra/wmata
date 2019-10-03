@@ -1,5 +1,7 @@
+//! Codes for each MetroRail line.
 use std::{error, fmt, str::FromStr};
 
+/// All MetroRail lines.
 pub enum LineCode {
     Red,
     Blue,

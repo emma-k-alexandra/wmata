@@ -1,5 +1,7 @@
+//! WMATA-defined codes for each MetroRail station.
 use std::{error, fmt, str::FromStr};
 
+/// Every MetroRail station code as defined by WMATA.
 #[derive(Copy, Clone)]
 pub enum StationCode {
     A01,
@@ -306,6 +308,7 @@ impl FromStr for StationCode {
     }
 }
 
+/// An error incidating that the provided string is not a WMATA Station Code.
 #[derive(Debug, Clone)]
 pub struct StringIsNotStationCodeError;
 

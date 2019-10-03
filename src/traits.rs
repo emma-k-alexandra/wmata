@@ -1,14 +1,27 @@
+//! Traits used for WMATA clients
 use crate::error::{Error, ErrorResponse};
 
 use reqwest;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json;
 
+/// A trait indicating that the implementor provides a WMATA API Key.
 pub trait ApiKey {
+    /// Returns the WMATA API Key the implementor contains.
+    /// # Examples
+    /// ```
+    /// use wmata::BusClient
+    /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert_eq!(client.api_key(), "9e38c3eab34c4e6c990828002828f5ed");
+    /// ```
     fn api_key(&self) -> &str;
 }
 
+/// A trait indicating the implementor can request and deserialize data
+/// from the WMATA API.
 pub trait Fetch: Requester + Deserializer {
+    /// Requests and deserializes JSON data from a WMATA endpoint.
+    /// Used internally by MetroRail and MetroBus clients.
     fn fetch<U, V>(&self, path: &str, query: Option<V>) -> Result<U, Error>
     where
         U: DeserializeOwned,
@@ -18,7 +31,10 @@ pub trait Fetch: Requester + Deserializer {
     }
 }
 
+/// A trait indicating the implementor can request data from the 
+/// WMATA API.
 pub trait Requester: ApiKey {
+    /// Requests data JSON data from a WMATA endpoint.
     fn request<T>(&self, path: &str, query: Option<T>) -> Result<String, Error>
     where
         T: Serialize + Sized,
@@ -37,7 +53,10 @@ pub trait Requester: ApiKey {
     }
 }
 
+/// A trait indicating the implementor can deserialize data from the
+/// WMATA API.
 pub trait Deserializer {
+    /// Deserializes JSON data from a WMATA endpoint.
     fn deserialize<T>(response: String) -> Result<T, Error>
     where
         T: DeserializeOwned,
@@ -51,8 +70,11 @@ pub trait Deserializer {
     }
 }
 
+/// Auto implement Requester where ApiKey is present.
 impl<T> Requester for T where T: ApiKey {}
 
+/// Auto implement Deserializer where ApiKey is present.
 impl<T> Deserializer for T where T: ApiKey {}
 
+/// Auto implement Fetch where ApiKey is present.
 impl<T> Fetch for T where T: ApiKey {}
