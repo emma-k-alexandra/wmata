@@ -38,7 +38,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::BusClient;
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     // This isn't actually dead code,
@@ -58,7 +58,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::BusClient;
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.routes().is_ok());
     /// ```
@@ -71,7 +71,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::BusClient;
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.stops(Some(38.8817596), Some(-77.0166426), Some(1000)).is_ok());
     /// ```
@@ -110,7 +110,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::{BusClient, RouteID};
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.positions_along(
     ///     Some(RouteID::A2),
@@ -156,7 +156,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{BusClient, RouteID};
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.incidents_along(Some(RouteID::A2)).is_ok());
     /// ```
@@ -184,14 +184,14 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{BusClient, RouteID};
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.path(RouteID::A2, None).is_ok());
     /// ```
     /// With a date
     /// ```
     /// use wmata::{BusClient, RouteID};
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.path(RouteID::A2, Some("2019-10-02")).is_ok());
     /// ```
@@ -223,7 +223,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{BusClient, RouteID};
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.route_schedule(RouteID::A2, None, false).is_ok());
     /// ```
@@ -231,7 +231,7 @@ impl Client {
     /// with date and variations
     /// ```
     /// use wmata::{BusClient, RouteID};
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.route_schedule(RouteID::A2, Some("2019-10-02"), true).is_ok());
     /// ```
@@ -262,7 +262,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::BusClient;
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.next_buses("1001195").is_ok());
     /// ```
@@ -278,7 +278,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::BusClient;
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.stop_schedule("1001195", None).is_ok());
     /// ```
@@ -286,7 +286,7 @@ impl Client {
     /// with date
     /// ```
     /// use wmata::BusClient;
-    /// 
+    ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.stop_schedule("1001195", Some("2019-10-02")).is_ok());
     /// ```
@@ -314,12 +314,10 @@ impl FromStr for Client {
     /// ```
     /// use wmata::BusClient;
     /// let client: BusClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
-    /// 
+    ///
     /// assert_eq!(client.key, "9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Client {
-            key: s.to_string(),
-        })
+        Ok(Client { key: s.to_string() })
     }
 }

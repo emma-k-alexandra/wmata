@@ -207,13 +207,13 @@ impl FromStr for StationCode {
     type Err = StringIsNotStationCodeError;
 
     /// Converts a string to a [`StationCode`].
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use wmata::StationCode;
-    /// 
+    ///
     /// let station_code: StationCode = "A01".parse().unwrap();
-    /// 
+    ///
     /// assert_eq!(StationCode::A01, station_code);
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {

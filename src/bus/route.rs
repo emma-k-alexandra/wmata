@@ -977,9 +977,9 @@ impl FromStr for RouteID {
     /// # Examples
     /// ```
     /// use wmata::RouteID;
-    /// 
+    ///
     /// let route_id: RouteID = "10A".parse().unwrap();
-    /// 
+    ///
     /// assert_eq!(route_id, RouteID::One0A);
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {

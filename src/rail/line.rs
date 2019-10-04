@@ -29,13 +29,13 @@ impl FromStr for LineCode {
     type Err = StringIsNotLineCodeError;
 
     /// Converts a string to a [`LineCode`].
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use wmata::LineCode;
-    /// 
+    ///
     /// let line_code: LineCode = "RD".parse().unwrap();
-    /// 
+    ///
     /// assert_eq!(LineCode::Red, line_code);
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {

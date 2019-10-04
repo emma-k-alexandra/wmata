@@ -23,7 +23,7 @@ impl ApiKey for Client {
     /// # Example
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     fn api_key(&self) -> &str {
@@ -38,7 +38,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     // Again, not actually dead code
@@ -58,7 +58,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.lines().is_ok());
     /// ```
@@ -72,7 +72,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.entrances(38.8817596, -77.0166426, 1000.0).is_ok());
     /// ```
@@ -94,7 +94,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.positions().is_ok());
     /// ```
@@ -111,7 +111,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.routes().is_ok());
     /// ```
@@ -135,7 +135,7 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.station_to_station(Some(StationCode::A01), Some(StationCode::A02)).is_ok());
     /// ```
@@ -170,7 +170,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.elevator_and_escalator_incidents_at(Some(StationCode::A01)).is_ok());
     /// ```
@@ -202,7 +202,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.incidents_at(Some(StationCode::A01)).is_ok());
     /// ```
@@ -224,7 +224,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.next_trains(StationCode::A01).is_ok());
     /// ```
@@ -243,7 +243,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.station_information(StationCode::A01).is_ok());
     /// ```
@@ -262,7 +262,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.parking_information(StationCode::A01).is_ok());
     /// ```
@@ -281,7 +281,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.path_from(StationCode::A01, StationCode::A02).is_ok());
     /// ```
@@ -304,7 +304,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, StationCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.timings(StationCode::A01).is_ok());
     /// ```
@@ -323,7 +323,7 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{RailClient, LineCode};
-    /// 
+    ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.stations_on(Some(LineCode::Red)).is_ok());
     /// ```
@@ -350,14 +350,12 @@ impl FromStr for Client {
     /// # Examples
     /// ```
     /// use wmata::RailClient;
-    /// 
+    ///
     /// let client: RailClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
-    /// 
+    ///
     /// assert_eq!(client.key, "9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Client {
-            key: s.to_string(),
-        })
+        Ok(Client { key: s.to_string() })
     }
 }
