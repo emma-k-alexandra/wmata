@@ -3,6 +3,11 @@ name = "wmata"
 version = "1.0.0"
 authors = ["Emma Foster <emma@emma.sh>"]
 edition = "2018"
+description = "wmata is a lightweight Rust interface to the Washington Metropolitan Area Transit Authority (WMATA) API"
+keywords = ["wmata", "washington", "dc", "networking", "mit"]
+categories = ["api-bindings", "encoding", "network-programming"]
+license = "MIT"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
