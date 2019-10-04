@@ -7,7 +7,7 @@ use crate::bus::route::RouteID;
 use crate::bus::urls::URLs;
 use crate::error::Error;
 use crate::traits::{ApiKey, Fetch};
-use crate::types::Empty;
+use crate::types::{Empty, RadiusAtLatLong};
 use std::str::FromStr;
 
 /// MetroBus client. Used to fetch MetroBus-related information from the WMATA API.
@@ -70,33 +70,20 @@ impl Client {
     ///
     /// # Examples
     /// ```
-    /// use wmata::BusClient;
+    /// use wmata::{BusClient, RadiusAtLatLong};
     ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stops(Some(38.8817596), Some(-77.0166426), Some(1000)).is_ok());
+    /// assert!(client.stops(Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))).is_ok());
     /// ```
     pub fn stops(
         &self,
-        latitude: Option<f64>,
-        longitude: Option<f64>,
-        radius: Option<u32>,
+        radius_at_lat_long: Option<RadiusAtLatLong>,
     ) -> Result<responses::Stops, Error> {
-        let mut query = vec![];
-
-        if let Some(latitude) = latitude {
-            query.push(("Lat", latitude.to_string()));
-        }
-
-        if let Some(longitude) = longitude {
-            query.push(("Lon", longitude.to_string()));
-        }
-
-        if let Some(radius) = radius {
-            query.push(("Radius", radius.to_string()));
-        }
-
-        if !query.is_empty() {
-            self.fetch(&URLs::Stops.to_string(), Some(&query))
+        if let Some(radius_at_lat_long) = radius_at_lat_long {
+            self.fetch(
+                &URLs::Stops.to_string(),
+                Some(radius_at_lat_long.to_query()),
+            )
         } else {
             self.fetch::<responses::Stops, Empty>(&URLs::Stops.to_string(), None)
         }
@@ -109,43 +96,31 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::{BusClient, RouteID};
+    /// use wmata::{BusClient, RouteID, RadiusAtLatLong};
     ///
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.positions_along(
     ///     Some(RouteID::A2),
-    ///     Some(38.8817596),
-    ///     Some(-77.0166426),
-    ///     Some(1000)
+    ///     Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))
     /// ).is_ok());
     /// ```
     pub fn positions_along(
         &self,
         route: Option<RouteID>,
-        latitude: Option<f64>,
-        longitude: Option<f64>,
-        radius: Option<u32>,
+        radius_at_lat_long: Option<RadiusAtLatLong>,
     ) -> Result<responses::BusPositions, Error> {
         let mut query = vec![];
 
         if let Some(route) = route {
-            query.push(("RouteID", route.to_string()));
+            query.push(("RouteID".to_string(), route.to_string()));
         }
 
-        if let Some(latitude) = latitude {
-            query.push(("Lat", latitude.to_string()));
-        }
-
-        if let Some(longitude) = longitude {
-            query.push(("Lon", longitude.to_string()));
-        }
-
-        if let Some(radius) = radius {
-            query.push(("Radius", radius.to_string()));
+        if let Some(radius_at_lat_long) = radius_at_lat_long {
+            query.append(&mut radius_at_lat_long.to_query());
         }
 
         if !query.is_empty() {
-            self.fetch(&URLs::Positions.to_string(), Some(&query))
+            self.fetch(&URLs::Positions.to_string(), Some(query))
         } else {
             self.fetch::<responses::BusPositions, Empty>(&URLs::Positions.to_string(), None)
         }

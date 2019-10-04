@@ -19,7 +19,7 @@ fn test_routes() {
 fn test_stops() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(client.stops(None, None, None).unwrap().stops.len(), 10299);
+    assert_eq!(client.stops(None).unwrap().stops.len(), 10299);
 }
 
 #[test]
@@ -28,7 +28,7 @@ fn test_stops_lat_long_radius() {
 
     assert_eq!(
         client
-            .stops(Some(38.8817596), Some(-77.0166426), Some(1000))
+            .stops(Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)))
             .unwrap()
             .stops
             .len(),
@@ -40,16 +40,14 @@ fn test_stops_lat_long_radius() {
 fn test_positions_along() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client.positions_along(None, None, None, None).is_ok());
+    assert!(client.positions_along(None, None).is_ok());
 }
 
 #[test]
 fn test_positions_along_with_route() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client
-        .positions_along(Some(RouteID::One0A), None, None, None)
-        .is_ok());
+    assert!(client.positions_along(Some(RouteID::One0A), None).is_ok());
 }
 
 #[test]
@@ -59,9 +57,7 @@ fn test_positions_along_with_route_and_lat_long_radius() {
     assert!(client
         .positions_along(
             Some(RouteID::One0A),
-            Some(38.8817596),
-            Some(-77.0166426),
-            Some(1000)
+            Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))
         )
         .is_ok());
 }

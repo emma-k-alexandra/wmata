@@ -15,10 +15,12 @@ pub mod rail;
 
 pub mod error;
 pub mod traits;
-mod types;
+pub mod types;
 
 pub use bus::client::Client as BusClient;
 pub use rail::client::Client as RailClient;
+
+pub use types::RadiusAtLatLong;
 
 pub use bus::route::RouteID;
 pub use rail::line::LineCode;

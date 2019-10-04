@@ -9,6 +9,7 @@ wmata is a lightweight Rust interface to the [Washington Metropolitan Area Trans
     - [Design](#design)
     - [Using `RailClient`](#using-railclient)
     - [Using `BusClient`](#using-busclient)
+- [Testing](#testing)
 - [Dependencies](#dependencies)
 - [Contact](#contact)
 - [License](#license)
@@ -60,6 +61,9 @@ let client = BusClient::new(api_key);
 
 let routes = client.routes()?;
 ```
+
+## Testing
+Note that tests must currently be run with `--test-threads 1` in order to pass, due to using live data.
 
 ## Dependencies
 - serde

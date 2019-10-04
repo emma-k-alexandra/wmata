@@ -8,7 +8,7 @@ use crate::rail::line::LineCode;
 use crate::rail::station::StationCode;
 use crate::rail::urls::URLs;
 use crate::traits::{ApiKey, Fetch};
-use crate::types::Empty;
+use crate::types::{Empty, RadiusAtLatLong};
 use std::str::FromStr;
 
 /// MetroRail client. Used to fetch MetroRail-related information from the WMATA API.
@@ -42,7 +42,7 @@ impl Client {
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     // Again, not actually dead code
-    #[allow(dead_code)]
+    // #[allow(dead_code)]
     pub fn new(api_key: &str) -> Self {
         Client {
             key: api_key.to_string(),
@@ -71,20 +71,18 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::RailClient;
+    /// use wmata::{RailClient, RadiusAtLatLong};
     ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.entrances(38.8817596, -77.0166426, 1000.0).is_ok());
+    /// assert!(client.entrances(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)).is_ok());
     /// ```
     pub fn entrances(
         &self,
-        latitude: f64,
-        longitude: f64,
-        radius: f64,
+        radius_at_lat_long: RadiusAtLatLong,
     ) -> Result<responses::StationEntrances, Error> {
         self.fetch(
             &URLs::Entrances.to_string(),
-            Some(&[("Lat", latitude), ("Lon", longitude), ("Radius", radius)]),
+            Some(radius_at_lat_long.to_query()),
         )
     }
 

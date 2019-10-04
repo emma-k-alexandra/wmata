@@ -18,7 +18,5 @@ fn test_routes() {
 fn test_positions_along() {
     let client: BusClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client
-        .positions_along(Some(RouteID::One0A), None, None, None)
-        .is_ok());
+    assert!(client.positions_along(Some(RouteID::One0A), None).is_ok());
 }

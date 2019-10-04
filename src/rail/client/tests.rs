@@ -20,7 +20,14 @@ fn test_lines() {
 fn test_entrances() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(client.entrances(1.0, 1.0, 1.0).unwrap().entrances.len(), 0);
+    assert_eq!(
+        client
+            .entrances(RadiusAtLatLong::new(1, 1.0, 1.0))
+            .unwrap()
+            .entrances
+            .len(),
+        0
+    );
 }
 
 #[test]
