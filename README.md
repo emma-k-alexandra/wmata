@@ -41,10 +41,7 @@ wmata breaks the WMATA API into two components: `RailClient` and `BusClient`.
 #### `RailClient`
 Provides access to all MetroRail related endpoints.
 
-#### `BusClient`
-Provides access to all MetroBus related endpoints.
-
-### Using `RailClient`
+##### Using `RailClient`
 ```rust
 use wmata::RailClient;
 
@@ -53,7 +50,11 @@ let client = RailClient::new(api_key);
 let trains = client.next_trains()?;
 ```
 
-### Using `BusClient`
+#### `BusClient`
+Provides access to all MetroBus related endpoints.
+
+
+##### Using `BusClient`
 ```rust
 use wmata::BusClient;
 
