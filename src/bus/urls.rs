@@ -1,3 +1,4 @@
+//! URLs of MetroBus-related endpoints
 pub enum URLs {
     Routes,
     Stops,

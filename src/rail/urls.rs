@@ -1,4 +1,4 @@
-//! URLs of Rail-related endpoints
+//! URLs of MetroRail-related endpoints
 pub enum URLs {
     NextTrains,
     Information,

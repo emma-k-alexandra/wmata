@@ -1,5 +1,12 @@
+//! IDs for each MetroBus route.
 use std::{error, fmt, str::FromStr};
 
+/// All MetroBus routes.
+/// # Note
+/// Some routes' name begins with a number (i.e. 10A). This is not allowed
+/// by Rust naming conventions. As a fix, the first number of the route
+/// has been replaced by a word. So, `10A` => `One0A`. This is unfortunate.
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum RouteID {
     One0A,
     One0B,
@@ -965,6 +972,16 @@ impl ToString for RouteID {
 impl FromStr for RouteID {
     type Err = StringIsNotRouteIDError;
 
+    /// Convert a string into a RouteID.
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::RouteID;
+    /// 
+    /// let route_id: RouteID = "10A".parse().unwrap();
+    /// 
+    /// assert_eq!(route_id, RouteID::One0A);
+    /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "10A" => Ok(RouteID::One0A),

@@ -275,7 +275,7 @@ pub struct RailPrediction {
     pub group: String,
     /// Two-letter abbreviation for the line (e.g.: RD, BL, YL, OR, GR, or SV). May also be blank or No for trains with no passengers.
     pub line: String,
-    /// [`StationCode`] for where the train is arriving. 
+    /// [`StationCode`] for where the train is arriving.
     pub location_code: String,
     /// Full name of the station where the train is arriving.
     pub location_name: String,

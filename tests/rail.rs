@@ -1,10 +1,10 @@
-use wmata::{RailClient, StationCode, LineCode};
+use wmata::{LineCode, RailClient, StationCode};
 
 #[test]
 fn test_constructor() {
     let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
 
-    assert_eq!(client.api_key, "9e38c3eab34c4e6c990828002828f5ed");
+    assert_eq!(client.key, "9e38c3eab34c4e6c990828002828f5ed");
 }
 
 #[test]
@@ -18,7 +18,9 @@ fn test_lines() {
 fn test_station_to_station() {
     let client: RailClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client.station_to_station(Some(StationCode::A01), Some(StationCode::A02)).is_ok());
+    assert!(client
+        .station_to_station(Some(StationCode::A01), Some(StationCode::A02))
+        .is_ok());
 }
 
 #[test]

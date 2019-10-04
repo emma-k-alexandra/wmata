@@ -5,7 +5,7 @@ use super::*;
 fn test_constructor() {
     let client = Client::new("9e38c3eab34c4e6c990828002828f5ed");
 
-    assert_eq!(client.api_key, "9e38c3eab34c4e6c990828002828f5ed");
+    assert_eq!(client.key, "9e38c3eab34c4e6c990828002828f5ed");
 }
 
 #[test]

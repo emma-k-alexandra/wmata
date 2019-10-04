@@ -10,7 +10,8 @@ pub trait ApiKey {
     /// Returns the WMATA API Key the implementor contains.
     /// # Examples
     /// ```
-    /// use wmata::BusClient
+    /// use wmata::BusClient;
+    /// use crate::wmata::traits::ApiKey;
     /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert_eq!(client.api_key(), "9e38c3eab34c4e6c990828002828f5ed");
     /// ```
@@ -31,7 +32,7 @@ pub trait Fetch: Requester + Deserializer {
     }
 }
 
-/// A trait indicating the implementor can request data from the 
+/// A trait indicating the implementor can request data from the
 /// WMATA API.
 pub trait Requester: ApiKey {
     /// Requests data JSON data from a WMATA endpoint.
