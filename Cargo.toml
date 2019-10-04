@@ -1,6 +1,6 @@
 [package]
 name = "wmata"
-version = "2.0.0"
+version = "2.0.1"
 authors = ["Emma Foster <emma@emma.sh>"]
 edition = "2018"
 repository = "https://github.com/emma-foster/wmata"

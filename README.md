@@ -21,7 +21,7 @@ wmata is a lightweight Rust interface to the [Washington Metropolitan Area Trans
 
 ### Cargo
 ```toml
-wmata = "2.0.0"
+wmata = "2.0.1"
 ```
 
 ## Usage
@@ -75,4 +75,4 @@ Feel free to email questions and comments to [emma@emma.sh](mailto:emma@emma.sh)
 
 ## License
 
-WMATA.swift is released under the MIT license. [See LICENSE](https://github.com/emma-foster/wmata/blob/master/LICENSE) for details.
+wmata is released under the MIT license. [See LICENSE](https://github.com/emma-foster/wmata/blob/master/LICENSE) for details.
