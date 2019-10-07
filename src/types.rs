@@ -26,16 +26,16 @@ impl RadiusAtLatLong {
         RadiusAtLatLong {
             radius,
             latitude,
-            longitude
+            longitude,
         }
     }
 
     /// Convert this struct to a query string
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use wmata::RadiusAtLatLong;
-    /// 
+    ///
     /// let point_with_radius = RadiusAtLatLong::new(1000, 38.8817596, -77.0166426);
     /// assert_eq!(point_with_radius.radius, 1000);
     /// ```
@@ -45,5 +45,21 @@ impl RadiusAtLatLong {
             ("Lat".to_string(), self.latitude.to_string()),
             ("Lon".to_string(), self.longitude.to_string()),
         ]
+    }
+}
+
+pub struct Request {
+    pub api_key: String,
+    pub path: String,
+    pub query: Option<Vec<(String, String)>>,
+}
+
+impl Request {
+    pub fn new(api_key: String, path: String, query: Option<Vec<(String, String)>>) -> Self {
+        Request {
+            api_key,
+            path,
+            query,
+        }
     }
 }
