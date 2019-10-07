@@ -41,8 +41,6 @@ impl Client {
     ///
     /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
     /// ```
-    // Again, not actually dead code
-    // #[allow(dead_code)]
     pub fn new(api_key: &str) -> Self {
         Client {
             key: api_key.to_string(),
