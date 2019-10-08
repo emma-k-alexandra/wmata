@@ -18,7 +18,6 @@ pub struct Client {
     pub key: String,
 }
 
-
 impl Fetch for Client {}
 
 // Constructor
@@ -51,11 +50,7 @@ impl Client {
     /// assert!(client.lines().is_ok());
     /// ```
     pub fn lines(&self) -> Result<responses::Lines, Error> {
-        self.fetch::<responses::Lines>(WMATARequest::new(
-            &self.key,
-            &URLs::Lines.to_string(),
-            None,
-        ))
+        self.fetch::<responses::Lines>(WMATARequest::new(&self.key, &URLs::Lines.to_string(), None))
     }
 
     /// A list of nearby station entrances based on latitude, longitude, and radius (meters).

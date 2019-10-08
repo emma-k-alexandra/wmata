@@ -2,7 +2,7 @@ use crate::error::Error;
 use crate::rail::client::responses;
 use crate::rail::urls::URLs;
 use crate::traits::Fetch;
-use crate::types::{Request as WMATARequest};
+use crate::types::Request as WMATARequest;
 use crate::LineCode;
 use crate::StationCode;
 

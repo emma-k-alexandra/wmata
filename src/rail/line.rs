@@ -1,8 +1,8 @@
 //! Codes for each MetroRail line.
 use crate::error::Error;
-use crate::traits::Fetch;
 use crate::rail::client::responses;
 use crate::rail::traits::NeedsLineCode;
+use crate::traits::Fetch;
 use std::{error, fmt, str::FromStr};
 
 /// All MetroRail lines.

@@ -7,7 +7,7 @@ use crate::bus::route::RouteID;
 use crate::bus::urls::URLs;
 use crate::error::Error;
 use crate::traits::Fetch;
-use crate::types::RadiusAtLatLong;
+use crate::types::{RadiusAtLatLong, Request as WMATARequest};
 use std::str::FromStr;
 
 /// MetroBus client. Used to fetch MetroBus-related information from the WMATA API.
@@ -47,7 +47,11 @@ impl Client {
     /// assert!(client.routes().is_ok());
     /// ```
     pub fn routes(&self) -> Result<responses::Routes, Error> {
-        self.fetch::<responses::Routes>(&URLs::Routes.to_string(), None)
+        self.fetch::<responses::Routes>(WMATARequest::new(
+            &self.key,
+            &URLs::Routes.to_string(),
+            None,
+        ))
     }
 
     /// Nearby bus stops based on latitude, longitude, and radius.
@@ -64,12 +68,17 @@ impl Client {
         radius_at_lat_long: Option<RadiusAtLatLong>,
     ) -> Result<responses::Stops, Error> {
         if let Some(radius_at_lat_long) = radius_at_lat_long {
-            self.fetch(
+            self.fetch(WMATARequest::new(
+                &self.key,
                 &URLs::Stops.to_string(),
                 Some(radius_at_lat_long.to_query()),
-            )
+            ))
         } else {
-            self.fetch::<responses::Stops>(&URLs::Stops.to_string(), None)
+            self.fetch::<responses::Stops>(WMATARequest::new(
+                &self.key,
+                &URLs::Stops.to_string(),
+                None,
+            ))
         }
     }
 }
@@ -104,9 +113,17 @@ impl Client {
         }
 
         if !query.is_empty() {
-            self.fetch(&URLs::Positions.to_string(), Some(query))
+            self.fetch(WMATARequest::new(
+                &self.key,
+                &URLs::Positions.to_string(),
+                Some(query),
+            ))
         } else {
-            self.fetch::<responses::BusPositions>(&URLs::Positions.to_string(), None)
+            self.fetch::<responses::BusPositions>(WMATARequest::new(
+                &self.key,
+                &URLs::Positions.to_string(),
+                None,
+            ))
         }
     }
 
@@ -123,13 +140,21 @@ impl Client {
         let mut query = vec![];
 
         if let Some(route) = route {
-            query.push(("Route", route.to_string()));
+            query.push(("Route".to_string(), route.to_string()));
         }
 
         if !query.is_empty() {
-            self.fetch(&URLs::Incidents.to_string(), Some(&query))
+            self.fetch(WMATARequest::new(
+                &self.key,
+                &URLs::Incidents.to_string(),
+                Some(query),
+            ))
         } else {
-            self.fetch::<responses::Incidents>(&URLs::Incidents.to_string(), None)
+            self.fetch::<responses::Incidents>(WMATARequest::new(
+                &self.key,
+                &URLs::Incidents.to_string(),
+                None,
+            ))
         }
     }
 
@@ -159,13 +184,17 @@ impl Client {
         route: RouteID,
         date: Option<&str>,
     ) -> Result<responses::PathDetails, Error> {
-        let mut query = vec![("RouteID", route.to_string())];
+        let mut query = vec![("RouteID".to_string(), route.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date", date.to_string()));
+            query.push(("Date".to_string(), date.to_string()));
         }
 
-        self.fetch(&URLs::PathDetails.to_string(), Some(&query))
+        self.fetch(WMATARequest::new(
+            &self.key,
+            &URLs::PathDetails.to_string(),
+            Some(query),
+        ))
     }
 
     /// Schedules for a given route variant for an optional given date.
@@ -200,17 +229,21 @@ impl Client {
         date: Option<&str>,
         including_variations: bool,
     ) -> Result<responses::RouteSchedule, Error> {
-        let mut query = vec![("RouteID", route.to_string())];
+        let mut query = vec![("RouteID".to_string(), route.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date", date.to_string()));
+            query.push(("Date".to_string(), date.to_string()));
         }
 
         if including_variations {
-            query.push(("IncludingVariations", including_variations.to_string()));
+            query.push(("IncludingVariations".to_string(), including_variations.to_string()));
         }
 
-        self.fetch(&URLs::RouteSchedule.to_string(), Some(&query))
+        self.fetch(WMATARequest::new(
+            &self.key,
+            &URLs::RouteSchedule.to_string(),
+            Some(query),
+        ))
     }
 }
 
@@ -226,7 +259,11 @@ impl Client {
     /// assert!(client.next_buses("1001195").is_ok());
     /// ```
     pub fn next_buses(&self, stop_id: &str) -> Result<responses::Predictions, Error> {
-        self.fetch(&URLs::NextBuses.to_string(), Some(&[("StopID", stop_id)]))
+        self.fetch(WMATARequest::new(
+            &self.key,
+            &URLs::NextBuses.to_string(),
+            Some(vec![("StopID".to_string(), stop_id.to_string())]),
+        ))
     }
 
     /// Buses scheduled at a stop for an optional given date.
@@ -254,13 +291,13 @@ impl Client {
         stop_id: &str,
         date: Option<&str>,
     ) -> Result<responses::StopSchedule, Error> {
-        let mut query = vec![("StopID", stop_id)];
+        let mut query = vec![("StopID".to_string(), stop_id.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date", date));
+            query.push(("Date".to_string(), date.to_string()));
         }
 
-        self.fetch(&URLs::StopSchedule.to_string(), Some(&query))
+        self.fetch(WMATARequest::new(&self.key, &URLs::StopSchedule.to_string(), Some(query)))
     }
 }
 

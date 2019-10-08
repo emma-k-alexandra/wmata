@@ -3,7 +3,7 @@ use crate::error::{Error, ErrorResponse};
 use crate::types::Request as WMATARequest;
 
 use reqwest;
-use serde::{de::DeserializeOwned};
+use serde::de::DeserializeOwned;
 use serde_json;
 
 /// A trait indicating the implementor can request and deserialize data
@@ -23,8 +23,7 @@ pub trait Fetch: Requester + Deserializer {
 /// WMATA API.
 pub trait Requester {
     /// Requests data JSON data from a WMATA endpoint.
-    fn request(&self, wmata_request: WMATARequest) -> Result<String, Error>
-    {
+    fn request(&self, wmata_request: WMATARequest) -> Result<String, Error> {
         let mut request = reqwest::Client::new().get(wmata_request.path);
 
         if let Some(query) = wmata_request.query {
