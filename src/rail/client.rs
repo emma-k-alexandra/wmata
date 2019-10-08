@@ -9,7 +9,7 @@ use crate::rail::station::StationCode;
 use crate::rail::traits::{NeedsLineCode, NeedsStationCode};
 use crate::rail::urls::URLs;
 use crate::traits::Fetch;
-use crate::types::{Empty, RadiusAtLatLong, Request as WMATARequest};
+use crate::types::{RadiusAtLatLong, Request as WMATARequest};
 use std::str::FromStr;
 
 /// MetroRail client. Used to fetch MetroRail-related information from the WMATA API.
@@ -17,6 +17,9 @@ pub struct Client {
     /// The WMATA API key to use for all requests routed through this client.
     pub key: String,
 }
+
+
+impl Fetch for Client {}
 
 // Constructor
 impl Client {
@@ -35,8 +38,6 @@ impl Client {
     }
 }
 
-impl Fetch for Client {}
-
 // No Station or Line Codes
 impl Client {
     /// Basic information on all MetroRail lines.
@@ -50,9 +51,9 @@ impl Client {
     /// assert!(client.lines().is_ok());
     /// ```
     pub fn lines(&self) -> Result<responses::Lines, Error> {
-        self.fetch::<responses::Lines, Empty>(WMATARequest::new(
-            self.key,
-            URLs::Lines.to_string(),
+        self.fetch::<responses::Lines>(WMATARequest::new(
+            &self.key,
+            &URLs::Lines.to_string(),
             None,
         ))
     }
@@ -72,8 +73,8 @@ impl Client {
         radius_at_lat_long: RadiusAtLatLong,
     ) -> Result<responses::StationEntrances, Error> {
         self.fetch(WMATARequest::new(
-            self.key,
-            URLs::Entrances.to_string(),
+            &self.key,
+            &URLs::Entrances.to_string(),
             Some(radius_at_lat_long.to_query()),
         ))
     }
@@ -90,8 +91,8 @@ impl Client {
     /// ```
     pub fn positions(&self) -> Result<responses::TrainPositions, Error> {
         self.fetch(WMATARequest::new(
-            self.key,
-            URLs::Positions.to_string(),
+            &self.key,
+            &URLs::Positions.to_string(),
             Some(vec![("contentType".to_string(), "json".to_string())]),
         ))
     }
@@ -108,16 +109,16 @@ impl Client {
     /// ```
     pub fn routes(&self) -> Result<responses::StandardRoutes, Error> {
         self.fetch(WMATARequest::new(
-            self.key,
-            URLs::Routes.to_string(),
+            &self.key,
+            &URLs::Routes.to_string(),
             Some(vec![("contentType".to_string(), "json".to_string())]),
         ))
     }
 
     pub fn circuits(&self) -> Result<responses::TrackCircuits, Error> {
         self.fetch(WMATARequest::new(
-            self.key,
-            URLs::Circuits.to_string(),
+            &self.key,
+            &URLs::Circuits.to_string(),
             Some(vec![("contentType".to_string(), "json".to_string())]),
         ))
     }
@@ -146,7 +147,7 @@ impl Client {
             &self,
             from_station,
             to_destination_station,
-            self.key,
+            &self.key,
         )
     }
 
@@ -164,7 +165,7 @@ impl Client {
         &self,
         station: Option<StationCode>,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        <Self as NeedsStationCode>::elevator_and_escalator_incidents_at(&self, station, self.key)
+        <Self as NeedsStationCode>::elevator_and_escalator_incidents_at(&self, station, &self.key)
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service)
@@ -180,7 +181,7 @@ impl Client {
         &self,
         station: Option<StationCode>,
     ) -> Result<responses::RailIncidents, Error> {
-        <Self as NeedsStationCode>::incidents_at(&self, station, self.key)
+        <Self as NeedsStationCode>::incidents_at(&self, station, &self.key)
     }
 
     /// Next train arrivals for the given station.
@@ -196,7 +197,7 @@ impl Client {
         &self,
         station_code: StationCode,
     ) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStationCode>::next_trains(&self, station_code, self.key)
+        <Self as NeedsStationCode>::next_trains(&self, station_code, &self.key)
     }
 
     /// Location and address information at the given station.
@@ -212,7 +213,7 @@ impl Client {
         &self,
         station_code: StationCode,
     ) -> Result<responses::StationInformation, Error> {
-        <Self as NeedsStationCode>::station_information(&self, station_code, self.key)
+        <Self as NeedsStationCode>::station_information(&self, station_code, &self.key)
     }
 
     /// Parking information for the given station.
@@ -228,7 +229,7 @@ impl Client {
         &self,
         station_code: StationCode,
     ) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStationCode>::parking_information(&self, station_code, self.key)
+        <Self as NeedsStationCode>::parking_information(&self, station_code, &self.key)
     }
 
     /// Set of ordered stations and distances between two stations on the **same line**.
@@ -245,7 +246,7 @@ impl Client {
         from_station: StationCode,
         to_station: StationCode,
     ) -> Result<responses::PathBetweenStations, Error> {
-        <Self as NeedsStationCode>::path_from(&self, from_station, to_station, self.key)
+        <Self as NeedsStationCode>::path_from(&self, from_station, to_station, &self.key)
     }
 
     /// Opening and scheduled first/last train times for the given station.
@@ -258,7 +259,7 @@ impl Client {
     /// assert!(client.timings(StationCode::A01).is_ok());
     /// ```
     pub fn timings(&self, station_code: StationCode) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStationCode>::timings(&self, station_code, self.key)
+        <Self as NeedsStationCode>::timings(&self, station_code, &self.key)
     }
 }
 
@@ -276,7 +277,7 @@ impl Client {
     /// assert!(client.stations_on(Some(LineCode::Red)).is_ok());
     /// ```
     pub fn stations_on(&self, line: Option<LineCode>) -> Result<responses::Stations, Error> {
-        <Self as NeedsLineCode>::stations_on(&self, line, self.key)
+        <Self as NeedsLineCode>::stations_on(&self, line, &self.key)
     }
 }
 

@@ -1,4 +1,8 @@
 //! Codes for each MetroRail line.
+use crate::error::Error;
+use crate::traits::Fetch;
+use crate::rail::client::responses;
+use crate::rail::traits::NeedsLineCode;
 use std::{error, fmt, str::FromStr};
 
 /// All MetroRail lines.
@@ -10,6 +14,16 @@ pub enum LineCode {
     Orange,
     Green,
     Silver,
+}
+
+impl Fetch for LineCode {}
+
+impl NeedsLineCode for LineCode {}
+
+impl LineCode {
+    pub fn stations(&self, api_key: String) -> Result<responses::Stations, Error> {
+        self.stations_on(Some(*self), &api_key)
+    }
 }
 
 impl ToString for LineCode {

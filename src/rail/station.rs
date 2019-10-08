@@ -1,4 +1,8 @@
 //! WMATA-defined codes for each MetroRail station.
+use crate::error::Error;
+use crate::traits::Fetch;
+use crate::rail::client::responses;
+use crate::rail::traits::NeedsStationCode;
 use std::{error, fmt, str::FromStr};
 
 /// Every MetroRail station code as defined by WMATA.
@@ -99,6 +103,49 @@ pub enum StationCode {
     N03,
     N04,
     N06,
+}
+
+impl Fetch for StationCode {}
+
+impl NeedsStationCode for StationCode {}
+
+impl StationCode {
+    pub fn to_station(
+        &self,
+        destination_station: Option<StationCode>,
+        api_key: String,
+    ) -> Result<responses::StationToStationInfos, Error> {
+        self.station_to_station(Some(*self), destination_station, &api_key)
+    }
+
+    pub fn elevator_and_escalator_incidents(&self, api_key: String) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
+        self.elevator_and_escalator_incidents_at(Some(*self), &api_key)
+    }
+
+    pub fn incidents(&self, api_key: String) -> Result<responses::RailIncidents, Error> {
+        self.incidents_at(Some(*self), &api_key)
+    }
+
+    pub fn next_trains(&self, api_key: String) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStationCode>::next_trains(&self, *self, &api_key)
+    }
+
+    pub fn information(&self, api_key: String) -> Result<responses::StationInformation, Error> {
+        self.station_information(*self, &api_key)
+    }
+
+    pub fn parking_information(&self, api_key: String) -> Result<responses::StationsParking, Error> {
+        <Self as NeedsStationCode>::parking_information(&self, *self, &api_key)
+    }
+
+    pub fn path_to(&self, destination_station: StationCode, api_key: String) -> Result<responses::PathBetweenStations, Error> {
+        self.path_from(*self, destination_station, &api_key)
+    }
+
+    pub fn timings(&self, api_key: String) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStationCode>::timings(&self, *self, &api_key)
+    }
+
 }
 
 impl ToString for StationCode {

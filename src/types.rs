@@ -1,8 +1,5 @@
 //! Types used throughout the crate
 
-/// A type indicating an empty query array
-pub type Empty = [(); 0];
-
 /// A radius (in meters) around a given latitude and longitude
 pub struct RadiusAtLatLong {
     /// Radius (in meters) around this point.
@@ -48,14 +45,14 @@ impl RadiusAtLatLong {
     }
 }
 
-pub struct Request {
-    pub api_key: String,
-    pub path: String,
+pub struct Request<'a> {
+    pub api_key: &'a str,
+    pub path: &'a str,
     pub query: Option<Vec<(String, String)>>,
 }
 
-impl Request {
-    pub fn new(api_key: String, path: String, query: Option<Vec<(String, String)>>) -> Self {
+impl<'a> Request<'a> {
+    pub fn new(api_key: &'a str, path: &'a str, query: Option<Vec<(String, String)>>) -> Self {
         Request {
             api_key,
             path,

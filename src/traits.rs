@@ -3,7 +3,7 @@ use crate::error::{Error, ErrorResponse};
 use crate::types::Request as WMATARequest;
 
 use reqwest;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{de::DeserializeOwned};
 use serde_json;
 
 /// A trait indicating the implementor can request and deserialize data
@@ -11,10 +11,9 @@ use serde_json;
 pub trait Fetch: Requester + Deserializer {
     // / Requests and deserializes JSON data from a WMATA endpoint.
     // / Used internally by MetroRail and MetroBus clients.
-    fn fetch<U, V>(&self, wmata_request: WMATARequest) -> Result<U, Error>
+    fn fetch<U>(&self, wmata_request: WMATARequest) -> Result<U, Error>
     where
         U: DeserializeOwned,
-        V: Serialize + Sized,
     {
         self.request(wmata_request).and_then(Self::deserialize)
     }
@@ -24,11 +23,9 @@ pub trait Fetch: Requester + Deserializer {
 /// WMATA API.
 pub trait Requester {
     /// Requests data JSON data from a WMATA endpoint.
-    fn request<T>(&self, wmata_request: WMATARequest) -> Result<String, Error>
-    where
-        T: Serialize + Sized,
+    fn request(&self, wmata_request: WMATARequest) -> Result<String, Error>
     {
-        let mut request = reqwest::Client::new().get(&wmata_request.path);
+        let mut request = reqwest::Client::new().get(wmata_request.path);
 
         if let Some(query) = wmata_request.query {
             request = request.query(&query)
@@ -59,11 +56,8 @@ pub trait Deserializer {
     }
 }
 
-/// Auto implement Requester where ApiKey is present.
+/// Auto implement Requester where Fetch is present.
 impl<T> Requester for T where T: Fetch {}
 
-/// Auto implement Deserializer where ApiKey is present.
+/// Auto implement Deserializer where Fetch is present.
 impl<T> Deserializer for T where T: Fetch {}
-
-/// Auto implement Fetch where ApiKey is present.
-impl<T> Fetch for T where T: ApiKey {}

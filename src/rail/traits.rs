@@ -2,7 +2,7 @@ use crate::error::Error;
 use crate::rail::client::responses;
 use crate::rail::urls::URLs;
 use crate::traits::Fetch;
-use crate::types::{Empty, Request as WMATARequest};
+use crate::types::{Request as WMATARequest};
 use crate::LineCode;
 use crate::StationCode;
 
@@ -10,7 +10,7 @@ pub trait NeedsLineCode: Fetch {
     fn stations_on(
         &self,
         line: Option<LineCode>,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::Stations, Error> {
         let mut query = vec![];
 
@@ -20,14 +20,14 @@ pub trait NeedsLineCode: Fetch {
 
         if !query.is_empty() {
             self.fetch(WMATARequest::new(
-                api_key,
-                URLs::Stations.to_string(),
+                &api_key,
+                &URLs::Stations.to_string(),
                 Some(query),
             ))
         } else {
-            self.fetch::<responses::Stations, Empty>(WMATARequest::new(
-                api_key,
-                URLs::Stations.to_string(),
+            self.fetch::<responses::Stations>(WMATARequest::new(
+                &api_key,
+                &URLs::Stations.to_string(),
                 None,
             ))
         }
@@ -39,7 +39,7 @@ pub trait NeedsStationCode: Fetch {
         &self,
         from_station: Option<StationCode>,
         to_destination_station: Option<StationCode>,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::StationToStationInfos, Error> {
         let mut query = vec![];
 
@@ -56,14 +56,14 @@ pub trait NeedsStationCode: Fetch {
 
         if !query.is_empty() {
             self.fetch(WMATARequest::new(
-                api_key,
-                URLs::StationToStation.to_string(),
+                &api_key,
+                &URLs::StationToStation.to_string(),
                 Some(query),
             ))
         } else {
-            self.fetch::<responses::StationToStationInfos, Empty>(WMATARequest::new(
-                api_key,
-                URLs::StationToStation.to_string(),
+            self.fetch::<responses::StationToStationInfos>(WMATARequest::new(
+                &api_key,
+                &URLs::StationToStation.to_string(),
                 None,
             ))
         }
@@ -72,7 +72,7 @@ pub trait NeedsStationCode: Fetch {
     fn elevator_and_escalator_incidents_at(
         &self,
         station: Option<StationCode>,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
         let mut query = vec![];
 
@@ -82,14 +82,14 @@ pub trait NeedsStationCode: Fetch {
 
         if !query.is_empty() {
             self.fetch(WMATARequest::new(
-                api_key,
-                URLs::ElevatorAndEscalatorIncidents.to_string(),
+                &api_key,
+                &URLs::ElevatorAndEscalatorIncidents.to_string(),
                 Some(query),
             ))
         } else {
-            self.fetch::<responses::ElevatorAndEscalatorIncidents, Empty>(WMATARequest::new(
-                api_key,
-                URLs::ElevatorAndEscalatorIncidents.to_string(),
+            self.fetch::<responses::ElevatorAndEscalatorIncidents>(WMATARequest::new(
+                &api_key,
+                &URLs::ElevatorAndEscalatorIncidents.to_string(),
                 None,
             ))
         }
@@ -98,7 +98,7 @@ pub trait NeedsStationCode: Fetch {
     fn incidents_at(
         &self,
         station: Option<StationCode>,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::RailIncidents, Error> {
         let mut query = vec![];
 
@@ -107,8 +107,8 @@ pub trait NeedsStationCode: Fetch {
         }
 
         self.fetch(WMATARequest::new(
-            api_key,
-            URLs::Incidents.to_string(),
+            &api_key,
+            &URLs::Incidents.to_string(),
             Some(query),
         ))
     }
@@ -116,11 +116,11 @@ pub trait NeedsStationCode: Fetch {
     fn next_trains(
         &self,
         station_code: StationCode,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::RailPredictions, Error> {
-        self.fetch::<responses::RailPredictions, Empty>(WMATARequest::new(
-            api_key,
-            [URLs::NextTrains.to_string(), station_code.to_string()].join("/"),
+        self.fetch::<responses::RailPredictions>(WMATARequest::new(
+            &api_key,
+            &[URLs::NextTrains.to_string(), station_code.to_string()].join("/"),
             None,
         ))
     }
@@ -128,11 +128,11 @@ pub trait NeedsStationCode: Fetch {
     fn station_information(
         &self,
         station_code: StationCode,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::StationInformation, Error> {
         self.fetch(WMATARequest::new(
-            api_key,
-            URLs::Information.to_string(),
+            &api_key,
+            &URLs::Information.to_string(),
             Some(vec![("StationCode".to_string(), station_code.to_string())]),
         ))
     }
@@ -140,11 +140,11 @@ pub trait NeedsStationCode: Fetch {
     fn parking_information(
         &self,
         station_code: StationCode,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::StationsParking, Error> {
         self.fetch(WMATARequest::new(
-            api_key,
-            URLs::ParkingInformation.to_string(),
+            &api_key,
+            &URLs::ParkingInformation.to_string(),
             Some(vec![("StationCode".to_string(), station_code.to_string())]),
         ))
     }
@@ -153,11 +153,11 @@ pub trait NeedsStationCode: Fetch {
         &self,
         from_station: StationCode,
         to_station: StationCode,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::PathBetweenStations, Error> {
         self.fetch(WMATARequest::new(
-            api_key,
-            URLs::Path.to_string(),
+            &api_key,
+            &URLs::Path.to_string(),
             Some(vec![
                 ("FromStationCode".to_string(), from_station.to_string()),
                 ("ToStationCode".to_string(), to_station.to_string()),
@@ -168,11 +168,11 @@ pub trait NeedsStationCode: Fetch {
     fn timings(
         &self,
         station_code: StationCode,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::StationTimings, Error> {
         self.fetch(WMATARequest::new(
-            api_key,
-            URLs::Timings.to_string(),
+            &api_key,
+            &URLs::Timings.to_string(),
             Some(vec![("StationCode".to_string(), station_code.to_string())]),
         ))
     }
