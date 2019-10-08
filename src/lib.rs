@@ -1,12 +1,12 @@
 //! wmata is a simple interface to the [WMATA](https://wmata.com)'s API.
 //!
 //! # Design
-//! wmata provides two main interfaces: [`BusClient`] and [`RailClient`].
+//! wmata provides two main interfaces: [`MetroBus`] and [`MetroRail`].
 //!
-//! ## [`BusClient`]
+//! ## [`MetroBus`]
 //! The interface to WMATA's MetroBus related methods
 //!
-//! ## [`RailClient`]
+//! ## [`MetroRail`]
 //! The interface to WMATA's MetroRail related methods
 //!
 
@@ -17,11 +17,12 @@ pub mod error;
 pub mod traits;
 pub mod types;
 
-pub use bus::client::Client as BusClient;
-pub use rail::client::Client as RailClient;
+pub use bus::client::Client as MetroBus;
+pub use rail::client::Client as MetroRail;
 
 pub use types::RadiusAtLatLong;
 
-pub use bus::route::RouteID;
-pub use rail::line::LineCode;
-pub use rail::station::StationCode;
+pub use bus::route::Route;
+pub use bus::stop::Stop;
+pub use rail::line::Line;
+pub use rail::station::Station;

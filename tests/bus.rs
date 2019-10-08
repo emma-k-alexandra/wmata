@@ -1,22 +1,22 @@
-use wmata::{BusClient, RouteID};
+use wmata::{MetroBus, Route};
 
 #[test]
 fn test_constructor() {
-    let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
 
     assert_eq!(client.key, "9e38c3eab34c4e6c990828002828f5ed");
 }
 
 #[test]
 fn test_routes() {
-    let client: BusClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: MetroBus = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert!(client.routes().is_ok());
 }
 
 #[test]
 fn test_positions_along() {
-    let client: BusClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let client: MetroBus = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client.positions_along(Some(RouteID::One0A), None).is_ok());
+    assert!(client.positions_along(Some(Route::One0A), None).is_ok());
 }

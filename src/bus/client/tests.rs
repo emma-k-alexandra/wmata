@@ -47,7 +47,7 @@ fn test_positions_along() {
 fn test_positions_along_with_route() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client.positions_along(Some(RouteID::One0A), None).is_ok());
+    assert!(client.positions_along(Some(Route::One0A), None).is_ok());
 }
 
 #[test]
@@ -56,7 +56,7 @@ fn test_positions_along_with_route_and_lat_long_radius() {
 
     assert!(client
         .positions_along(
-            Some(RouteID::One0A),
+            Some(Route::One0A),
             Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))
         )
         .is_ok());
@@ -73,14 +73,14 @@ fn test_incidents_along() {
 fn test_incidents_along_route() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert!(client.incidents_along(Some(RouteID::One0A)).is_ok());
+    assert!(client.incidents_along(Some(Route::One0A)).is_ok());
 }
 
 #[test]
 fn test_path() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(client.path(RouteID::One0A, None).unwrap().route_id, "10A");
+    assert_eq!(client.path(Route::One0A, None).unwrap().route_id, "10A");
 }
 
 #[test]
@@ -89,7 +89,7 @@ fn test_path_with_date() {
 
     assert_eq!(
         client
-            .path(RouteID::One0A, Some("2019-10-01"))
+            .path(Route::One0A, Some("2019-10-01"))
             .unwrap()
             .route_id,
         "10A"
@@ -102,7 +102,7 @@ fn test_route_schedule() {
 
     assert_eq!(
         client
-            .route_schedule(RouteID::One0A, None, false)
+            .route_schedule(Route::One0A, None, false)
             .unwrap()
             .name,
         "10A - PENTAGON - HUNTINGTON STA"
@@ -115,7 +115,7 @@ fn test_route_schedule_with_variations() {
 
     assert_eq!(
         client
-            .route_schedule(RouteID::One0A, None, true)
+            .route_schedule(Route::One0A, None, true)
             .unwrap()
             .name,
         "10A - PENTAGON - HUNTINGTON STA"
@@ -128,7 +128,7 @@ fn test_route_schedule_with_date() {
 
     assert_eq!(
         client
-            .route_schedule(RouteID::One0A, Some("2019-10-02"), true)
+            .route_schedule(Route::One0A, Some("2019-10-02"), true)
             .unwrap()
             .name,
         "10A - PENTAGON - HUNTINGTON STA"
@@ -140,7 +140,11 @@ fn test_stop_schedule() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.stop_schedule("1001195", None).unwrap().stop.stop_id,
+        client
+            .stop_schedule(Stop("1001195"), None)
+            .unwrap()
+            .stop
+            .stop_id,
         "1001195"
     );
 }
@@ -151,7 +155,7 @@ fn test_stop_schedule_with_date() {
 
     assert_eq!(
         client
-            .stop_schedule("1001195", Some("2019-10-02"))
+            .stop_schedule(Stop("1001195"), Some("2019-10-02"))
             .unwrap()
             .stop
             .stop_id,

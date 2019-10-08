@@ -4,9 +4,9 @@ pub mod responses;
 mod tests;
 
 use crate::error::Error;
-use crate::rail::line::LineCode;
-use crate::rail::station::StationCode;
-use crate::rail::traits::{NeedsLineCode, NeedsStationCode};
+use crate::rail::line::Line;
+use crate::rail::station::Station;
+use crate::rail::traits::{NeedsLine, NeedsStation};
 use crate::rail::urls::URLs;
 use crate::traits::Fetch;
 use crate::types::{RadiusAtLatLong, Request as WMATARequest};
@@ -26,9 +26,9 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::RailClient;
+    /// use wmata::MetroRail;
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
     /// ```
     pub fn new(api_key: &str) -> Self {
         Client {
@@ -44,9 +44,9 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::RailClient;
+    /// use wmata::MetroRail;
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.lines().is_ok());
     /// ```
     pub fn lines(&self) -> Result<responses::Lines, Error> {
@@ -58,9 +58,9 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::{RailClient, RadiusAtLatLong};
+    /// use wmata::{MetroRail, RadiusAtLatLong};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.entrances(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)).is_ok());
     /// ```
     pub fn entrances(
@@ -79,9 +79,9 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::RailClient;
+    /// use wmata::MetroRail;
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.positions().is_ok());
     /// ```
     pub fn positions(&self) -> Result<responses::TrainPositions, Error> {
@@ -97,9 +97,9 @@ impl Client {
     ///
     /// # Example
     /// ```
-    /// use wmata::RailClient;
+    /// use wmata::MetroRail;
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
     /// assert!(client.routes().is_ok());
     /// ```
     pub fn routes(&self) -> Result<responses::StandardRoutes, Error> {
@@ -119,26 +119,26 @@ impl Client {
     }
 }
 
-impl NeedsStationCode for Client {}
+impl NeedsStation for Client {}
 
-// Overwriting NeedsStationCode
+// Overwriting NeedsStation
 impl Client {
     /// Distance, fare information, and estimated travel time between any two stations, including those on different lines.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe3313?)
     ///
     /// # Example
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.station_to_station(Some(StationCode::A01), Some(StationCode::A02)).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.station_to_station(Some(Station::A01), Some(Station::A02)).is_ok());
     /// ```
     pub fn station_to_station(
         &self,
-        from_station: Option<StationCode>,
-        to_destination_station: Option<StationCode>,
+        from_station: Option<Station>,
+        to_destination_station: Option<Station>,
     ) -> Result<responses::StationToStationInfos, Error> {
-        <Self as NeedsStationCode>::station_to_station(
+        <Self as NeedsStation>::station_to_station(
             &self,
             from_station,
             to_destination_station,
@@ -151,128 +151,125 @@ impl Client {
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.elevator_and_escalator_incidents_at(Some(StationCode::A01)).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.elevator_and_escalator_incidents_at(Some(Station::A01)).is_ok());
     /// ```
     pub fn elevator_and_escalator_incidents_at(
         &self,
-        station: Option<StationCode>,
+        station: Option<Station>,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        <Self as NeedsStationCode>::elevator_and_escalator_incidents_at(&self, station, &self.key)
+        <Self as NeedsStation>::elevator_and_escalator_incidents_at(&self, station, &self.key)
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service)
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.incidents_at(Some(StationCode::A01)).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.incidents_at(Some(Station::A01)).is_ok());
     /// ```
     pub fn incidents_at(
         &self,
-        station: Option<StationCode>,
+        station: Option<Station>,
     ) -> Result<responses::RailIncidents, Error> {
-        <Self as NeedsStationCode>::incidents_at(&self, station, &self.key)
+        <Self as NeedsStation>::incidents_at(&self, station, &self.key)
     }
 
     /// Next train arrivals for the given station.
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.next_trains(StationCode::A01).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.next_trains(Station::A01).is_ok());
     /// ```
-    pub fn next_trains(
-        &self,
-        station_code: StationCode,
-    ) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStationCode>::next_trains(&self, station_code, &self.key)
+    pub fn next_trains(&self, station_code: Station) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStation>::next_trains(&self, station_code, &self.key)
     }
 
     /// Location and address information at the given station.
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.station_information(StationCode::A01).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.station_information(Station::A01).is_ok());
     /// ```
     pub fn station_information(
         &self,
-        station_code: StationCode,
+        station_code: Station,
     ) -> Result<responses::StationInformation, Error> {
-        <Self as NeedsStationCode>::station_information(&self, station_code, &self.key)
+        <Self as NeedsStation>::station_information(&self, station_code, &self.key)
     }
 
     /// Parking information for the given station.
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.parking_information(StationCode::A01).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.parking_information(Station::A01).is_ok());
     /// ```
     pub fn parking_information(
         &self,
-        station_code: StationCode,
+        station_code: Station,
     ) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStationCode>::parking_information(&self, station_code, &self.key)
+        <Self as NeedsStation>::parking_information(&self, station_code, &self.key)
     }
 
     /// Set of ordered stations and distances between two stations on the **same line**.
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.path_from(StationCode::A01, StationCode::A02).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.path_from(Station::A01, Station::A02).is_ok());
     /// ```
     pub fn path_from(
         &self,
-        from_station: StationCode,
-        to_station: StationCode,
+        from_station: Station,
+        to_station: Station,
     ) -> Result<responses::PathBetweenStations, Error> {
-        <Self as NeedsStationCode>::path_from(&self, from_station, to_station, &self.key)
+        <Self as NeedsStation>::path_from(&self, from_station, to_station, &self.key)
     }
 
     /// Opening and scheduled first/last train times for the given station.
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, StationCode};
+    /// use wmata::{MetroRail, Station};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.timings(StationCode::A01).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.timings(Station::A01).is_ok());
     /// ```
-    pub fn timings(&self, station_code: StationCode) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStationCode>::timings(&self, station_code, &self.key)
+    pub fn timings(&self, station_code: Station) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStation>::timings(&self, station_code, &self.key)
     }
 }
 
-impl NeedsLineCode for Client {}
+impl NeedsLine for Client {}
 
-/// Overwriting NeedsLineCode methods
+/// Overwriting NeedsLine methods
 impl Client {
     /// Station location and address information for all stations on the given line.
     ///
     /// # Examples
     /// ```
-    /// use wmata::{RailClient, LineCode};
+    /// use wmata::{MetroRail, Line};
     ///
-    /// let client = RailClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stations_on(Some(LineCode::Red)).is_ok());
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// assert!(client.stations_on(Some(Line::Red)).is_ok());
     /// ```
-    pub fn stations_on(&self, line: Option<LineCode>) -> Result<responses::Stations, Error> {
-        <Self as NeedsLineCode>::stations_on(&self, line, &self.key)
+    pub fn stations_on(&self, line: Option<Line>) -> Result<responses::Stations, Error> {
+        <Self as NeedsLine>::stations_on(&self, line, &self.key)
     }
 }
 
@@ -283,9 +280,9 @@ impl FromStr for Client {
     ///
     /// # Examples
     /// ```
-    /// use wmata::RailClient;
+    /// use wmata::MetroRail;
     ///
-    /// let client: RailClient = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    /// let client: MetroRail = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
     ///
     /// assert_eq!(client.key, "9e38c3eab34c4e6c990828002828f5ed");
     /// ```

@@ -1,13 +1,13 @@
 //! WMATA-defined codes for each MetroRail station.
 use crate::error::Error;
 use crate::rail::client::responses;
-use crate::rail::traits::NeedsStationCode;
+use crate::rail::traits::NeedsStation;
 use crate::traits::Fetch;
 use std::{error, fmt, str::FromStr};
 
 /// Every MetroRail station code as defined by WMATA.
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub enum StationCode {
+pub enum Station {
     A01,
     A02,
     A03,
@@ -105,14 +105,14 @@ pub enum StationCode {
     N06,
 }
 
-impl Fetch for StationCode {}
+impl Fetch for Station {}
 
-impl NeedsStationCode for StationCode {}
+impl NeedsStation for Station {}
 
-impl StationCode {
+impl Station {
     pub fn to_station(
         &self,
-        destination_station: Option<StationCode>,
+        destination_station: Option<Station>,
         api_key: String,
     ) -> Result<responses::StationToStationInfos, Error> {
         self.station_to_station(Some(*self), destination_station, &api_key)
@@ -130,7 +130,7 @@ impl StationCode {
     }
 
     pub fn next_trains(&self, api_key: String) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStationCode>::next_trains(&self, *self, &api_key)
+        <Self as NeedsStation>::next_trains(&self, *self, &api_key)
     }
 
     pub fn information(&self, api_key: String) -> Result<responses::StationInformation, Error> {
@@ -141,250 +141,250 @@ impl StationCode {
         &self,
         api_key: String,
     ) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStationCode>::parking_information(&self, *self, &api_key)
+        <Self as NeedsStation>::parking_information(&self, *self, &api_key)
     }
 
     pub fn path_to(
         &self,
-        destination_station: StationCode,
+        destination_station: Station,
         api_key: String,
     ) -> Result<responses::PathBetweenStations, Error> {
         self.path_from(*self, destination_station, &api_key)
     }
 
     pub fn timings(&self, api_key: String) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStationCode>::timings(&self, *self, &api_key)
+        <Self as NeedsStation>::timings(&self, *self, &api_key)
     }
 }
 
-impl ToString for StationCode {
+impl ToString for Station {
     fn to_string(&self) -> String {
         match self {
-            StationCode::A01 => "A01".to_string(),
-            StationCode::A02 => "A02".to_string(),
-            StationCode::A03 => "A03".to_string(),
-            StationCode::A04 => "A04".to_string(),
-            StationCode::A05 => "A05".to_string(),
-            StationCode::A06 => "A06".to_string(),
-            StationCode::A07 => "A07".to_string(),
-            StationCode::A08 => "A08".to_string(),
-            StationCode::A09 => "A09".to_string(),
-            StationCode::A10 => "A10".to_string(),
-            StationCode::A11 => "A11".to_string(),
-            StationCode::A12 => "A12".to_string(),
-            StationCode::A13 => "A13".to_string(),
-            StationCode::A14 => "A14".to_string(),
-            StationCode::A15 => "A15".to_string(),
-            StationCode::B01 => "B01".to_string(),
-            StationCode::B02 => "B02".to_string(),
-            StationCode::B03 => "B03".to_string(),
-            StationCode::B04 => "B04".to_string(),
-            StationCode::B05 => "B05".to_string(),
-            StationCode::B06 => "B06".to_string(),
-            StationCode::B07 => "B07".to_string(),
-            StationCode::B08 => "B08".to_string(),
-            StationCode::B09 => "B09".to_string(),
-            StationCode::B10 => "B10".to_string(),
-            StationCode::B11 => "B11".to_string(),
-            StationCode::B35 => "B35".to_string(),
-            StationCode::C01 => "C01".to_string(),
-            StationCode::C02 => "C02".to_string(),
-            StationCode::C03 => "C03".to_string(),
-            StationCode::C04 => "C04".to_string(),
-            StationCode::C05 => "C05".to_string(),
-            StationCode::C06 => "C06".to_string(),
-            StationCode::C07 => "C07".to_string(),
-            StationCode::C08 => "C08".to_string(),
-            StationCode::C09 => "C09".to_string(),
-            StationCode::C10 => "C10".to_string(),
-            StationCode::C12 => "C12".to_string(),
-            StationCode::C13 => "C13".to_string(),
-            StationCode::C14 => "C14".to_string(),
-            StationCode::C15 => "C15".to_string(),
-            StationCode::D01 => "D01".to_string(),
-            StationCode::D02 => "D02".to_string(),
-            StationCode::D03 => "D03".to_string(),
-            StationCode::D04 => "D04".to_string(),
-            StationCode::D05 => "D05".to_string(),
-            StationCode::D06 => "D06".to_string(),
-            StationCode::D07 => "D07".to_string(),
-            StationCode::D08 => "D08".to_string(),
-            StationCode::D09 => "D09".to_string(),
-            StationCode::D10 => "D10".to_string(),
-            StationCode::D11 => "D11".to_string(),
-            StationCode::D12 => "D12".to_string(),
-            StationCode::D13 => "D13".to_string(),
-            StationCode::E01 => "E01".to_string(),
-            StationCode::E02 => "E02".to_string(),
-            StationCode::E03 => "E03".to_string(),
-            StationCode::E04 => "E04".to_string(),
-            StationCode::E05 => "E05".to_string(),
-            StationCode::E06 => "E06".to_string(),
-            StationCode::E07 => "E07".to_string(),
-            StationCode::E08 => "E08".to_string(),
-            StationCode::E09 => "E09".to_string(),
-            StationCode::E10 => "E10".to_string(),
-            StationCode::F01 => "F01".to_string(),
-            StationCode::F02 => "F02".to_string(),
-            StationCode::F03 => "F03".to_string(),
-            StationCode::F04 => "F04".to_string(),
-            StationCode::F05 => "F05".to_string(),
-            StationCode::F06 => "F06".to_string(),
-            StationCode::F07 => "F07".to_string(),
-            StationCode::F08 => "F08".to_string(),
-            StationCode::F09 => "F09".to_string(),
-            StationCode::F10 => "F10".to_string(),
-            StationCode::F11 => "F11".to_string(),
-            StationCode::G01 => "G01".to_string(),
-            StationCode::G02 => "G02".to_string(),
-            StationCode::G03 => "G03".to_string(),
-            StationCode::G04 => "G04".to_string(),
-            StationCode::G05 => "G05".to_string(),
-            StationCode::J02 => "J02".to_string(),
-            StationCode::J03 => "J03".to_string(),
-            StationCode::K01 => "K01".to_string(),
-            StationCode::K02 => "K02".to_string(),
-            StationCode::K03 => "K03".to_string(),
-            StationCode::K04 => "K04".to_string(),
-            StationCode::K05 => "K05".to_string(),
-            StationCode::K06 => "K06".to_string(),
-            StationCode::K07 => "K07".to_string(),
-            StationCode::K08 => "K08".to_string(),
-            StationCode::N01 => "N01".to_string(),
-            StationCode::N02 => "N02".to_string(),
-            StationCode::N03 => "N03".to_string(),
-            StationCode::N04 => "N04".to_string(),
-            StationCode::N06 => "N06".to_string(),
+            Station::A01 => "A01".to_string(),
+            Station::A02 => "A02".to_string(),
+            Station::A03 => "A03".to_string(),
+            Station::A04 => "A04".to_string(),
+            Station::A05 => "A05".to_string(),
+            Station::A06 => "A06".to_string(),
+            Station::A07 => "A07".to_string(),
+            Station::A08 => "A08".to_string(),
+            Station::A09 => "A09".to_string(),
+            Station::A10 => "A10".to_string(),
+            Station::A11 => "A11".to_string(),
+            Station::A12 => "A12".to_string(),
+            Station::A13 => "A13".to_string(),
+            Station::A14 => "A14".to_string(),
+            Station::A15 => "A15".to_string(),
+            Station::B01 => "B01".to_string(),
+            Station::B02 => "B02".to_string(),
+            Station::B03 => "B03".to_string(),
+            Station::B04 => "B04".to_string(),
+            Station::B05 => "B05".to_string(),
+            Station::B06 => "B06".to_string(),
+            Station::B07 => "B07".to_string(),
+            Station::B08 => "B08".to_string(),
+            Station::B09 => "B09".to_string(),
+            Station::B10 => "B10".to_string(),
+            Station::B11 => "B11".to_string(),
+            Station::B35 => "B35".to_string(),
+            Station::C01 => "C01".to_string(),
+            Station::C02 => "C02".to_string(),
+            Station::C03 => "C03".to_string(),
+            Station::C04 => "C04".to_string(),
+            Station::C05 => "C05".to_string(),
+            Station::C06 => "C06".to_string(),
+            Station::C07 => "C07".to_string(),
+            Station::C08 => "C08".to_string(),
+            Station::C09 => "C09".to_string(),
+            Station::C10 => "C10".to_string(),
+            Station::C12 => "C12".to_string(),
+            Station::C13 => "C13".to_string(),
+            Station::C14 => "C14".to_string(),
+            Station::C15 => "C15".to_string(),
+            Station::D01 => "D01".to_string(),
+            Station::D02 => "D02".to_string(),
+            Station::D03 => "D03".to_string(),
+            Station::D04 => "D04".to_string(),
+            Station::D05 => "D05".to_string(),
+            Station::D06 => "D06".to_string(),
+            Station::D07 => "D07".to_string(),
+            Station::D08 => "D08".to_string(),
+            Station::D09 => "D09".to_string(),
+            Station::D10 => "D10".to_string(),
+            Station::D11 => "D11".to_string(),
+            Station::D12 => "D12".to_string(),
+            Station::D13 => "D13".to_string(),
+            Station::E01 => "E01".to_string(),
+            Station::E02 => "E02".to_string(),
+            Station::E03 => "E03".to_string(),
+            Station::E04 => "E04".to_string(),
+            Station::E05 => "E05".to_string(),
+            Station::E06 => "E06".to_string(),
+            Station::E07 => "E07".to_string(),
+            Station::E08 => "E08".to_string(),
+            Station::E09 => "E09".to_string(),
+            Station::E10 => "E10".to_string(),
+            Station::F01 => "F01".to_string(),
+            Station::F02 => "F02".to_string(),
+            Station::F03 => "F03".to_string(),
+            Station::F04 => "F04".to_string(),
+            Station::F05 => "F05".to_string(),
+            Station::F06 => "F06".to_string(),
+            Station::F07 => "F07".to_string(),
+            Station::F08 => "F08".to_string(),
+            Station::F09 => "F09".to_string(),
+            Station::F10 => "F10".to_string(),
+            Station::F11 => "F11".to_string(),
+            Station::G01 => "G01".to_string(),
+            Station::G02 => "G02".to_string(),
+            Station::G03 => "G03".to_string(),
+            Station::G04 => "G04".to_string(),
+            Station::G05 => "G05".to_string(),
+            Station::J02 => "J02".to_string(),
+            Station::J03 => "J03".to_string(),
+            Station::K01 => "K01".to_string(),
+            Station::K02 => "K02".to_string(),
+            Station::K03 => "K03".to_string(),
+            Station::K04 => "K04".to_string(),
+            Station::K05 => "K05".to_string(),
+            Station::K06 => "K06".to_string(),
+            Station::K07 => "K07".to_string(),
+            Station::K08 => "K08".to_string(),
+            Station::N01 => "N01".to_string(),
+            Station::N02 => "N02".to_string(),
+            Station::N03 => "N03".to_string(),
+            Station::N04 => "N04".to_string(),
+            Station::N06 => "N06".to_string(),
         }
     }
 }
 
-impl FromStr for StationCode {
-    type Err = StringIsNotStationCodeError;
+impl FromStr for Station {
+    type Err = StringIsNotStationError;
 
-    /// Converts a string to a [`StationCode`].
+    /// Converts a string to a [`Station`].
     ///
     /// # Examples
     /// ```
-    /// use wmata::StationCode;
+    /// use wmata::Station;
     ///
-    /// let station_code: StationCode = "A01".parse().unwrap();
+    /// let station_code: Station = "A01".parse().unwrap();
     ///
-    /// assert_eq!(StationCode::A01, station_code);
+    /// assert_eq!(Station::A01, station_code);
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "A01" => Ok(StationCode::A01),
-            "A02" => Ok(StationCode::A02),
-            "A03" => Ok(StationCode::A03),
-            "A04" => Ok(StationCode::A04),
-            "A05" => Ok(StationCode::A05),
-            "A06" => Ok(StationCode::A06),
-            "A07" => Ok(StationCode::A07),
-            "A08" => Ok(StationCode::A08),
-            "A09" => Ok(StationCode::A09),
-            "A10" => Ok(StationCode::A10),
-            "A11" => Ok(StationCode::A11),
-            "A12" => Ok(StationCode::A12),
-            "A13" => Ok(StationCode::A13),
-            "A14" => Ok(StationCode::A14),
-            "A15" => Ok(StationCode::A15),
-            "B01" => Ok(StationCode::B01),
-            "B02" => Ok(StationCode::B02),
-            "B03" => Ok(StationCode::B03),
-            "B04" => Ok(StationCode::B04),
-            "B05" => Ok(StationCode::B05),
-            "B06" => Ok(StationCode::B06),
-            "B07" => Ok(StationCode::B07),
-            "B08" => Ok(StationCode::B08),
-            "B09" => Ok(StationCode::B09),
-            "B10" => Ok(StationCode::B10),
-            "B11" => Ok(StationCode::B11),
-            "B35" => Ok(StationCode::B35),
-            "C01" => Ok(StationCode::C01),
-            "C02" => Ok(StationCode::C02),
-            "C03" => Ok(StationCode::C03),
-            "C04" => Ok(StationCode::C04),
-            "C05" => Ok(StationCode::C05),
-            "C06" => Ok(StationCode::C06),
-            "C07" => Ok(StationCode::C07),
-            "C08" => Ok(StationCode::C08),
-            "C09" => Ok(StationCode::C09),
-            "C10" => Ok(StationCode::C10),
-            "C12" => Ok(StationCode::C12),
-            "C13" => Ok(StationCode::C13),
-            "C14" => Ok(StationCode::C14),
-            "C15" => Ok(StationCode::C15),
-            "D01" => Ok(StationCode::D01),
-            "D02" => Ok(StationCode::D02),
-            "D03" => Ok(StationCode::D03),
-            "D04" => Ok(StationCode::D04),
-            "D05" => Ok(StationCode::D05),
-            "D06" => Ok(StationCode::D06),
-            "D07" => Ok(StationCode::D07),
-            "D08" => Ok(StationCode::D08),
-            "D09" => Ok(StationCode::D09),
-            "D10" => Ok(StationCode::D10),
-            "D11" => Ok(StationCode::D11),
-            "D12" => Ok(StationCode::D12),
-            "D13" => Ok(StationCode::D13),
-            "E01" => Ok(StationCode::E01),
-            "E02" => Ok(StationCode::E02),
-            "E03" => Ok(StationCode::E03),
-            "E04" => Ok(StationCode::E04),
-            "E05" => Ok(StationCode::E05),
-            "E06" => Ok(StationCode::E06),
-            "E07" => Ok(StationCode::E07),
-            "E08" => Ok(StationCode::E08),
-            "E09" => Ok(StationCode::E09),
-            "E10" => Ok(StationCode::E10),
-            "F01" => Ok(StationCode::F01),
-            "F02" => Ok(StationCode::F02),
-            "F03" => Ok(StationCode::F03),
-            "F04" => Ok(StationCode::F04),
-            "F05" => Ok(StationCode::F05),
-            "F06" => Ok(StationCode::F06),
-            "F07" => Ok(StationCode::F07),
-            "F08" => Ok(StationCode::F08),
-            "F09" => Ok(StationCode::F09),
-            "F10" => Ok(StationCode::F10),
-            "F11" => Ok(StationCode::F11),
-            "G01" => Ok(StationCode::G01),
-            "G02" => Ok(StationCode::G02),
-            "G03" => Ok(StationCode::G03),
-            "G04" => Ok(StationCode::G04),
-            "G05" => Ok(StationCode::G05),
-            "J02" => Ok(StationCode::J02),
-            "J03" => Ok(StationCode::J03),
-            "K01" => Ok(StationCode::K01),
-            "K02" => Ok(StationCode::K02),
-            "K03" => Ok(StationCode::K03),
-            "K04" => Ok(StationCode::K04),
-            "K05" => Ok(StationCode::K05),
-            "K06" => Ok(StationCode::K06),
-            "K07" => Ok(StationCode::K07),
-            "K08" => Ok(StationCode::K08),
-            "N01" => Ok(StationCode::N01),
-            "N02" => Ok(StationCode::N02),
-            "N03" => Ok(StationCode::N03),
-            "N04" => Ok(StationCode::N04),
-            "N06" => Ok(StationCode::N06),
-            _ => Err(StringIsNotStationCodeError),
+            "A01" => Ok(Station::A01),
+            "A02" => Ok(Station::A02),
+            "A03" => Ok(Station::A03),
+            "A04" => Ok(Station::A04),
+            "A05" => Ok(Station::A05),
+            "A06" => Ok(Station::A06),
+            "A07" => Ok(Station::A07),
+            "A08" => Ok(Station::A08),
+            "A09" => Ok(Station::A09),
+            "A10" => Ok(Station::A10),
+            "A11" => Ok(Station::A11),
+            "A12" => Ok(Station::A12),
+            "A13" => Ok(Station::A13),
+            "A14" => Ok(Station::A14),
+            "A15" => Ok(Station::A15),
+            "B01" => Ok(Station::B01),
+            "B02" => Ok(Station::B02),
+            "B03" => Ok(Station::B03),
+            "B04" => Ok(Station::B04),
+            "B05" => Ok(Station::B05),
+            "B06" => Ok(Station::B06),
+            "B07" => Ok(Station::B07),
+            "B08" => Ok(Station::B08),
+            "B09" => Ok(Station::B09),
+            "B10" => Ok(Station::B10),
+            "B11" => Ok(Station::B11),
+            "B35" => Ok(Station::B35),
+            "C01" => Ok(Station::C01),
+            "C02" => Ok(Station::C02),
+            "C03" => Ok(Station::C03),
+            "C04" => Ok(Station::C04),
+            "C05" => Ok(Station::C05),
+            "C06" => Ok(Station::C06),
+            "C07" => Ok(Station::C07),
+            "C08" => Ok(Station::C08),
+            "C09" => Ok(Station::C09),
+            "C10" => Ok(Station::C10),
+            "C12" => Ok(Station::C12),
+            "C13" => Ok(Station::C13),
+            "C14" => Ok(Station::C14),
+            "C15" => Ok(Station::C15),
+            "D01" => Ok(Station::D01),
+            "D02" => Ok(Station::D02),
+            "D03" => Ok(Station::D03),
+            "D04" => Ok(Station::D04),
+            "D05" => Ok(Station::D05),
+            "D06" => Ok(Station::D06),
+            "D07" => Ok(Station::D07),
+            "D08" => Ok(Station::D08),
+            "D09" => Ok(Station::D09),
+            "D10" => Ok(Station::D10),
+            "D11" => Ok(Station::D11),
+            "D12" => Ok(Station::D12),
+            "D13" => Ok(Station::D13),
+            "E01" => Ok(Station::E01),
+            "E02" => Ok(Station::E02),
+            "E03" => Ok(Station::E03),
+            "E04" => Ok(Station::E04),
+            "E05" => Ok(Station::E05),
+            "E06" => Ok(Station::E06),
+            "E07" => Ok(Station::E07),
+            "E08" => Ok(Station::E08),
+            "E09" => Ok(Station::E09),
+            "E10" => Ok(Station::E10),
+            "F01" => Ok(Station::F01),
+            "F02" => Ok(Station::F02),
+            "F03" => Ok(Station::F03),
+            "F04" => Ok(Station::F04),
+            "F05" => Ok(Station::F05),
+            "F06" => Ok(Station::F06),
+            "F07" => Ok(Station::F07),
+            "F08" => Ok(Station::F08),
+            "F09" => Ok(Station::F09),
+            "F10" => Ok(Station::F10),
+            "F11" => Ok(Station::F11),
+            "G01" => Ok(Station::G01),
+            "G02" => Ok(Station::G02),
+            "G03" => Ok(Station::G03),
+            "G04" => Ok(Station::G04),
+            "G05" => Ok(Station::G05),
+            "J02" => Ok(Station::J02),
+            "J03" => Ok(Station::J03),
+            "K01" => Ok(Station::K01),
+            "K02" => Ok(Station::K02),
+            "K03" => Ok(Station::K03),
+            "K04" => Ok(Station::K04),
+            "K05" => Ok(Station::K05),
+            "K06" => Ok(Station::K06),
+            "K07" => Ok(Station::K07),
+            "K08" => Ok(Station::K08),
+            "N01" => Ok(Station::N01),
+            "N02" => Ok(Station::N02),
+            "N03" => Ok(Station::N03),
+            "N04" => Ok(Station::N04),
+            "N06" => Ok(Station::N06),
+            _ => Err(StringIsNotStationError),
         }
     }
 }
 
 /// An error incidating that the provided string is not a WMATA Station Code.
 #[derive(Debug, Clone)]
-pub struct StringIsNotStationCodeError;
+pub struct StringIsNotStationError;
 
-impl fmt::Display for StringIsNotStationCodeError {
+impl fmt::Display for StringIsNotStationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Provided string is not a valid station code.")
     }
 }
 
-impl error::Error for StringIsNotStationCodeError {
+impl error::Error for StringIsNotStationError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         None
     }

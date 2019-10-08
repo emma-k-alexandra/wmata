@@ -113,7 +113,7 @@ pub struct Incident {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct PathDetails {
-    /// [`RouteID`] of the route.
+    /// [`Route`] of the route.
     #[serde(rename = "RouteID")]
     pub route_id: String,
     /// Descriptive name for the route.
@@ -180,7 +180,7 @@ pub struct Prediction {
     /// Minutes until bus arrival at this stop.
     pub minutes: i32,
     #[serde(rename = "RouteID")]
-    /// [`RouteID`] of the bus. Base route name as shown on the bus. This can be used in other bus-related methods. Note that all variants will be shown as their base route names (i.e.: 10Av1 and 10Av2 will be shown as 10A).
+    /// [`Route`] of the bus. Base route name as shown on the bus. This can be used in other bus-related methods. Note that all variants will be shown as their base route names (i.e.: 10Av1 and 10Av2 will be shown as 10A).
     pub route_id: String,
     /// Trip identifier. This can be correlated with the data in our bus schedule information as well as bus positions.
     #[serde(rename = "TripID")]
@@ -212,7 +212,7 @@ pub struct Arrival {
     pub start_time: String,
     /// Scheduled end date and time (Eastern Standard Time) for this trip. Will be in YYYY-MM-DDTHH:mm:ss format (e.g.: 2014-10-27T13:17:00).
     pub end_time: String,
-    /// [`RouteID`] of the bus. Bus route variant identifier (pattern). This variant can be used in several other bus methods which accept variants. Note that customers will never see anything other than the base route name, so variants 10A, 10Av1, 10Av2, etc. will be displayed as 10A on the bus.
+    /// [`Route`] of the bus. Bus route variant identifier (pattern). This variant can be used in several other bus methods which accept variants. Note that customers will never see anything other than the base route name, so variants 10A, 10Av1, 10Av2, etc. will be displayed as 10A on the bus.
     #[serde(rename = "RouteID")]
     pub route_id: String,
     /// General direction of the trip (e.g.: NORTH, SOUTH, EAST, WEST).
@@ -258,7 +258,7 @@ pub struct RouteSchedule {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct RouteInfo {
-    /// [`RouteID`] of the route. Bus route variant. This can be used in several other bus methods which accept variants.
+    /// [`Route`] of the route. Bus route variant. This can be used in several other bus methods which accept variants.
     #[serde(rename = "RouteID")]
     pub route_id: String,
     /// Warning: Deprecated. Use the TripDirectionText element to denote the general direction of the trip.

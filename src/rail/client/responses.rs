@@ -11,18 +11,18 @@ pub struct Lines {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Line {
-    /// Two letter abbreviation of the line. See [`LineCode`].
+    /// Two letter abbreviation of the line. See [`Line`].
     pub line_code: String,
     /// Full name of the Line.
     pub display_name: String,
-    /// [`StationCode`] for start of the Line.
+    /// [`Station`] for start of the Line.
     pub start_station_code: String,
-    /// [`StationCode`] for end of the Line.
+    /// [`Station`] for end of the Line.
     pub end_station_code: String,
-    /// Intermediate terminal [`StationCode`]. Ex: Mt. Vernon for Yellow, Silver Spring for Red.
+    /// Intermediate terminal [`Station`]. Ex: Mt. Vernon for Yellow, Silver Spring for Red.
     #[serde(rename = "InternalDestination1")]
     pub first_internal_destination: String,
-    /// Intermediate terminal [`StationCode`]. Ex: Mt. Vernon for Yellow, Silver Spring for Red.
+    /// Intermediate terminal [`Station`]. Ex: Mt. Vernon for Yellow, Silver Spring for Red.
     #[serde(rename = "InternalDestination2")]
     pub second_internal_destination: String,
 }
@@ -50,10 +50,10 @@ pub struct StationEntrance {
     pub longitude: f64,
     /// Name of entrance.
     pub name: String,
-    /// [`StationCode`] of this entrance.
+    /// [`Station`] of this entrance.
     #[serde(rename = "StationCode1")]
     pub first_station_code: String,
-    /// Second [`StationCode`] of this entrance.
+    /// Second [`Station`] of this entrance.
     #[serde(rename = "StationCode2")]
     pub second_station_code: String,
 }
@@ -79,9 +79,9 @@ pub struct TrainPosition {
     pub direction_number: i32,
     /// The circuit identifier the train is currently on.
     pub circuit_id: i32,
-    /// Destination [`StationCode`].
+    /// Destination [`Station`].
     pub destination_station_code: Option<String>,
-    /// [`LineCode`] for this train.
+    /// [`Line`] for this train.
     pub line_code: Option<String>,
     /// Approximate "dwell time". This is not an exact value, but can be used to determine how long a train has been reported at the same track circuit.
     pub seconds_at_location: i32,
@@ -99,7 +99,7 @@ pub struct StandardRoutes {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct StandardRoute {
-    /// [`LineCode`] for this route.
+    /// [`Line`] for this route.
     pub line_code: String,
     #[serde(rename = "TrackNum")]
     /// Track number. 1 or 2.
@@ -116,7 +116,7 @@ pub struct TrackCircuitWithStation {
     pub sequence_number: i32,
     /// An internal system-wide uniquely identifiable circuit number.
     pub circuit_id: i32,
-    /// [`StationCode`] if this circuit is at a station.
+    /// [`Station`] if this circuit is at a station.
     pub station_code: Option<String>,
 }
 
@@ -164,7 +164,7 @@ pub struct ElevatorAndEscalatorIncident {
     pub unit_type: String,
     /// Warning: Deprecated. If listed here, the unit is inoperational or otherwise impaired.
     pub unit_status: Option<String>,
-    /// [`StationCode`] of the incident.
+    /// [`Station`] of the incident.
     pub station_code: String,
     /// Full station name, may include entrance information (e.g.: Metro Center, G and 11th St Entrance).
     pub station_name: String,
@@ -232,13 +232,13 @@ pub struct StationToStationInfos {
 pub struct StationToStationInfo {
     /// Average of distance traveled between two stations and straight-line distance (as used for WMATA fare calculations).
     pub composite_miles: f64,
-    /// Destination [`StationCode`].
+    /// Destination [`Station`].
     pub destination_station: String,
     /// Structure containing fare information.
     pub rail_fare: RailFare,
     /// Estimated travel time (schedule time) in minutes between the source and destination station. This is not correlated to minutes (Min) in Real-Time Rail Predictions.
     pub rail_time: i32,
-    /// Origin [`StationCode`].
+    /// Origin [`Station`].
     pub source_station: String,
 }
 
@@ -267,7 +267,7 @@ pub struct RailPrediction {
     pub car: Option<String>,
     /// Abbreviated version of the final destination for a train. This is similar to what is displayed on the signs at stations.
     pub destination: String,
-    /// [`StationCode`] of destination station.
+    /// [`Station`] of destination station.
     pub destination_code: Option<String>,
     /// When DestinationCode is populated, this is the full name of the destination station, as shown on the WMATA website.
     pub destination_name: String,
@@ -275,7 +275,7 @@ pub struct RailPrediction {
     pub group: String,
     /// Two-letter abbreviation for the line (e.g.: RD, BL, YL, OR, GR, or SV). May also be blank or No for trains with no passengers.
     pub line: String,
-    /// [`StationCode`] for where the train is arriving.
+    /// [`Station`] for where the train is arriving.
     pub location_code: String,
     /// Full name of the station where the train is arriving.
     pub location_name: String,
@@ -289,7 +289,7 @@ pub struct RailPrediction {
 pub struct StationInformation {
     /// Structure describing address information.
     pub address: StationAddress,
-    /// [`StationCode`] for this station.
+    /// [`Station`] for this station.
     pub code: String,
     /// Latitude of this station.
     #[serde(rename = "Lat")]
@@ -297,21 +297,21 @@ pub struct StationInformation {
     /// Longitude of this station.
     #[serde(rename = "Lon")]
     pub longitude: f64,
-    /// First [`StationCode`] for this station.
+    /// First [`Line`] for this station.
     #[serde(rename = "LineCode1")]
     pub first_line_code: String,
-    /// Second [`StationCode`] for this station.
+    /// Second [`Line`] for this station.
     #[serde(rename = "LineCode2")]
     pub second_line_code: Option<String>,
-    /// Third [`StationCode`] for this station.
+    /// Third [`Line`] for this station.
     #[serde(rename = "LineCode3")]
     pub third_line_code: Option<String>,
-    /// Fourth [`StationCode`] for this station.
+    /// Fourth [`Line`] for this station.
     #[serde(rename = "LineCode4")]
     pub fourth_line_code: Option<String>,
     /// Station name.
     pub name: String,
-    /// For stations with multiple platforms (e.g.: Gallery Place, Fort Totten, L'Enfant Plaza, and Metro Center), the additional [`StationCode`] will be listed here.
+    /// For stations with multiple platforms (e.g.: Gallery Place, Fort Totten, L'Enfant Plaza, and Metro Center), the additional [`Station`] will be listed here.
     #[serde(rename = "StationTogether1")]
     pub first_station_together: String,
     /// Similar in function to first_station_together. Currently not in use.
@@ -342,7 +342,7 @@ pub struct StationsParking {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct StationParking {
-    /// [`StationCode`] of this station.
+    /// [`Station`] of this station.
     pub code: String,
     /// When not None, provides additional parking resources such as nearby lots.
     pub notes: Option<String>,
@@ -389,12 +389,12 @@ pub struct Path {
     /// Distance in feet to the previous station in the list.
     #[serde(rename = "DistanceToPrev")]
     pub distance_to_previous_station: i32,
-    /// [`LineCode`] of this station.
+    /// [`Line`] of this station.
     pub line_code: String,
     /// Ordered sequence number.
     #[serde(rename = "SeqNum")]
     pub sequence_number: i32,
-    /// [`StationCode`] of this station.
+    /// [`Station`] of this station.
     pub station_code: String,
     /// Full name for this station, as shown on the WMATA website.
     pub station_name: String,
@@ -410,7 +410,7 @@ pub struct StationTimings {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct StationTime {
-    /// [`StationCode`] of this station.
+    /// [`Station`] of this station.
     pub code: String,
     /// Full name of the station.
     pub station_name: String,
@@ -447,7 +447,7 @@ pub struct StationFirstLastTrains {
 pub struct TrainTime {
     /// Time the train leaves the station.
     pub time: String,
-    /// [`StationCode`] for the destination station.
+    /// [`Station`] for the destination station.
     pub destination_station: String,
 }
 
@@ -463,7 +463,7 @@ pub struct Stations {
 pub struct Station {
     /// See [`Address`](./struct.Address.html).
     pub address: Address,
-    /// [`StationCode`] of this station.
+    /// [`Station`] of this station.
     pub code: String,
     /// Latitude of this station.
     #[serde(rename = "Lat")]
@@ -471,21 +471,21 @@ pub struct Station {
     /// Longitude of this station.
     #[serde(rename = "Lon")]
     pub longitude: f64,
-    /// First [`StationCode`] of this station.
+    /// First [`Station`] of this station.
     #[serde(rename = "LineCode1")]
     pub first_line_code: String,
-    /// Second [`StationCode`] of this station.
+    /// Second [`Station`] of this station.
     #[serde(rename = "LineCode2")]
     pub second_line_code: Option<String>,
-    /// Third [`StationCode`] of this station.
+    /// Third [`Station`] of this station.
     #[serde(rename = "LineCode3")]
     pub third_line_code: Option<String>,
-    /// Fourth [`StationCode`] of this station.
+    /// Fourth [`Station`] of this station.
     #[serde(rename = "LineCode4")]
     pub fourth_line_code: Option<String>,
     /// Station name.
     pub name: String,
-    /// For stations with multiple platforms (e.g.: Gallery Place, Fort Totten, L'Enfant Plaza, and Metro Center), the additional [`StationCode`] will be listed here.
+    /// For stations with multiple platforms (e.g.: Gallery Place, Fort Totten, L'Enfant Plaza, and Metro Center), the additional [`Station`] will be listed here.
     #[serde(rename = "StationTogether1")]
     pub first_station_together: String,
     /// imilar in function to first_station_together. Currently not in use.

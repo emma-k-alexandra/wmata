@@ -1,5 +1,5 @@
 # wmata
-wmata is a lightweight Rust interface to the [Washington Metropolitan Area Transit Authority API](https://developer.wmata.com).
+wmata is a high level Rust interface to the [Washington Metropolitan Area Transit Authority API](https://developer.wmata.com).
 
 ## Contents
 - [Requirements](#requirements)
@@ -7,8 +7,8 @@ wmata is a lightweight Rust interface to the [Washington Metropolitan Area Trans
 - [Usage](#usage)
     - [Getting Started](#getting-started)
     - [Design](#design)
-    - [Using `RailClient`](#using-railclient)
-    - [Using `BusClient`](#using-busclient)
+    - [Using `MetroRail`](#using-MetroRail)
+    - [Using `MetroBus`](#using-MetroBus)
 - [Testing](#testing)
 - [Dependencies](#dependencies)
 - [Contact](#contact)
@@ -21,44 +21,44 @@ wmata is a lightweight Rust interface to the [Washington Metropolitan Area Trans
 
 ### Cargo
 ```toml
-wmata = "2.0.1"
+wmata = "3.0.0"
 ```
 
 ## Usage
 
 ### Getting Started
 ```rust
-use wmata::RailClient;
+use wmata::MetroRail;
 
-let client = RailClient::new(api_key);
+let client = MetroRail::new(api_key);
 
 let trains = client.next_trains()?;
 ```
 
 ### Design
-wmata breaks the WMATA API into two components: `RailClient` and `BusClient`.
+wmata breaks the WMATA API into two components: `MetroRail` and `MetroBus`.
 
-#### `RailClient`
+#### `MetroRail`
 Provides access to all MetroRail related endpoints.
 
-##### Using `RailClient`
+##### Using `MetroRail`
 ```rust
-use wmata::RailClient;
+use wmata::MetroRail;
 
-let client = RailClient::new(api_key);
+let client = MetroRail::new(api_key);
 
 let trains = client.next_trains()?;
 ```
 
-#### `BusClient`
+#### `MetroBus`
 Provides access to all MetroBus related endpoints.
 
 
-##### Using `BusClient`
+##### Using `MetroBus`
 ```rust
-use wmata::BusClient;
+use wmata::MetroBus;
 
-let client = BusClient::new(api_key);
+let client = MetroBus::new(api_key);
 
 let routes = client.routes()?;
 ```
