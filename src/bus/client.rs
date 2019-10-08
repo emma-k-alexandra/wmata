@@ -6,8 +6,8 @@ mod tests;
 use crate::bus::route::RouteID;
 use crate::bus::urls::URLs;
 use crate::error::Error;
-use crate::traits::{ApiKey, Fetch};
-use crate::types::{Empty, RadiusAtLatLong};
+use crate::traits::Fetch;
+use crate::types::RadiusAtLatLong;
 use std::str::FromStr;
 
 /// MetroBus client. Used to fetch MetroBus-related information from the WMATA API.
@@ -16,20 +16,7 @@ pub struct Client {
     pub key: String,
 }
 
-impl ApiKey for Client {
-    /// Returns the API key contained in this Client.
-    ///
-    /// # Example
-    /// ```
-    /// use wmata::{BusClient, traits::ApiKey};
-    /// let client = BusClient::new("9e38c3eab34c4e6c990828002828f5ed");
-    ///
-    /// assert_eq!(client.api_key(), "9e38c3eab34c4e6c990828002828f5ed");
-    /// ```
-    fn api_key(&self) -> &str {
-        &self.key
-    }
-}
+impl Fetch for Client {}
 
 // Constructor
 impl Client {
@@ -60,7 +47,7 @@ impl Client {
     /// assert!(client.routes().is_ok());
     /// ```
     pub fn routes(&self) -> Result<responses::Routes, Error> {
-        self.fetch::<responses::Routes, Empty>(&URLs::Routes.to_string(), None)
+        self.fetch::<responses::Routes>(&URLs::Routes.to_string(), None)
     }
 
     /// Nearby bus stops based on latitude, longitude, and radius.
@@ -82,7 +69,7 @@ impl Client {
                 Some(radius_at_lat_long.to_query()),
             )
         } else {
-            self.fetch::<responses::Stops, Empty>(&URLs::Stops.to_string(), None)
+            self.fetch::<responses::Stops>(&URLs::Stops.to_string(), None)
         }
     }
 }
@@ -119,7 +106,7 @@ impl Client {
         if !query.is_empty() {
             self.fetch(&URLs::Positions.to_string(), Some(query))
         } else {
-            self.fetch::<responses::BusPositions, Empty>(&URLs::Positions.to_string(), None)
+            self.fetch::<responses::BusPositions>(&URLs::Positions.to_string(), None)
         }
     }
 
@@ -142,7 +129,7 @@ impl Client {
         if !query.is_empty() {
             self.fetch(&URLs::Incidents.to_string(), Some(&query))
         } else {
-            self.fetch::<responses::Incidents, Empty>(&URLs::Incidents.to_string(), None)
+            self.fetch::<responses::Incidents>(&URLs::Incidents.to_string(), None)
         }
     }
 
