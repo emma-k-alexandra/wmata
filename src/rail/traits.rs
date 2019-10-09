@@ -9,25 +9,11 @@ use crate::Station;
 
 pub trait NeedsLine: Fetch {
     fn stations_on(&self, line: Option<Line>, api_key: &str) -> Result<responses::Stations, Error> {
-        let mut query = vec![];
-
-        if let Some(line) = line {
-            query.push(("LineCode".to_string(), line.to_string()));
-        }
-
-        if !query.is_empty() {
-            self.fetch(WMATARequest::new(
-                &api_key,
-                &URLs::Stations.to_string(),
-                Some(query),
-            ))
-        } else {
-            self.fetch::<responses::Stations>(WMATARequest::new(
-                &api_key,
-                &URLs::Stations.to_string(),
-                None,
-            ))
-        }
+        self.fetch(WMATARequest::new(
+            &api_key,
+            &URLs::Stations.to_string(),
+            line.map(|l| vec![("LineCode".to_string(), l.to_string())]),
+        ))
     }
 }
 
@@ -81,16 +67,10 @@ pub trait NeedsStation: Fetch {
         station: Option<Station>,
         api_key: &str,
     ) -> Result<responses::RailIncidents, Error> {
-        let mut query = vec![];
-
-        if let Some(station) = station {
-            query.push(("StationCode".to_string(), station.to_string()));
-        }
-
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Incidents.to_string(),
-            Some(query),
+            station.map(|s| vec![("StationCode".to_string(), s.to_string())]),
         ))
     }
 

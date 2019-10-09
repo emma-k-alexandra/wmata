@@ -43,25 +43,11 @@ pub trait NeedsRoute: Fetch {
         route: Option<Route>,
         api_key: &str,
     ) -> Result<responses::Incidents, Error> {
-        let mut query = vec![];
-
-        if let Some(route) = route {
-            query.push(("Route".to_string(), route.to_string()));
-        }
-
-        if !query.is_empty() {
-            self.fetch(WMATARequest::new(
-                &api_key,
-                &URLs::Incidents.to_string(),
-                Some(query),
-            ))
-        } else {
-            self.fetch::<responses::Incidents>(WMATARequest::new(
-                &api_key,
-                &URLs::Incidents.to_string(),
-                None,
-            ))
-        }
+        self.fetch(WMATARequest::new(
+            &api_key,
+            &URLs::Incidents.to_string(),
+            route.map(|r| vec![("Route".to_string(), r.to_string())]),
+        ))
     }
 
     fn path(
