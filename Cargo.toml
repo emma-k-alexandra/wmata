@@ -1,11 +1,11 @@
 [package]
 name = "wmata"
-version = "2.0.1"
+version = "3.0.0"
 authors = ["Emma Foster <emma@emma.sh>"]
 edition = "2018"
 repository = "https://github.com/emma-foster/wmata"
-description = "wmata is a lightweight Rust interface to the Washington Metropolitan Area Transit Authority (WMATA) API"
-keywords = ["wmata", "washington", "dc", "networking", "mit"]
+description = "wmata is a high level Rust interface to the Washington Metropolitan Area Transit Authority (WMATA) API"
+keywords = ["wmata", "washington", "dc", "networking", "api bindings"]
 categories = ["api-bindings", "encoding", "network-programming"]
 license = "MIT"
 readme = "README.md"

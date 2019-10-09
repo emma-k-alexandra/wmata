@@ -1,8 +1,5 @@
 //! Types used throughout the crate
 
-/// A type indicating an empty query array
-pub type Empty = [(); 0];
-
 /// A radius (in meters) around a given latitude and longitude
 pub struct RadiusAtLatLong {
     /// Radius (in meters) around this point.
@@ -26,16 +23,16 @@ impl RadiusAtLatLong {
         RadiusAtLatLong {
             radius,
             latitude,
-            longitude
+            longitude,
         }
     }
 
     /// Convert this struct to a query string
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use wmata::RadiusAtLatLong;
-    /// 
+    ///
     /// let point_with_radius = RadiusAtLatLong::new(1000, 38.8817596, -77.0166426);
     /// assert_eq!(point_with_radius.radius, 1000);
     /// ```
@@ -45,5 +42,21 @@ impl RadiusAtLatLong {
             ("Lat".to_string(), self.latitude.to_string()),
             ("Lon".to_string(), self.longitude.to_string()),
         ]
+    }
+}
+
+pub struct Request<'a> {
+    pub api_key: &'a str,
+    pub path: &'a str,
+    pub query: Option<Vec<(String, String)>>,
+}
+
+impl<'a> Request<'a> {
+    pub fn new(api_key: &'a str, path: &'a str, query: Option<Vec<(String, String)>>) -> Self {
+        Request {
+            api_key,
+            path,
+            query,
+        }
     }
 }
