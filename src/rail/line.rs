@@ -21,7 +21,16 @@ impl Fetch for Line {}
 impl NeedsLine for Line {}
 
 impl Line {
-    pub fn stations(&self, api_key: String) -> Result<responses::Stations, Error> {
+    /// Station location and address information for all stations on this line.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330c)
+    /// 
+    /// # Examples
+    /// ```
+    /// use wmata::Line;
+    ///
+    /// assert!(Line::Red.stations("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    pub fn stations(&self, api_key: &str) -> Result<responses::Stations, Error> {
         self.stations_on(Some(*self), &api_key)
     }
 }

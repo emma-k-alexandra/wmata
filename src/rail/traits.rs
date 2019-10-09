@@ -12,7 +12,7 @@ pub trait NeedsLine: Fetch {
         let mut query = vec![];
 
         if let Some(line) = line {
-            query.push(("Line".to_string(), line.to_string()));
+            query.push(("LineCode".to_string(), line.to_string()));
         }
 
         if !query.is_empty() {
@@ -41,11 +41,11 @@ pub trait NeedsStation: Fetch {
         let mut query = vec![];
 
         if let Some(from_station) = from_station {
-            query.push(("FromStation".to_string(), from_station.to_string()));
+            query.push(("FromStationCode".to_string(), from_station.to_string()));
         }
 
         if let Some(to_destination_station) = to_destination_station {
-            query.push(("ToStation".to_string(), to_destination_station.to_string()));
+            query.push(("ToStationCode".to_string(), to_destination_station.to_string()));
         }
 
         if !query.is_empty() {
@@ -68,25 +68,12 @@ pub trait NeedsStation: Fetch {
         station: Option<Station>,
         api_key: &str,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        let mut query = vec![];
+        self.fetch(WMATARequest::new(
+            &api_key,
+            &URLs::ElevatorAndEscalatorIncidents.to_string(),
+            station.map(|s| vec![("StationCode".to_string(), s.to_string())]),
+        ))
 
-        if let Some(station) = station {
-            query.push(("Station".to_string(), station.to_string()));
-        }
-
-        if !query.is_empty() {
-            self.fetch(WMATARequest::new(
-                &api_key,
-                &URLs::ElevatorAndEscalatorIncidents.to_string(),
-                Some(query),
-            ))
-        } else {
-            self.fetch::<responses::ElevatorAndEscalatorIncidents>(WMATARequest::new(
-                &api_key,
-                &URLs::ElevatorAndEscalatorIncidents.to_string(),
-                None,
-            ))
-        }
     }
 
     fn incidents_at(
@@ -97,7 +84,7 @@ pub trait NeedsStation: Fetch {
         let mut query = vec![];
 
         if let Some(station) = station {
-            query.push(("Station".to_string(), station.to_string()));
+            query.push(("StationCode".to_string(), station.to_string()));
         }
 
         self.fetch(WMATARequest::new(
@@ -109,12 +96,12 @@ pub trait NeedsStation: Fetch {
 
     fn next_trains(
         &self,
-        station_code: Station,
+        station: Station,
         api_key: &str,
     ) -> Result<responses::RailPredictions, Error> {
         self.fetch::<responses::RailPredictions>(WMATARequest::new(
             &api_key,
-            &[URLs::NextTrains.to_string(), station_code.to_string()].join("/"),
+            &[URLs::NextTrains.to_string(), station.to_string()].join("/"),
             None,
         ))
     }
@@ -127,7 +114,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Information.to_string(),
-            Some(vec![("Station".to_string(), station_code.to_string())]),
+            Some(vec![("StationCode".to_string(), station_code.to_string())]),
         ))
     }
 
@@ -139,7 +126,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::ParkingInformation.to_string(),
-            Some(vec![("Station".to_string(), station_code.to_string())]),
+            Some(vec![("StationCode".to_string(), station_code.to_string())]),
         ))
     }
 
@@ -153,8 +140,8 @@ pub trait NeedsStation: Fetch {
             &api_key,
             &URLs::Path.to_string(),
             Some(vec![
-                ("FromStation".to_string(), from_station.to_string()),
-                ("ToStation".to_string(), to_station.to_string()),
+                ("FromStationCode".to_string(), from_station.to_string()),
+                ("ToStationCode".to_string(), to_station.to_string()),
             ]),
         ))
     }
@@ -167,7 +154,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Timings.to_string(),
-            Some(vec![("Station".to_string(), station_code.to_string())]),
+            Some(vec![("StationCode".to_string(), station_code.to_string())]),
         ))
     }
 }

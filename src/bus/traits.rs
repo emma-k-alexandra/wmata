@@ -70,7 +70,7 @@ pub trait NeedsRoute: Fetch {
         date: Option<&str>,
         api_key: &str,
     ) -> Result<responses::PathDetails, Error> {
-        let mut query = vec![("Route".to_string(), route.to_string())];
+        let mut query = vec![("RouteID".to_string(), route.to_string())];
 
         if let Some(date) = date {
             query.push(("Date".to_string(), date.to_string()));
@@ -90,7 +90,7 @@ pub trait NeedsRoute: Fetch {
         including_variations: bool,
         api_key: &str,
     ) -> Result<responses::RouteSchedule, Error> {
-        let mut query = vec![("Route".to_string(), route.to_string())];
+        let mut query = vec![("RouteID".to_string(), route.to_string())];
 
         if let Some(date) = date {
             query.push(("Date".to_string(), date.to_string()));

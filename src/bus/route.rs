@@ -490,7 +490,7 @@ pub enum Route {
 
 impl Route {
     pub fn new(s: &str) -> Result<Self, StringIsNotRouteError> {
-        s.parse::<Route>()
+        s.parse()
     }
 }
 
@@ -500,6 +500,18 @@ impl NeedsRoute for Route {}
 
 // Overwrite NeedsRoute methods
 impl Route {
+    /// Bus positions for this route around a given lat/long.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d68?)
+    /// 
+    /// # Example
+    /// ```
+    /// use wmata::{Route, RadiusAtLatLong};
+    ///
+    /// assert!(Route::A2.positions(
+    ///     Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)),
+    ///     "9e38c3eab34c4e6c990828002828f5ed"
+    /// ).is_ok());
+    /// ```
     pub fn positions(
         &self,
         radius_at_lat_long: Option<RadiusAtLatLong>,
@@ -508,14 +520,68 @@ impl Route {
         self.positions_along(Some(*self), radius_at_lat_long, api_key)
     }
 
+    /// Reported bus incidents/delays for this route.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763641281d83086473f232/operations/54763641281d830c946a3d75)
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Route;
+    ///
+    /// assert!(Route::A2.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn incidents(&self, api_key: &str) -> Result<responses::Incidents, Error> {
         self.incidents_along(Some(*self), api_key)
     }
 
+    /// For an optional given date, returns the set of ordered latitude/longitude
+    /// points along this route along with the list of stops served.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d69?)
+    ///
+    /// # Date
+    /// Date is in YYYY-MM-DD format.
+    /// ***Omit date for current date***
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Route;
+    ///
+    /// assert!(Route::A2.path(None, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    /// With a date
+    /// ```
+    /// use wmata::Route;
+    ///
+    /// assert!(Route::A2.path(Some("2019-10-02"), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn path(&self, date: Option<&str>, api_key: &str) -> Result<responses::PathDetails, Error> {
         <Self as NeedsRoute>::path(&self, *self, date, api_key)
     }
 
+    /// Schedules for this route for an optional given date.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6b?)
+    ///
+    /// # Date
+    /// Date is in YYYY-MM-DD format.
+    /// ***Omit date for current date***
+    ///
+    /// # Variations
+    /// Whether or not to include variations if a base route is specified in Route.
+    /// For example, if B30 is specified and IncludingVariations is set to true,
+    /// data for all variations of B30 such as B30v1, B30v2, etc. will be returned.
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Route;
+    ///
+    /// assert!(Route::A2.schedule(None, false, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    ///
+    /// with date and variations
+    /// ```
+    /// use wmata::Route;
+    ///
+    /// assert!(Route::A2.schedule(Some("2019-10-02"), true, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn schedule(
         &self,
         date: Option<&str>,

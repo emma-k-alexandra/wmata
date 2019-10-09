@@ -110,50 +110,116 @@ impl Fetch for Station {}
 impl NeedsStation for Station {}
 
 impl Station {
+    /// Distance, fare information, and estimated travel time between this and another optional station, including those on different lines.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe3313?)
+    ///
+    /// # Example
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.to_station(Some(Station::A02), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn to_station(
         &self,
         destination_station: Option<Station>,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::StationToStationInfos, Error> {
-        self.station_to_station(Some(*self), destination_station, &api_key)
+        self.station_to_station(Some(*self), destination_station, api_key)
     }
 
+    // List of reported elevator and escalator outages at this station.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763641281d83086473f232/operations/54763641281d830c946a3d76?)
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.elevator_and_escalator_incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn elevator_and_escalator_incidents(
         &self,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        self.elevator_and_escalator_incidents_at(Some(*self), &api_key)
+        self.elevator_and_escalator_incidents_at(Some(*self), api_key)
     }
 
-    pub fn incidents(&self, api_key: String) -> Result<responses::RailIncidents, Error> {
-        self.incidents_at(Some(*self), &api_key)
+    /// Reported rail incidents (significant disruptions and delays to normal service) at this station
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    pub fn incidents(&self, api_key: &str) -> Result<responses::RailIncidents, Error> {
+        self.incidents_at(Some(*self), api_key)
     }
 
-    pub fn next_trains(&self, api_key: String) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStation>::next_trains(&self, *self, &api_key)
+    /// Next train arrivals for this station
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.next_trains("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    pub fn next_trains(&self, api_key: &str) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStation>::next_trains(&self, *self, api_key)
     }
 
-    pub fn information(&self, api_key: String) -> Result<responses::StationInformation, Error> {
-        self.station_information(*self, &api_key)
+    /// Location and address information at this station
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    pub fn information(&self, api_key: &str) -> Result<responses::StationInformation, Error> {
+        self.station_information(*self, api_key)
     }
 
+    /// Parking information for this station
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.parking_information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn parking_information(
         &self,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStation>::parking_information(&self, *self, &api_key)
+        <Self as NeedsStation>::parking_information(&self, *self, api_key)
     }
 
+    /// Set of ordered stations and distances between this station and another on the **same line**.
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.path_to(Station::A02, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
     pub fn path_to(
         &self,
         destination_station: Station,
-        api_key: String,
+        api_key: &str,
     ) -> Result<responses::PathBetweenStations, Error> {
-        self.path_from(*self, destination_station, &api_key)
+        self.path_from(*self, destination_station, api_key)
     }
 
-    pub fn timings(&self, api_key: String) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStation>::timings(&self, *self, &api_key)
+    /// Opening and scheduled first/last train times for this station.
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Station;
+    ///
+    /// assert!(Station::A01.timings("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    pub fn timings(&self, api_key: &str) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStation>::timings(&self, *self, api_key)
     }
 }
 

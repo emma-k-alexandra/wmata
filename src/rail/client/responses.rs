@@ -184,7 +184,7 @@ pub struct ElevatorAndEscalatorIncident {
     /// Date and time (Eastern Standard Time) outage details was last updated. Will be in YYYY-MM-DDTHH:mm:ss format (e.g.: 2014-10-27T15:17:00).
     pub date_updated: String,
     /// Estimated date and time (Eastern Standard Time) by when unit is expected to return to normal service. May be NULL, otherwise will be in YYYY-MM-DDTHH:mm:ss format (e.g.: 2014-10-27T23:59:59).
-    pub estimated_return_to_service: String,
+    pub estimated_return_to_service: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

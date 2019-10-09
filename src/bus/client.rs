@@ -40,6 +40,7 @@ impl Client {
 // These don't take Route IDs or Stop IDs
 impl Client {
     /// List of all bus route variants.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6a?)
     ///
     /// # Examples
     /// ```
@@ -57,7 +58,8 @@ impl Client {
     }
 
     /// Nearby bus stops based on latitude, longitude, and radius.
-    ///
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6d?)
+    /// 
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, RadiusAtLatLong};
@@ -90,6 +92,7 @@ impl NeedsRoute for Client {}
 // Overwriting NeedsRoute methods
 impl Client {
     /// Bus positions for the given route around a given lat/long.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d68?)
     ///
     /// # Example
     /// ```
@@ -110,6 +113,7 @@ impl Client {
     }
 
     /// Reported bus incidents/delays for a given route.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763641281d83086473f232/operations/54763641281d830c946a3d75)
     ///
     /// # Examples
     /// ```
@@ -124,6 +128,7 @@ impl Client {
 
     /// For an optional given date, returns the set of ordered latitude/longitude
     /// points along a route variant along with the list of stops served.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d69?)
     ///
     /// # Date
     /// Date is in YYYY-MM-DD format.
@@ -148,7 +153,8 @@ impl Client {
     }
 
     /// Schedules for a given route variant for an optional given date.
-    ///
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6b?)
+    /// 
     /// # Date
     /// Date is in YYYY-MM-DD format.
     /// ***Omit date for current date***
@@ -188,6 +194,7 @@ impl NeedsStop for Client {}
 // Overwriting NeedsStop methods
 impl Client {
     /// Next bus arrivals at a given stop.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476365e031f590f38092508/operations/5476365e031f5909e4fe331d)
     ///
     /// # Examples
     /// ```
@@ -201,6 +208,8 @@ impl Client {
     }
 
     /// Buses scheduled at a stop for an optional given date.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6c?)
+    /// 
     /// # Date
     /// Date is in YYYY-MM-DD format.
     /// ***Omit date for current date***
