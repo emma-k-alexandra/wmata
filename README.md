@@ -28,11 +28,11 @@ wmata = "3.0.0"
 
 ### Getting Started
 ```rust
-use wmata::MetroRail;
+use wmata::{MetroRail, Station};
 
 let client = MetroRail::new(api_key);
 
-let trains = client.next_trains()?;
+let trains = client.next_trains(Station::A01)?;
 ```
 
 ### Design
@@ -43,11 +43,11 @@ Provides access to all MetroRail related endpoints.
 
 ##### Using `MetroRail`
 ```rust
-use wmata::MetroRail;
+use wmata::{MetroRail, Station};
 
 let client = MetroRail::new(api_key);
 
-let trains = client.next_trains()?;
+let trains = client.next_trains(Station::A01)?;
 ```
 
 #### `MetroBus`
