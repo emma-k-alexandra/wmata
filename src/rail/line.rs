@@ -3,6 +3,7 @@ use crate::error::Error;
 use crate::rail::client::responses;
 use crate::rail::traits::NeedsLine;
 use crate::traits::Fetch;
+use serde::{Deserialize, de::{Deserializer, Error as SerdeError}};
 use std::{error, fmt, str::FromStr};
 
 /// All MetroRail lines.
@@ -11,9 +12,30 @@ pub enum Line {
     Red,
     Blue,
     Yellow,
+    YellowLineRushPlus,
     Orange,
     Green,
     Silver,
+}
+
+impl<'de> Deserialize<'de> for Line {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let line = String::deserialize(deserializer)?;
+
+        match line.as_str() {
+            "RD" => Ok(Line::Red),
+            "BL" => Ok(Line::Blue),
+            "YL" => Ok(Line::Yellow),
+            "YLRP" => Ok(Line::YellowLineRushPlus),
+            "OR" => Ok(Line::Orange),
+            "GR" => Ok(Line::Green),
+            "SV" => Ok(Line::Silver),
+            _ => Err(SerdeError::custom("String provided is not a Line code.")),
+        }
+    }
 }
 
 impl Fetch for Line {}
@@ -44,6 +66,7 @@ impl ToString for Line {
             Line::Orange => "OR".to_string(),
             Line::Green => "GR".to_string(),
             Line::Silver => "SV".to_string(),
+            Line::YellowLineRushPlus => "YLRP".to_string(),
         }
     }
 }
@@ -69,6 +92,7 @@ impl FromStr for Line {
             "OR" => Ok(Line::Orange),
             "GR" => Ok(Line::Green),
             "SV" => Ok(Line::Silver),
+            "YLRP" => Ok(Line::YellowLineRushPlus),
             _ => Err(StringIsNotLineError),
         }
     }
