@@ -70,7 +70,13 @@ impl Client {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Entrances.to_string(),
-            Some(radius_at_lat_long.to_query()),
+            Some(
+                radius_at_lat_long
+                    .to_query()
+                    .iter()
+                    .map(|(key, value)| (key.as_str(), value.clone()))
+                    .collect(),
+            ),
         ))
     }
 
@@ -88,7 +94,7 @@ impl Client {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Positions.to_string(),
-            Some(vec![("contentType".to_string(), "json".to_string())]),
+            Some(vec![("contentType", "json".to_string())]),
         ))
     }
 
@@ -106,7 +112,7 @@ impl Client {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Routes.to_string(),
-            Some(vec![("contentType".to_string(), "json".to_string())]),
+            Some(vec![("contentType", "json".to_string())]),
         ))
     }
 
@@ -114,7 +120,7 @@ impl Client {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Circuits.to_string(),
-            Some(vec![("contentType".to_string(), "json".to_string())]),
+            Some(vec![("contentType", "json".to_string())]),
         ))
     }
 }

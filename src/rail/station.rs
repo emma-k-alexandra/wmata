@@ -187,10 +187,7 @@ impl Station {
     ///
     /// assert!(Station::A01.parking_information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn parking_information(
-        &self,
-        api_key: &str,
-    ) -> Result<responses::StationsParking, Error> {
+    pub fn parking_information(&self, api_key: &str) -> Result<responses::StationsParking, Error> {
         <Self as NeedsStation>::parking_information(&self, *self, api_key)
     }
 

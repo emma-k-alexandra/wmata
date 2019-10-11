@@ -502,7 +502,7 @@ impl NeedsRoute for Route {}
 impl Route {
     /// Bus positions for this route around a given lat/long.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d68?)
-    /// 
+    ///
     /// # Example
     /// ```
     /// use wmata::{Route, RadiusAtLatLong};

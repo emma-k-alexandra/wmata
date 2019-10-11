@@ -12,7 +12,7 @@ pub trait NeedsLine: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Stations.to_string(),
-            line.map(|l| vec![("LineCode".to_string(), l.to_string())]),
+            line.map(|l| vec![("LineCode", l.to_string())]),
         ))
     }
 }
@@ -27,11 +27,11 @@ pub trait NeedsStation: Fetch {
         let mut query = vec![];
 
         if let Some(from_station) = from_station {
-            query.push(("FromStationCode".to_string(), from_station.to_string()));
+            query.push(("FromStationCode", from_station.to_string()));
         }
 
         if let Some(to_destination_station) = to_destination_station {
-            query.push(("ToStationCode".to_string(), to_destination_station.to_string()));
+            query.push(("ToStationCode", to_destination_station.to_string()));
         }
 
         if !query.is_empty() {
@@ -57,9 +57,8 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::ElevatorAndEscalatorIncidents.to_string(),
-            station.map(|s| vec![("StationCode".to_string(), s.to_string())]),
+            station.map(|s| vec![("StationCode", s.to_string())]),
         ))
-
     }
 
     fn incidents_at(
@@ -70,7 +69,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Incidents.to_string(),
-            station.map(|s| vec![("StationCode".to_string(), s.to_string())]),
+            station.map(|s| vec![("StationCode", s.to_string())]),
         ))
     }
 
@@ -94,7 +93,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Information.to_string(),
-            Some(vec![("StationCode".to_string(), station_code.to_string())]),
+            Some(vec![("StationCode", station_code.to_string())]),
         ))
     }
 
@@ -106,7 +105,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::ParkingInformation.to_string(),
-            Some(vec![("StationCode".to_string(), station_code.to_string())]),
+            Some(vec![("StationCode", station_code.to_string())]),
         ))
     }
 
@@ -120,8 +119,8 @@ pub trait NeedsStation: Fetch {
             &api_key,
             &URLs::Path.to_string(),
             Some(vec![
-                ("FromStationCode".to_string(), from_station.to_string()),
-                ("ToStationCode".to_string(), to_station.to_string()),
+                ("FromStationCode", from_station.to_string()),
+                ("ToStationCode", to_station.to_string()),
             ]),
         ))
     }
@@ -134,7 +133,7 @@ pub trait NeedsStation: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Timings.to_string(),
-            Some(vec![("StationCode".to_string(), station_code.to_string())]),
+            Some(vec![("StationCode", station_code.to_string())]),
         ))
     }
 }

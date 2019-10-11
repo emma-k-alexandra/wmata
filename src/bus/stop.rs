@@ -26,7 +26,7 @@ impl<'a> Stop<'a> {
 
     /// Buses scheduled at this stop for an optional given date.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6c?)
-    /// 
+    ///
     /// # Date
     /// Date is in YYYY-MM-DD format.
     /// ***Omit date for current date***

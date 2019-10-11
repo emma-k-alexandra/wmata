@@ -59,7 +59,7 @@ impl Client {
 
     /// Nearby bus stops based on latitude, longitude, and radius.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6d?)
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, RadiusAtLatLong};
@@ -75,7 +75,13 @@ impl Client {
             self.fetch(WMATARequest::new(
                 &self.key,
                 &URLs::Stops.to_string(),
-                Some(radius_at_lat_long.to_query()),
+                Some(
+                    radius_at_lat_long
+                        .to_query()
+                        .iter()
+                        .map(|(key, value)| (key.as_str(), value.clone()))
+                        .collect(),
+                ),
             ))
         } else {
             self.fetch::<responses::Stops>(WMATARequest::new(
@@ -154,7 +160,7 @@ impl Client {
 
     /// Schedules for a given route variant for an optional given date.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6b?)
-    /// 
+    ///
     /// # Date
     /// Date is in YYYY-MM-DD format.
     /// ***Omit date for current date***
@@ -209,7 +215,7 @@ impl Client {
 
     /// Buses scheduled at a stop for an optional given date.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6c?)
-    /// 
+    ///
     /// # Date
     /// Date is in YYYY-MM-DD format.
     /// ***Omit date for current date***

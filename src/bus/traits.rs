@@ -23,6 +23,11 @@ pub trait NeedsRoute: Fetch {
             query.append(&mut radius_at_lat_long.to_query());
         }
 
+        let query: Vec<(&str, String)> = query
+            .iter()
+            .map(|(key, value)| (key.as_str(), value.clone()))
+            .collect();
+
         if !query.is_empty() {
             self.fetch(WMATARequest::new(
                 &api_key,
@@ -46,7 +51,7 @@ pub trait NeedsRoute: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Incidents.to_string(),
-            route.map(|r| vec![("Route".to_string(), r.to_string())]),
+            route.map(|r| vec![("Route", r.to_string())]),
         ))
     }
 
@@ -56,10 +61,10 @@ pub trait NeedsRoute: Fetch {
         date: Option<&str>,
         api_key: &str,
     ) -> Result<responses::PathDetails, Error> {
-        let mut query = vec![("RouteID".to_string(), route.to_string())];
+        let mut query = vec![("RouteID", route.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date".to_string(), date.to_string()));
+            query.push(("Date", date.to_string()));
         }
 
         self.fetch(WMATARequest::new(
@@ -76,17 +81,14 @@ pub trait NeedsRoute: Fetch {
         including_variations: bool,
         api_key: &str,
     ) -> Result<responses::RouteSchedule, Error> {
-        let mut query = vec![("RouteID".to_string(), route.to_string())];
+        let mut query = vec![("RouteID", route.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date".to_string(), date.to_string()));
+            query.push(("Date", date.to_string()));
         }
 
         if including_variations {
-            query.push((
-                "IncludingVariations".to_string(),
-                including_variations.to_string(),
-            ));
+            query.push(("IncludingVariations", including_variations.to_string()));
         }
 
         self.fetch(WMATARequest::new(
@@ -102,7 +104,7 @@ pub trait NeedsStop: Fetch {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::NextBuses.to_string(),
-            Some(vec![("StopID".to_string(), stop.0.to_string())]),
+            Some(vec![("StopID", stop.0.to_string())]),
         ))
     }
 
@@ -112,10 +114,10 @@ pub trait NeedsStop: Fetch {
         date: Option<&str>,
         api_key: &str,
     ) -> Result<responses::StopSchedule, Error> {
-        let mut query = vec![("StopID".to_string(), stop.0.to_string())];
+        let mut query = vec![("StopID", stop.0.to_string())];
 
         if let Some(date) = date {
-            query.push(("Date".to_string(), date.to_string()));
+            query.push(("Date", date.to_string()));
         }
 
         self.fetch(WMATARequest::new(

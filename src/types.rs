@@ -48,11 +48,11 @@ impl RadiusAtLatLong {
 pub struct Request<'a> {
     pub api_key: &'a str,
     pub path: &'a str,
-    pub query: Option<Vec<(String, String)>>,
+    pub query: Option<Vec<(&'a str, String)>>,
 }
 
 impl<'a> Request<'a> {
-    pub fn new(api_key: &'a str, path: &'a str, query: Option<Vec<(String, String)>>) -> Self {
+    pub fn new(api_key: &'a str, path: &'a str, query: Option<Vec<(&'a str, String)>>) -> Self {
         Request {
             api_key,
             path,
