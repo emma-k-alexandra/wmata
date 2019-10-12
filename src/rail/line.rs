@@ -18,6 +18,25 @@ pub enum Line {
     Silver,
 }
 
+impl Fetch for Line {}
+
+impl NeedsLine for Line {}
+
+impl Line {
+    /// Station location and address information for all stations on this line.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330c)
+    ///
+    /// # Examples
+    /// ```
+    /// use wmata::Line;
+    ///
+    /// assert!(Line::Red.stations("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// ```
+    pub fn stations(&self, api_key: &str) -> Result<responses::Stations, Error> {
+        self.stations_on(Some(*self), &api_key)
+    }
+}
+
 impl<'de> Deserialize<'de> for Line {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -35,25 +54,6 @@ impl<'de> Deserialize<'de> for Line {
             "SV" => Ok(Line::Silver),
             _ => Err(SerdeError::custom("String provided is not a Line code.")),
         }
-    }
-}
-
-impl Fetch for Line {}
-
-impl NeedsLine for Line {}
-
-impl Line {
-    /// Station location and address information for all stations on this line.
-    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330c)
-    ///
-    /// # Examples
-    /// ```
-    /// use wmata::Line;
-    ///
-    /// assert!(Line::Red.stations("9e38c3eab34c4e6c990828002828f5ed").is_ok());
-    /// ```
-    pub fn stations(&self, api_key: &str) -> Result<responses::Stations, Error> {
-        self.stations_on(Some(*self), &api_key)
     }
 }
 

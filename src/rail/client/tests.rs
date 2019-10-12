@@ -153,7 +153,7 @@ fn test_information() {
 
     assert_eq!(
         client.station_information(Station::A01).unwrap().code,
-        "A01"
+        Station::A01
     );
 }
 
@@ -187,6 +187,6 @@ fn test_timings() {
 
     assert_eq!(
         client.timings(Station::A01).unwrap().station_times[0].code,
-        "A01"
+        Station::A01
     );
 }
