@@ -3,6 +3,10 @@ use crate::error::Error;
 use crate::rail::client::responses;
 use crate::rail::traits::NeedsLine;
 use crate::traits::Fetch;
+use serde::{
+    de::{Deserializer, Error as SerdeError},
+    Deserialize,
+};
 use std::{error, fmt, str::FromStr};
 
 /// All MetroRail lines.
@@ -11,6 +15,7 @@ pub enum Line {
     Red,
     Blue,
     Yellow,
+    YellowLineRushPlus,
     Orange,
     Green,
     Silver,
@@ -23,7 +28,7 @@ impl NeedsLine for Line {}
 impl Line {
     /// Station location and address information for all stations on this line.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330c)
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use wmata::Line;
@@ -32,6 +37,26 @@ impl Line {
     /// ```
     pub fn stations(&self, api_key: &str) -> Result<responses::Stations, Error> {
         self.stations_on(Some(*self), &api_key)
+    }
+}
+
+impl<'de> Deserialize<'de> for Line {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let line = String::deserialize(deserializer)?;
+
+        match line.as_str() {
+            "RD" => Ok(Line::Red),
+            "BL" => Ok(Line::Blue),
+            "YL" => Ok(Line::Yellow),
+            "YLRP" => Ok(Line::YellowLineRushPlus),
+            "OR" => Ok(Line::Orange),
+            "GR" => Ok(Line::Green),
+            "SV" => Ok(Line::Silver),
+            _ => Err(SerdeError::custom("String provided is not a Line code.")),
+        }
     }
 }
 
@@ -44,6 +69,7 @@ impl ToString for Line {
             Line::Orange => "OR".to_string(),
             Line::Green => "GR".to_string(),
             Line::Silver => "SV".to_string(),
+            Line::YellowLineRushPlus => "YLRP".to_string(),
         }
     }
 }
@@ -69,6 +95,7 @@ impl FromStr for Line {
             "OR" => Ok(Line::Orange),
             "GR" => Ok(Line::Green),
             "SV" => Ok(Line::Silver),
+            "YLRP" => Ok(Line::YellowLineRushPlus),
             _ => Err(StringIsNotLineError),
         }
     }
