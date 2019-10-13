@@ -2,7 +2,10 @@ use crate::bus::client::responses;
 use crate::bus::traits::NeedsStop;
 use crate::error::Error;
 use crate::traits::Fetch;
-use serde::{Deserialize, de::{Deserializer, Error as SerdeError}};
+use serde::{
+    de::{Deserializer, Error as SerdeError},
+    Deserialize,
+};
 
 #[derive(Debug)]
 pub struct Stop(pub String);
@@ -69,7 +72,7 @@ impl<'de> Deserialize<'de> for Stop {
         let stop = String::deserialize(deserializer)?;
 
         if [""].contains(&stop.as_str()) {
-            return Err(SerdeError::custom("Stop isn't present"))
+            return Err(SerdeError::custom("Stop isn't present"));
         }
 
         Ok(Stop::new(&stop))

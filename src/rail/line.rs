@@ -3,7 +3,10 @@ use crate::error::Error;
 use crate::rail::client::responses;
 use crate::rail::traits::NeedsLine;
 use crate::traits::Fetch;
-use serde::{Deserialize, de::{Deserializer, Error as SerdeError}};
+use serde::{
+    de::{Deserializer, Error as SerdeError},
+    Deserialize,
+};
 use std::{error, fmt, str::FromStr};
 
 /// All MetroRail lines.

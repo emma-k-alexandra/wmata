@@ -3,7 +3,10 @@ use crate::error::Error;
 use crate::rail::client::responses;
 use crate::rail::traits::NeedsStation;
 use crate::traits::Fetch;
-use serde::{Deserialize, de::{Deserializer, Error as SerdeError}};
+use serde::{
+    de::{Deserializer, Error as SerdeError},
+    Deserialize,
+};
 use std::{error, fmt, str::FromStr};
 
 /// Every MetroRail station code as defined by WMATA.
@@ -324,7 +327,10 @@ impl<'de> Deserialize<'de> for Station {
             "N03" => Ok(Station::N03),
             "N04" => Ok(Station::N04),
             "N06" => Ok(Station::N06),
-            _ => Err(SerdeError::custom(format!("String {} is not a Station code.", station))),
+            _ => Err(SerdeError::custom(format!(
+                "String {} is not a Station code.",
+                station
+            ))),
         }
     }
 }
@@ -552,7 +558,7 @@ where
 {
     match Station::deserialize(deserializer) {
         Ok(station) => Ok(Some(station)),
-        Err(_) => Ok(None)
+        Err(_) => Ok(None),
     }
 }
 
