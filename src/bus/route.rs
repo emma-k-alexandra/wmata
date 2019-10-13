@@ -1075,7 +1075,10 @@ impl<'de> Deserialize<'de> for Route {
             "Z8v4" => Ok(Route::Z8v4),
             "Z8v5" => Ok(Route::Z8v5),
             "Z8v6" => Ok(Route::Z8v6),
-            _ => Err(SerdeError::custom(format!("String provided is not a Route ID. {}", route))),
+            _ => Err(SerdeError::custom(format!(
+                "String provided is not a Route ID. {}",
+                route
+            ))),
         }
     }
 }

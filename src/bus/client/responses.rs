@@ -1,5 +1,5 @@
-use crate::bus::stop::Stop as StopID;
 use crate::bus::route::Route as RouteID;
+use crate::bus::stop::Stop as StopID;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]

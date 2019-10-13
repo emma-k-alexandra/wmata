@@ -80,7 +80,10 @@ fn test_incidents_along_route() {
 fn test_path() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(client.path(Route::One0A, None).unwrap().route_id, Route::One0A);
+    assert_eq!(
+        client.path(Route::One0A, None).unwrap().route_id,
+        Route::One0A
+    );
 }
 
 #[test]
