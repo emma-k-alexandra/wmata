@@ -207,7 +207,7 @@ impl Client {
     /// use wmata::{MetroBus, Stop};
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.next_buses(Stop("1001195")).is_ok());
+    /// assert!(client.next_buses(Stop::new("1001195")).is_ok());
     /// ```
     pub fn next_buses(&self, stop: Stop) -> Result<responses::Predictions, Error> {
         <Self as NeedsStop>::next_buses(&self, &stop, &self.key)
@@ -225,7 +225,7 @@ impl Client {
     /// use wmata::{MetroBus, Stop};
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stop_schedule(Stop("1001195"), None).is_ok());
+    /// assert!(client.stop_schedule(Stop::new("1001195"), None).is_ok());
     /// ```
     ///
     /// with date
@@ -233,7 +233,7 @@ impl Client {
     /// use wmata::{MetroBus, Stop};
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stop_schedule(Stop("1001195"), Some("2019-10-02")).is_ok());
+    /// assert!(client.stop_schedule(Stop::new("1001195"), Some("2019-10-02")).is_ok());
     /// ```
     pub fn stop_schedule(
         &self,

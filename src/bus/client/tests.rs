@@ -141,7 +141,7 @@ fn test_stop_schedule() {
 
     assert_eq!(
         client
-            .stop_schedule(Stop("1001195"), None)
+            .stop_schedule(Stop::new("1001195"), None)
             .unwrap()
             .stop
             .stop_id,
@@ -155,7 +155,7 @@ fn test_stop_schedule_with_date() {
 
     assert_eq!(
         client
-            .stop_schedule(Stop("1001195"), Some("2019-10-02"))
+            .stop_schedule(Stop::new("1001195"), Some("2019-10-02"))
             .unwrap()
             .stop
             .stop_id,

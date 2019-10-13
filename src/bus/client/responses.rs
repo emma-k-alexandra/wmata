@@ -1,3 +1,4 @@
+use crate::bus::stop::Stop as StopID;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -61,19 +62,19 @@ pub struct Route {
     pub line_description: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stops {
     /// See [`Stop`].
     pub stops: Box<[Stop]>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stop {
     /// 7-digit regional ID which can be used in various bus-related methods. If unavailable, the StopID will be 0 or NULL.
     #[serde(rename = "StopID")]
-    pub stop_id: Option<String>,
+    pub stop_id: Option<StopID>,
     /// Stop name. May be slightly different from what is spoken or displayed in the bus.
     pub name: String,
     /// Latitude of stop.
@@ -110,7 +111,7 @@ pub struct Incident {
     pub routes_affected: Box<[String]>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct PathDetails {
     /// [`Route`] of the route.
@@ -130,7 +131,7 @@ pub struct PathDetails {
     pub direction_one: PathDirection,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct PathDirection {
     /// Descriptive text of where the bus is headed. This is similar, but not necessarily identical, to what is displayed on the bus.
