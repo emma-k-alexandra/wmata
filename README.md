@@ -21,7 +21,7 @@ wmata is a high level Rust interface to the [Washington Metropolitan Area Transi
 
 ### Cargo
 ```toml
-wmata = "3.0.0"
+wmata = "4.0.0"
 ```
 
 ## Usage
