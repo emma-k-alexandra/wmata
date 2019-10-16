@@ -60,3 +60,25 @@ impl<'a> Request<'a> {
         }
     }
 }
+
+pub struct Date {
+    pub year: u16,
+    pub month: u8,
+    pub day: u8,
+}
+
+impl Date {
+    pub fn new(year: u16, month: u8, day: u8) -> Self {
+        Date {
+            year,
+            month,
+            day
+        }
+    }
+}
+
+impl ToString for Date {
+    fn to_string(&self) -> String {
+        format!("{:04}-{:02}-{:02}", self.year, self.month, self.day)
+    }
+}

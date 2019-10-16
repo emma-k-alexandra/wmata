@@ -21,6 +21,7 @@ pub use bus::client::Client as MetroBus;
 pub use rail::client::Client as MetroRail;
 
 pub use types::RadiusAtLatLong;
+pub use types::Date;
 
 pub use bus::route::Route;
 pub use bus::stop::Stop;

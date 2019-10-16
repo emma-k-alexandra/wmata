@@ -9,7 +9,7 @@ use crate::bus::traits::{NeedsRoute, NeedsStop};
 use crate::bus::urls::URLs;
 use crate::error::Error;
 use crate::traits::Fetch;
-use crate::types::{RadiusAtLatLong, Request as WMATARequest};
+use crate::types::{RadiusAtLatLong, Request as WMATARequest, Date};
 use std::str::FromStr;
 
 /// MetroBus client. Used to fetch MetroBus-related information from the WMATA API.
@@ -137,8 +137,7 @@ impl Client {
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d69?)
     ///
     /// # Date
-    /// Date is in YYYY-MM-DD format.
-    /// ***Omit date for current date***
+    /// Omit date for current date
     ///
     /// # Examples
     /// ```
@@ -149,12 +148,12 @@ impl Client {
     /// ```
     /// With a date
     /// ```
-    /// use wmata::{MetroBus, Route};
+    /// use wmata::{MetroBus, Route, Date};
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.path(Route::A2, Some("2019-10-02")).is_ok());
+    /// assert!(client.path(Route::A2, Some(Date::new(2019, 10, 2))).is_ok());
     /// ```
-    pub fn path(&self, route: Route, date: Option<&str>) -> Result<responses::PathDetails, Error> {
+    pub fn path(&self, route: Route, date: Option<Date>) -> Result<responses::PathDetails, Error> {
         <Self as NeedsRoute>::path(&self, route, date, &self.key)
     }
 
@@ -162,8 +161,7 @@ impl Client {
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6b?)
     ///
     /// # Date
-    /// Date is in YYYY-MM-DD format.
-    /// ***Omit date for current date***
+    /// Omit date for current date
     ///
     /// # Variations
     /// Whether or not to include variations if a base route is specified in Route.
@@ -180,15 +178,15 @@ impl Client {
     ///
     /// with date and variations
     /// ```
-    /// use wmata::{MetroBus, Route};
+    /// use wmata::{MetroBus, Route, Date};
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.route_schedule(Route::A2, Some("2019-10-02"), true).is_ok());
+    /// assert!(client.route_schedule(Route::A2, Some(Date::new(2019, 10, 2)), true).is_ok());
     /// ```
     pub fn route_schedule(
         &self,
         route: Route,
-        date: Option<&str>,
+        date: Option<Date>,
         including_variations: bool,
     ) -> Result<responses::RouteSchedule, Error> {
         <Self as NeedsRoute>::route_schedule(&self, route, date, including_variations, &self.key)
@@ -217,8 +215,7 @@ impl Client {
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6c?)
     ///
     /// # Date
-    /// Date is in YYYY-MM-DD format.
-    /// ***Omit date for current date***
+    /// Omit date for current date
     ///
     /// # Examples
     /// ```
@@ -230,15 +227,15 @@ impl Client {
     ///
     /// with date
     /// ```
-    /// use wmata::{MetroBus, Stop};
+    /// use wmata::{MetroBus, Stop, Date};
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stop_schedule(Stop::new("1001195"), Some("2019-10-02")).is_ok());
+    /// assert!(client.stop_schedule(Stop::new("1001195"), Some(Date::new(2019, 10, 2))).is_ok());
     /// ```
     pub fn stop_schedule(
         &self,
         stop: Stop,
-        date: Option<&str>,
+        date: Option<Date>,
     ) -> Result<responses::StopSchedule, Error> {
         <Self as NeedsStop>::stop_schedule(&self, &stop, date, &self.key)
     }

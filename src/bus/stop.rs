@@ -2,6 +2,7 @@ use crate::bus::client::responses;
 use crate::bus::traits::NeedsStop;
 use crate::error::Error;
 use crate::traits::Fetch;
+use crate::types::Date;
 use serde::{
     de::{Deserializer, Error as SerdeError},
     Deserialize,
@@ -39,8 +40,7 @@ impl Stop {
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763629281d83086473f231/operations/5476362a281d830c946a3d6c?)
     ///
     /// # Date
-    /// Date is in YYYY-MM-DD format.
-    /// ***Omit date for current date***
+    /// Omit date for current date
     ///
     /// # Examples
     /// ```
@@ -51,13 +51,13 @@ impl Stop {
     ///
     /// with date
     /// ```
-    /// use wmata::Stop;
+    /// use wmata::{Stop, Date};
     ///
-    /// assert!(Stop::new("1001195").schedule(Some("2019-10-02"), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// assert!(Stop::new("1001195").schedule(Some(Date::new(2019, 10, 2)), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn schedule(
         &self,
-        date: Option<&str>,
+        date: Option<Date>,
         api_key: &str,
     ) -> Result<responses::StopSchedule, Error> {
         self.stop_schedule(self, date, api_key)
@@ -71,7 +71,7 @@ impl<'de> Deserialize<'de> for Stop {
     {
         let stop = String::deserialize(deserializer)?;
 
-        if [""].contains(&stop.as_str()) {
+        if stop.as_str() == "" {
             return Err(SerdeError::custom("Stop isn't present"));
         }
 

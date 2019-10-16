@@ -47,16 +47,8 @@ impl<'de> Deserialize<'de> for Line {
     {
         let line = String::deserialize(deserializer)?;
 
-        match line.as_str() {
-            "RD" => Ok(Line::Red),
-            "BL" => Ok(Line::Blue),
-            "YL" => Ok(Line::Yellow),
-            "YLRP" => Ok(Line::YellowLineRushPlus),
-            "OR" => Ok(Line::Orange),
-            "GR" => Ok(Line::Green),
-            "SV" => Ok(Line::Silver),
-            _ => Err(SerdeError::custom("String provided is not a Line code.")),
-        }
+        Line::from_str(&line).map_err(|_| SerdeError::custom("String provided is not a Line code."))
+
     }
 }
 
