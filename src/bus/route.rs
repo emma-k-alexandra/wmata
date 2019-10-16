@@ -221,6 +221,8 @@ pub enum Route {
     B8v1,
     B8v2,
     B9,
+    B98,
+    B99,
     C11,
     C12,
     C13,
@@ -301,6 +303,7 @@ pub enum Route {
     F6v1,
     F6v2,
     F8,
+    F99,
     G12,
     G12v1,
     G12v2,
@@ -348,6 +351,7 @@ pub enum Route {
     L2,
     L2v1,
     L2v2,
+    L99,
     L8,
     M4,
     M4v1,
@@ -355,6 +359,7 @@ pub enum Route {
     M6,
     M6v1,
     MW1,
+    M99,
     N2,
     N4,
     N4v1,
@@ -371,6 +376,7 @@ pub enum Route {
     P6v2,
     P6v3,
     P6v4,
+    P99,
     Q1,
     Q2,
     Q2v1,
@@ -601,7 +607,7 @@ impl<'de> Deserialize<'de> for Route {
     {
         let route = String::deserialize(deserializer)?;
 
-        Route::from_str(&route).map_err(|_| SerdeError::custom("String provided is not a Route."))
+        Route::from_str(&route).map_err(|e| SerdeError::custom(e))
     }
 }
 
@@ -811,6 +817,8 @@ impl ToString for Route {
             Route::B8v1 => "B8v1".to_string(),
             Route::B8v2 => "B8v2".to_string(),
             Route::B9 => "B9".to_string(),
+            Route::B98 => "B98".to_string(),
+            Route::B99 => "B99".to_string(),
             Route::C11 => "C11".to_string(),
             Route::C12 => "C12".to_string(),
             Route::C13 => "C13".to_string(),
@@ -891,6 +899,7 @@ impl ToString for Route {
             Route::F6v1 => "F6v1".to_string(),
             Route::F6v2 => "F6v2".to_string(),
             Route::F8 => "F8".to_string(),
+            Route::F99 => "F99".to_string(),
             Route::G12 => "G12".to_string(),
             Route::G12v1 => "G12v1".to_string(),
             Route::G12v2 => "G12v2".to_string(),
@@ -938,6 +947,7 @@ impl ToString for Route {
             Route::L2 => "L2".to_string(),
             Route::L2v1 => "L2v1".to_string(),
             Route::L2v2 => "L2v2".to_string(),
+            Route::L99 => "L99".to_string(),
             Route::L8 => "L8".to_string(),
             Route::M4 => "M4".to_string(),
             Route::M4v1 => "M4v1".to_string(),
@@ -945,6 +955,7 @@ impl ToString for Route {
             Route::M6 => "M6".to_string(),
             Route::M6v1 => "M6v1".to_string(),
             Route::MW1 => "MW1".to_string(),
+            Route::M99 => "M99".to_string(),
             Route::N2 => "N2".to_string(),
             Route::N4 => "N4".to_string(),
             Route::N4v1 => "N4v1".to_string(),
@@ -961,6 +972,7 @@ impl ToString for Route {
             Route::P6v2 => "P6v2".to_string(),
             Route::P6v3 => "P6v3".to_string(),
             Route::P6v4 => "P6v4".to_string(),
+            Route::P99 => "P99".to_string(),
             Route::Q1 => "Q1".to_string(),
             Route::Q2 => "Q2".to_string(),
             Route::Q2v1 => "Q2v1".to_string(),
@@ -1302,6 +1314,8 @@ impl FromStr for Route {
             "B8v1" => Ok(Route::B8v1),
             "B8v2" => Ok(Route::B8v2),
             "B9" => Ok(Route::B9),
+            "B98" => Ok(Route::B98),
+            "B99" => Ok(Route::B99),
             "C11" => Ok(Route::C11),
             "C12" => Ok(Route::C12),
             "C13" => Ok(Route::C13),
@@ -1382,6 +1396,7 @@ impl FromStr for Route {
             "F6v1" => Ok(Route::F6v1),
             "F6v2" => Ok(Route::F6v2),
             "F8" => Ok(Route::F8),
+            "F99" => Ok(Route::F99),
             "G12" => Ok(Route::G12),
             "G12v1" => Ok(Route::G12v1),
             "G12v2" => Ok(Route::G12v2),
@@ -1430,12 +1445,14 @@ impl FromStr for Route {
             "L2v1" => Ok(Route::L2v1),
             "L2v2" => Ok(Route::L2v2),
             "L8" => Ok(Route::L8),
+            "L99" => Ok(Route::L99),
             "M4" => Ok(Route::M4),
             "M4v1" => Ok(Route::M4v1),
             "M4v2" => Ok(Route::M4v2),
             "M6" => Ok(Route::M6),
             "M6v1" => Ok(Route::M6v1),
             "MW1" => Ok(Route::MW1),
+            "M99" => Ok(Route::M99),
             "N2" => Ok(Route::N2),
             "N4" => Ok(Route::N4),
             "N4v1" => Ok(Route::N4v1),
@@ -1452,6 +1469,7 @@ impl FromStr for Route {
             "P6v2" => Ok(Route::P6v2),
             "P6v3" => Ok(Route::P6v3),
             "P6v4" => Ok(Route::P6v4),
+            "P99" => Ok(Route::P99),
             "Q1" => Ok(Route::Q1),
             "Q2" => Ok(Route::Q2),
             "Q2v1" => Ok(Route::Q2v1),
@@ -1571,17 +1589,17 @@ impl FromStr for Route {
             "Z8v4" => Ok(Route::Z8v4),
             "Z8v5" => Ok(Route::Z8v5),
             "Z8v6" => Ok(Route::Z8v6),
-            _ => Err(StringIsNotRouteError),
+            _ => Err(StringIsNotRouteError(s.to_string())),
         }
     }
 }
 
 #[derive(Debug, Clone)]
-pub struct StringIsNotRouteError;
+pub struct StringIsNotRouteError(pub String);
 
 impl fmt::Display for StringIsNotRouteError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Provided string is not a valid Route ID.")
+        write!(f, "{} is not a valid Route ID.", self.0)
     }
 }
 
