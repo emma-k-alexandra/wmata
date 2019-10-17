@@ -1,8 +1,9 @@
 //! WMATA-defined codes for each MetroRail station.
-use crate::error::Error;
-use crate::rail::client::responses;
-use crate::rail::traits::NeedsStation;
-use crate::traits::Fetch;
+use crate::{
+    error::Error,
+    rail::{client::responses, traits::NeedsStation},
+    requests::Fetch,
+};
 use serde::{
     de::{Deserializer, Error as SerdeError},
     Deserialize,
@@ -124,11 +125,11 @@ impl Station {
     /// assert!(Station::A01.to_station(Some(Station::A02), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn to_station(
-        &self,
+        self,
         destination_station: Option<Station>,
         api_key: &str,
     ) -> Result<responses::StationToStationInfos, Error> {
-        self.station_to_station(Some(*self), destination_station, api_key)
+        self.station_to_station(Some(self), destination_station, api_key)
     }
 
     // List of reported elevator and escalator outages at this station.
@@ -141,10 +142,10 @@ impl Station {
     /// assert!(Station::A01.elevator_and_escalator_incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn elevator_and_escalator_incidents(
-        &self,
+        self,
         api_key: &str,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        self.elevator_and_escalator_incidents_at(Some(*self), api_key)
+        self.elevator_and_escalator_incidents_at(Some(self), api_key)
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service) at this station
@@ -155,8 +156,8 @@ impl Station {
     ///
     /// assert!(Station::A01.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn incidents(&self, api_key: &str) -> Result<responses::RailIncidents, Error> {
-        self.incidents_at(Some(*self), api_key)
+    pub fn incidents(self, api_key: &str) -> Result<responses::RailIncidents, Error> {
+        self.incidents_at(Some(self), api_key)
     }
 
     /// Next train arrivals for this station
@@ -167,8 +168,8 @@ impl Station {
     ///
     /// assert!(Station::A01.next_trains("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn next_trains(&self, api_key: &str) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStation>::next_trains(&self, *self, api_key)
+    pub fn next_trains(self, api_key: &str) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStation>::next_trains(&self, self, api_key)
     }
 
     /// Location and address information at this station
@@ -179,8 +180,8 @@ impl Station {
     ///
     /// assert!(Station::A01.information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn information(&self, api_key: &str) -> Result<responses::StationInformation, Error> {
-        self.station_information(*self, api_key)
+    pub fn information(self, api_key: &str) -> Result<responses::StationInformation, Error> {
+        self.station_information(self, api_key)
     }
 
     /// Parking information for this station
@@ -191,8 +192,8 @@ impl Station {
     ///
     /// assert!(Station::A01.parking_information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn parking_information(&self, api_key: &str) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStation>::parking_information(&self, *self, api_key)
+    pub fn parking_information(self, api_key: &str) -> Result<responses::StationsParking, Error> {
+        <Self as NeedsStation>::parking_information(&self, self, api_key)
     }
 
     /// Set of ordered stations and distances between this station and another on the **same line**.
@@ -204,11 +205,11 @@ impl Station {
     /// assert!(Station::A01.path_to(Station::A02, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn path_to(
-        &self,
+        self,
         destination_station: Station,
         api_key: &str,
     ) -> Result<responses::PathBetweenStations, Error> {
-        self.path_from(*self, destination_station, api_key)
+        self.path_from(self, destination_station, api_key)
     }
 
     /// Opening and scheduled first/last train times for this station.
@@ -219,8 +220,8 @@ impl Station {
     ///
     /// assert!(Station::A01.timings("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn timings(&self, api_key: &str) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStation>::timings(&self, *self, api_key)
+    pub fn timings(self, api_key: &str) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStation>::timings(&self, self, api_key)
     }
 }
 
@@ -231,7 +232,8 @@ impl<'de> Deserialize<'de> for Station {
     {
         let station = String::deserialize(deserializer)?;
 
-        Station::from_str(&station).map_err(|_| SerdeError::custom("String provided is not a Station code"))
+        Station::from_str(&station)
+            .map_err(|_| SerdeError::custom("String provided is not a Station code"))
     }
 }
 

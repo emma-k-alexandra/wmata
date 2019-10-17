@@ -1,10 +1,10 @@
-use crate::bus::client::responses;
-use crate::bus::route::Route;
-use crate::bus::stop::Stop;
-use crate::bus::urls::URLs;
-use crate::error::Error;
-use crate::traits::Fetch;
-use crate::types::{RadiusAtLatLong, Request as WMATARequest, Date};
+//! Traits used to define Bus-related method behavior
+use crate::{
+    bus::{client::responses, urls::URLs},
+    error::Error,
+    requests::{Fetch, Request as WMATARequest},
+    Date, RadiusAtLatLong, Route, Stop,
+};
 
 pub trait NeedsRoute: Fetch {
     fn positions_along(

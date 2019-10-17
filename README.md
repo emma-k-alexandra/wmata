@@ -70,6 +70,7 @@ Note that tests must currently be run with `--test-threads 1` in order to pass, 
 - serde
 - serde_json
 - reqwest
+- chrono
 
 ## Contact
 Feel free to email questions and comments to [emma@emma.sh](mailto:emma@emma.sh)

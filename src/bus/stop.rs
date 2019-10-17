@@ -1,8 +1,10 @@
-use crate::bus::client::responses;
-use crate::bus::traits::NeedsStop;
-use crate::error::Error;
-use crate::traits::Fetch;
-use crate::types::Date;
+//! MetroBus Stop related structs and methods.
+use crate::{
+    bus::{client::responses, traits::NeedsStop},
+    error::Error,
+    requests::Fetch,
+    Date,
+};
 use serde::{
     de::{Deserializer, Error as SerdeError},
     Deserialize,

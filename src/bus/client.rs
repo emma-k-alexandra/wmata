@@ -3,13 +3,15 @@
 pub mod responses;
 mod tests;
 
-use crate::bus::route::Route;
-use crate::bus::stop::Stop;
-use crate::bus::traits::{NeedsRoute, NeedsStop};
-use crate::bus::urls::URLs;
-use crate::error::Error;
-use crate::traits::Fetch;
-use crate::types::{RadiusAtLatLong, Request as WMATARequest, Date};
+use crate::{
+    bus::{
+        traits::{NeedsRoute, NeedsStop},
+        urls::URLs,
+    },
+    error::Error,
+    requests::{Fetch, Request as WMATARequest},
+    Date, RadiusAtLatLong, Route, Stop,
+};
 use std::str::FromStr;
 
 /// MetroBus client. Used to fetch MetroBus-related information from the WMATA API.

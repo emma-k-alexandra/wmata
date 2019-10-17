@@ -1,8 +1,9 @@
 //! Codes for each MetroRail line.
-use crate::error::Error;
-use crate::rail::client::responses;
-use crate::rail::traits::NeedsLine;
-use crate::traits::Fetch;
+use crate::{
+    error::Error,
+    rail::{client::responses, traits::NeedsLine},
+    requests::Fetch,
+};
 use serde::{
     de::{Deserializer, Error as SerdeError},
     Deserialize,
@@ -35,8 +36,8 @@ impl Line {
     ///
     /// assert!(Line::Red.stations("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn stations(&self, api_key: &str) -> Result<responses::Stations, Error> {
-        self.stations_on(Some(*self), &api_key)
+    pub fn stations(self, api_key: &str) -> Result<responses::Stations, Error> {
+        self.stations_on(Some(self), &api_key)
     }
 }
 
@@ -48,7 +49,6 @@ impl<'de> Deserialize<'de> for Line {
         let line = String::deserialize(deserializer)?;
 
         Line::from_str(&line).map_err(|_| SerdeError::custom("String provided is not a Line code."))
-
     }
 }
 

@@ -1,7 +1,7 @@
-//! Responses from the WMATA API
-use crate::Line as LineCode;
-use crate::Station as StationCode;
-use serde::{Deserialize, Serialize};
+//! MetroRail related responses from the WMATA API.
+use crate::{Line as LineCode, Station as StationCode};
+use chrono::{DateTime, FixedOffset};
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
@@ -125,14 +125,14 @@ pub struct TrackCircuitWithStation {
     pub station_code: Option<StationCode>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct TrackCircuits {
     /// See [`TrackCircuit`].
     pub track_circuits: Box<[TrackCircuit]>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct TrackCircuit {
     /// Track number. 1 and 2 denote "main" lines, while 0 and 3 are connectors (between different types of tracks) and pocket tracks, respectively.
@@ -143,7 +143,7 @@ pub struct TrackCircuit {
     pub neighbors: Box<[TrackNeighbor]>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct TrackNeighbor {
     /// Left or Right neighbor group. Generally speaking, left neighbors are to the west and south, while right neighbors are to the east/north.
@@ -183,23 +183,26 @@ pub struct ElevatorAndEscalatorIncident {
     pub symptom_description: String,
     /// Warning: Deprecated.
     pub display_order: f64,
-    /// Date and time (Eastern Standard Time) unit was reported out of service. Will be in YYYY-MM-DDTHH:mm:ss format (e.g.: 2014-10-27T15:17:00).
+    /// Date and time (Eastern Standard Time) unit was reported out of service.
     #[serde(rename = "DateOutOfServ")]
-    pub date_out_of_service: String,
-    /// Date and time (Eastern Standard Time) outage details was last updated. Will be in YYYY-MM-DDTHH:mm:ss format (e.g.: 2014-10-27T15:17:00).
-    pub date_updated: String,
-    /// Estimated date and time (Eastern Standard Time) by when unit is expected to return to normal service. May be NULL, otherwise will be in YYYY-MM-DDTHH:mm:ss format (e.g.: 2014-10-27T23:59:59).
-    pub estimated_return_to_service: Option<String>,
+    #[serde(deserialize_with = "crate::date::deserialize")]
+    pub date_out_of_service: DateTime<FixedOffset>,
+    /// Date and time (Eastern Standard Time) outage details was last updated.
+    #[serde(deserialize_with = "crate::date::deserialize")]
+    pub date_updated: DateTime<FixedOffset>,
+    /// Estimated date and time (Eastern Standard Time) by when unit is expected to return to normal service.
+    #[serde(deserialize_with = "crate::date::deserialize_option")]
+    pub estimated_return_to_service: Option<DateTime<FixedOffset>>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct RailIncidents {
     /// See [`RailIncident`]
     pub incidents: Box<[RailIncident]>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct RailIncident {
     /// Unique identifier for an incident.
@@ -221,8 +224,9 @@ pub struct RailIncident {
     pub emergency_text: Option<String>,
     /// Semi-colon and space separated list of line codes (e.g.: RD; or BL; OR; or BL; OR; RD;). =(
     pub lines_affected: String,
-    /// Date and time (Eastern Standard Time) of last update. Will be in YYYY-MM-DDTHH:mm:SS format (e.g.: 2010-07-29T14:21:28).
-    pub date_updated: String,
+    /// Date and time (Eastern Standard Time) of last update.
+    #[serde(deserialize_with = "crate::date::deserialize")]
+    pub date_updated: DateTime<FixedOffset>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -247,7 +251,7 @@ pub struct StationToStationInfo {
     pub source_station: StationCode,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct RailFare {
     /// Fare during off-peak times.
@@ -326,7 +330,7 @@ pub struct StationInformation {
     pub second_station_together: Option<StationCode>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct StationAddress {
     /// City of this station.
@@ -359,7 +363,7 @@ pub struct StationParking {
     pub short_term_parking: ShortTermParking,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct AllDayParking {
     /// Number of all-day parking spots available at a station.
@@ -374,7 +378,7 @@ pub struct AllDayParking {
     pub saturday_non_rider_cost: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct ShortTermParking {
     /// Number of short-term parking spots available at a station (parking meters).
@@ -502,7 +506,7 @@ pub struct Station {
     pub second_station_together: Option<StationCode>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Address {
     /// City of this station.

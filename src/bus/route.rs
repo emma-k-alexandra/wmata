@@ -1,10 +1,11 @@
-//! IDs for each MetroBus route.
-use crate::bus::client::responses;
-use crate::bus::traits::NeedsRoute;
-use crate::error::Error;
-use crate::traits::Fetch;
-use crate::RadiusAtLatLong;
-use crate::types::Date;
+//! MetroBus route related enum and methods.
+use crate::{
+    bus::{client::responses, traits::NeedsRoute},
+    date::Date,
+    error::Error,
+    location::RadiusAtLatLong,
+    requests::Fetch,
+};
 use serde::{
     de::{Deserializer, Error as SerdeError},
     Deserialize,
@@ -523,11 +524,11 @@ impl Route {
     /// ).is_ok());
     /// ```
     pub fn positions(
-        &self,
+        self,
         radius_at_lat_long: Option<RadiusAtLatLong>,
         api_key: &str,
     ) -> Result<responses::BusPositions, Error> {
-        self.positions_along(Some(*self), radius_at_lat_long, api_key)
+        self.positions_along(Some(self), radius_at_lat_long, api_key)
     }
 
     /// Reported bus incidents/delays for this route.
@@ -539,8 +540,8 @@ impl Route {
     ///
     /// assert!(Route::A2.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn incidents(&self, api_key: &str) -> Result<responses::Incidents, Error> {
-        self.incidents_along(Some(*self), api_key)
+    pub fn incidents(self, api_key: &str) -> Result<responses::Incidents, Error> {
+        self.incidents_along(Some(self), api_key)
     }
 
     /// For an optional given date, returns the set of ordered latitude/longitude
@@ -562,8 +563,8 @@ impl Route {
     ///
     /// assert!(Route::A2.path(Some(Date::new(2019, 10, 2)), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn path(&self, date: Option<Date>, api_key: &str) -> Result<responses::PathDetails, Error> {
-        <Self as NeedsRoute>::path(&self, *self, date, api_key)
+    pub fn path(self, date: Option<Date>, api_key: &str) -> Result<responses::PathDetails, Error> {
+        <Self as NeedsRoute>::path(&self, self, date, api_key)
     }
 
     /// Schedules for this route for an optional given date.
@@ -591,12 +592,12 @@ impl Route {
     /// assert!(Route::A2.schedule(Some(Date::new(2019, 10, 2)), true, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn schedule(
-        &self,
+        self,
         date: Option<Date>,
         including_variations: bool,
         api_key: &str,
     ) -> Result<responses::RouteSchedule, Error> {
-        self.route_schedule(*self, date, including_variations, api_key)
+        self.route_schedule(self, date, including_variations, api_key)
     }
 }
 
@@ -607,7 +608,7 @@ impl<'de> Deserialize<'de> for Route {
     {
         let route = String::deserialize(deserializer)?;
 
-        Route::from_str(&route).map_err(|e| SerdeError::custom(e))
+        Route::from_str(&route).map_err(SerdeError::custom)
     }
 }
 
