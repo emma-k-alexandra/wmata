@@ -1,17 +1,32 @@
-//! Traits used for WMATA clients
+//! Internal requests structs and traits.
 use crate::error::{Error, ErrorResponse};
-use crate::types::Request as WMATARequest;
 
 use reqwest;
 use serde::de::DeserializeOwned;
 use serde_json;
+
+pub struct Request<'a> {
+    pub api_key: &'a str,
+    pub path: &'a str,
+    pub query: Option<Vec<(&'a str, String)>>,
+}
+
+impl<'a> Request<'a> {
+    pub fn new(api_key: &'a str, path: &'a str, query: Option<Vec<(&'a str, String)>>) -> Self {
+        Request {
+            api_key,
+            path,
+            query,
+        }
+    }
+}
 
 /// A trait indicating the implementor can request and deserialize data
 /// from the WMATA API.
 pub trait Fetch: Requester + Deserializer {
     // / Requests and deserializes JSON data from a WMATA endpoint.
     // / Used internally by MetroRail and MetroBus clients.
-    fn fetch<U>(&self, wmata_request: WMATARequest) -> Result<U, Error>
+    fn fetch<U>(&self, wmata_request: Request) -> Result<U, Error>
     where
         U: DeserializeOwned,
     {
@@ -23,7 +38,7 @@ pub trait Fetch: Requester + Deserializer {
 /// WMATA API.
 pub trait Requester {
     /// Requests data JSON data from a WMATA endpoint.
-    fn request(&self, wmata_request: WMATARequest) -> Result<String, Error> {
+    fn request(&self, wmata_request: Request) -> Result<String, Error> {
         let mut request = reqwest::Client::new().get(wmata_request.path);
 
         if let Some(query) = wmata_request.query {

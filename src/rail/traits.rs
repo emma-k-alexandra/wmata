@@ -1,11 +1,10 @@
 //! Traits for sending requests based on Lines and Stations
-use crate::error::Error;
-use crate::rail::client::responses;
-use crate::rail::urls::URLs;
-use crate::traits::Fetch;
-use crate::types::Request as WMATARequest;
-use crate::Line;
-use crate::Station;
+use crate::{
+    error::Error,
+    rail::{client::responses, urls::URLs},
+    requests::{Fetch, Request as WMATARequest},
+    Line, Station,
+};
 
 pub trait NeedsLine: Fetch {
     fn stations_on(&self, line: Option<Line>, api_key: &str) -> Result<responses::Stations, Error> {

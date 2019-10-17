@@ -1,8 +1,9 @@
 //! WMATA-defined codes for each MetroRail station.
-use crate::error::Error;
-use crate::rail::client::responses;
-use crate::rail::traits::NeedsStation;
-use crate::traits::Fetch;
+use crate::{
+    error::Error,
+    rail::{client::responses, traits::NeedsStation},
+    requests::Fetch,
+};
 use serde::{
     de::{Deserializer, Error as SerdeError},
     Deserialize,
@@ -124,11 +125,11 @@ impl Station {
     /// assert!(Station::A01.to_station(Some(Station::A02), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn to_station(
-        &self,
+        self,
         destination_station: Option<Station>,
         api_key: &str,
     ) -> Result<responses::StationToStationInfos, Error> {
-        self.station_to_station(Some(*self), destination_station, api_key)
+        self.station_to_station(Some(self), destination_station, api_key)
     }
 
     // List of reported elevator and escalator outages at this station.
@@ -141,10 +142,10 @@ impl Station {
     /// assert!(Station::A01.elevator_and_escalator_incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn elevator_and_escalator_incidents(
-        &self,
+        self,
         api_key: &str,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        self.elevator_and_escalator_incidents_at(Some(*self), api_key)
+        self.elevator_and_escalator_incidents_at(Some(self), api_key)
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service) at this station
@@ -155,8 +156,8 @@ impl Station {
     ///
     /// assert!(Station::A01.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn incidents(&self, api_key: &str) -> Result<responses::RailIncidents, Error> {
-        self.incidents_at(Some(*self), api_key)
+    pub fn incidents(self, api_key: &str) -> Result<responses::RailIncidents, Error> {
+        self.incidents_at(Some(self), api_key)
     }
 
     /// Next train arrivals for this station
@@ -167,8 +168,8 @@ impl Station {
     ///
     /// assert!(Station::A01.next_trains("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn next_trains(&self, api_key: &str) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStation>::next_trains(&self, *self, api_key)
+    pub fn next_trains(self, api_key: &str) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStation>::next_trains(&self, self, api_key)
     }
 
     /// Location and address information at this station
@@ -179,8 +180,8 @@ impl Station {
     ///
     /// assert!(Station::A01.information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn information(&self, api_key: &str) -> Result<responses::StationInformation, Error> {
-        self.station_information(*self, api_key)
+    pub fn information(self, api_key: &str) -> Result<responses::StationInformation, Error> {
+        self.station_information(self, api_key)
     }
 
     /// Parking information for this station
@@ -191,8 +192,8 @@ impl Station {
     ///
     /// assert!(Station::A01.parking_information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn parking_information(&self, api_key: &str) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStation>::parking_information(&self, *self, api_key)
+    pub fn parking_information(self, api_key: &str) -> Result<responses::StationsParking, Error> {
+        <Self as NeedsStation>::parking_information(&self, self, api_key)
     }
 
     /// Set of ordered stations and distances between this station and another on the **same line**.
@@ -204,11 +205,11 @@ impl Station {
     /// assert!(Station::A01.path_to(Station::A02, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
     pub fn path_to(
-        &self,
+        self,
         destination_station: Station,
         api_key: &str,
     ) -> Result<responses::PathBetweenStations, Error> {
-        self.path_from(*self, destination_station, api_key)
+        self.path_from(self, destination_station, api_key)
     }
 
     /// Opening and scheduled first/last train times for this station.
@@ -219,8 +220,8 @@ impl Station {
     ///
     /// assert!(Station::A01.timings("9e38c3eab34c4e6c990828002828f5ed").is_ok());
     /// ```
-    pub fn timings(&self, api_key: &str) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStation>::timings(&self, *self, api_key)
+    pub fn timings(self, api_key: &str) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStation>::timings(&self, self, api_key)
     }
 }
 
@@ -231,107 +232,8 @@ impl<'de> Deserialize<'de> for Station {
     {
         let station = String::deserialize(deserializer)?;
 
-        match station.as_str() {
-            "A01" => Ok(Station::A01),
-            "A02" => Ok(Station::A02),
-            "A03" => Ok(Station::A03),
-            "A04" => Ok(Station::A04),
-            "A05" => Ok(Station::A05),
-            "A06" => Ok(Station::A06),
-            "A07" => Ok(Station::A07),
-            "A08" => Ok(Station::A08),
-            "A09" => Ok(Station::A09),
-            "A10" => Ok(Station::A10),
-            "A11" => Ok(Station::A11),
-            "A12" => Ok(Station::A12),
-            "A13" => Ok(Station::A13),
-            "A14" => Ok(Station::A14),
-            "A15" => Ok(Station::A15),
-            "B01" => Ok(Station::B01),
-            "B02" => Ok(Station::B02),
-            "B03" => Ok(Station::B03),
-            "B04" => Ok(Station::B04),
-            "B05" => Ok(Station::B05),
-            "B06" => Ok(Station::B06),
-            "B07" => Ok(Station::B07),
-            "B08" => Ok(Station::B08),
-            "B09" => Ok(Station::B09),
-            "B10" => Ok(Station::B10),
-            "B11" => Ok(Station::B11),
-            "B35" => Ok(Station::B35),
-            "C01" => Ok(Station::C01),
-            "C02" => Ok(Station::C02),
-            "C03" => Ok(Station::C03),
-            "C04" => Ok(Station::C04),
-            "C05" => Ok(Station::C05),
-            "C06" => Ok(Station::C06),
-            "C07" => Ok(Station::C07),
-            "C08" => Ok(Station::C08),
-            "C09" => Ok(Station::C09),
-            "C10" => Ok(Station::C10),
-            "C12" => Ok(Station::C12),
-            "C13" => Ok(Station::C13),
-            "C14" => Ok(Station::C14),
-            "C15" => Ok(Station::C15),
-            "D01" => Ok(Station::D01),
-            "D02" => Ok(Station::D02),
-            "D03" => Ok(Station::D03),
-            "D04" => Ok(Station::D04),
-            "D05" => Ok(Station::D05),
-            "D06" => Ok(Station::D06),
-            "D07" => Ok(Station::D07),
-            "D08" => Ok(Station::D08),
-            "D09" => Ok(Station::D09),
-            "D10" => Ok(Station::D10),
-            "D11" => Ok(Station::D11),
-            "D12" => Ok(Station::D12),
-            "D13" => Ok(Station::D13),
-            "E01" => Ok(Station::E01),
-            "E02" => Ok(Station::E02),
-            "E03" => Ok(Station::E03),
-            "E04" => Ok(Station::E04),
-            "E05" => Ok(Station::E05),
-            "E06" => Ok(Station::E06),
-            "E07" => Ok(Station::E07),
-            "E08" => Ok(Station::E08),
-            "E09" => Ok(Station::E09),
-            "E10" => Ok(Station::E10),
-            "F01" => Ok(Station::F01),
-            "F02" => Ok(Station::F02),
-            "F03" => Ok(Station::F03),
-            "F04" => Ok(Station::F04),
-            "F05" => Ok(Station::F05),
-            "F06" => Ok(Station::F06),
-            "F07" => Ok(Station::F07),
-            "F08" => Ok(Station::F08),
-            "F09" => Ok(Station::F09),
-            "F10" => Ok(Station::F10),
-            "F11" => Ok(Station::F11),
-            "G01" => Ok(Station::G01),
-            "G02" => Ok(Station::G02),
-            "G03" => Ok(Station::G03),
-            "G04" => Ok(Station::G04),
-            "G05" => Ok(Station::G05),
-            "J02" => Ok(Station::J02),
-            "J03" => Ok(Station::J03),
-            "K01" => Ok(Station::K01),
-            "K02" => Ok(Station::K02),
-            "K03" => Ok(Station::K03),
-            "K04" => Ok(Station::K04),
-            "K05" => Ok(Station::K05),
-            "K06" => Ok(Station::K06),
-            "K07" => Ok(Station::K07),
-            "K08" => Ok(Station::K08),
-            "N01" => Ok(Station::N01),
-            "N02" => Ok(Station::N02),
-            "N03" => Ok(Station::N03),
-            "N04" => Ok(Station::N04),
-            "N06" => Ok(Station::N06),
-            _ => Err(SerdeError::custom(format!(
-                "String {} is not a Station code.",
-                station
-            ))),
-        }
+        Station::from_str(&station)
+            .map_err(|_| SerdeError::custom("String provided is not a Station code"))
     }
 }
 

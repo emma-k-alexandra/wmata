@@ -3,13 +3,15 @@
 pub mod responses;
 mod tests;
 
-use crate::error::Error;
-use crate::rail::line::Line;
-use crate::rail::station::Station;
-use crate::rail::traits::{NeedsLine, NeedsStation};
-use crate::rail::urls::URLs;
-use crate::traits::Fetch;
-use crate::types::{RadiusAtLatLong, Request as WMATARequest};
+use crate::{
+    error::Error,
+    rail::{
+        traits::{NeedsLine, NeedsStation},
+        urls::URLs,
+    },
+    requests::{Fetch, Request as WMATARequest},
+    Line, RadiusAtLatLong, Station,
+};
 use std::str::FromStr;
 
 /// MetroRail client. Used to fetch MetroRail-related information from the WMATA API.

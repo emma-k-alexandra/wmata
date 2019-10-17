@@ -1,6 +1,6 @@
 [package]
 name = "wmata"
-version = "4.0.0"
+version = "5.0.0"
 authors = ["Emma Foster <emma@emma.sh>"]
 edition = "2018"
 repository = "https://github.com/emma-foster/wmata"
@@ -16,3 +16,4 @@ readme = "README.md"
 serde = "1.0.101"
 serde_json = "1.0.41"
 reqwest = "0.9.22"
+chrono = "0.4.9"

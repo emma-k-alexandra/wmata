@@ -1,10 +1,10 @@
-use crate::bus::client::responses;
-use crate::bus::route::Route;
-use crate::bus::stop::Stop;
-use crate::bus::urls::URLs;
-use crate::error::Error;
-use crate::traits::Fetch;
-use crate::types::{RadiusAtLatLong, Request as WMATARequest};
+//! Traits used to define Bus-related method behavior
+use crate::{
+    bus::{client::responses, urls::URLs},
+    error::Error,
+    requests::{Fetch, Request as WMATARequest},
+    Date, RadiusAtLatLong, Route, Stop,
+};
 
 pub trait NeedsRoute: Fetch {
     fn positions_along(
@@ -58,7 +58,7 @@ pub trait NeedsRoute: Fetch {
     fn path(
         &self,
         route: Route,
-        date: Option<&str>,
+        date: Option<Date>,
         api_key: &str,
     ) -> Result<responses::PathDetails, Error> {
         let mut query = vec![("RouteID", route.to_string())];
@@ -77,7 +77,7 @@ pub trait NeedsRoute: Fetch {
     fn route_schedule(
         &self,
         route: Route,
-        date: Option<&str>,
+        date: Option<Date>,
         including_variations: bool,
         api_key: &str,
     ) -> Result<responses::RouteSchedule, Error> {
@@ -111,7 +111,7 @@ pub trait NeedsStop: Fetch {
     fn stop_schedule(
         &self,
         stop: &Stop,
-        date: Option<&str>,
+        date: Option<Date>,
         api_key: &str,
     ) -> Result<responses::StopSchedule, Error> {
         let mut query = vec![("StopID", stop.0.to_string())];

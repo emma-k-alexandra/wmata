@@ -92,7 +92,7 @@ fn test_path_with_date() {
 
     assert_eq!(
         client
-            .path(Route::One0A, Some("2019-10-01"))
+            .path(Route::One0A, Some(Date::new(2019, 10, 1)))
             .unwrap()
             .route_id,
         Route::One0A
@@ -131,7 +131,7 @@ fn test_route_schedule_with_date() {
 
     assert_eq!(
         client
-            .route_schedule(Route::One0A, Some("2019-10-02"), true)
+            .route_schedule(Route::One0A, Some(Date::new(2019, 10, 2)), true)
             .unwrap()
             .name,
         "10A - PENTAGON - HUNTINGTON STA"
@@ -158,7 +158,7 @@ fn test_stop_schedule_with_date() {
 
     assert_eq!(
         client
-            .stop_schedule(Stop::new("1001195"), Some("2019-10-02"))
+            .stop_schedule(Stop::new("1001195"), Some(Date::new(2019, 10, 2)))
             .unwrap()
             .stop
             .stop_id,

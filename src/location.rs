@@ -1,4 +1,4 @@
-//! Types used throughout the crate
+//! Location related types used throughout the crate.
 
 /// A radius (in meters) around a given latitude and longitude
 pub struct RadiusAtLatLong {
@@ -42,21 +42,5 @@ impl RadiusAtLatLong {
             ("Lat".to_string(), self.latitude.to_string()),
             ("Lon".to_string(), self.longitude.to_string()),
         ]
-    }
-}
-
-pub struct Request<'a> {
-    pub api_key: &'a str,
-    pub path: &'a str,
-    pub query: Option<Vec<(&'a str, String)>>,
-}
-
-impl<'a> Request<'a> {
-    pub fn new(api_key: &'a str, path: &'a str, query: Option<Vec<(&'a str, String)>>) -> Self {
-        Request {
-            api_key,
-            path,
-            query,
-        }
     }
 }
