@@ -152,7 +152,7 @@ fn test_information() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.station_information(Station::A01).unwrap().code,
+        client.station_information(Station::A01).unwrap().station,
         Station::A01
     );
 }
@@ -186,7 +186,21 @@ fn test_timings() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
     assert_eq!(
-        client.timings(Station::A01).unwrap().station_times[0].code,
+        client.timings(Station::A01).unwrap().station_times[0].station,
         Station::A01
     );
+}
+
+#[test]
+fn test_station_name() {
+    let station = Station::A01;
+
+    assert_eq!(station.name(), "Metro Center");
+}
+
+#[test]
+fn test_station_lines() {
+    let station = Station::N01;
+
+    assert_eq!(station.lines(), &[Line::Silver])
 }

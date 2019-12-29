@@ -80,3 +80,9 @@ impl<'de> Deserialize<'de> for Stop {
         Ok(Stop::new(&stop))
     }
 }
+
+impl PartialEq for Stop {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}

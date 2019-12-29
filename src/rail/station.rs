@@ -1,7 +1,7 @@
 //! WMATA-defined codes for each MetroRail station.
 use crate::{
     error::Error,
-    rail::{client::responses, traits::NeedsStation},
+    rail::{client::responses, line::Line, traits::NeedsStation},
     requests::Fetch,
 };
 use serde::{
@@ -234,6 +234,202 @@ impl<'de> Deserialize<'de> for Station {
 
         Station::from_str(&station)
             .map_err(|_| SerdeError::custom("String provided is not a Station code"))
+    }
+}
+
+impl Station {
+    pub fn name(&self) -> String {
+        match self {
+            Station::A01 => "Metro Center".to_string(),
+            Station::A02 => "Farragut North".to_string(),
+            Station::A03 => "Dupont Circle".to_string(),
+            Station::A04 => "Woodley Park-Zoo/Adams Morgan".to_string(),
+            Station::A05 => "Cleveland Park".to_string(),
+            Station::A06 => "Van Ness-UDC".to_string(),
+            Station::A07 => "Tenleytown-AU".to_string(),
+            Station::A08 => "Friendship Heights".to_string(),
+            Station::A09 => "Bethesda".to_string(),
+            Station::A10 => "Medical Center".to_string(),
+            Station::A11 => "Grosvenor-Strathmore".to_string(),
+            Station::A12 => "White Flint".to_string(),
+            Station::A13 => "Twinbrook".to_string(),
+            Station::A14 => "Rockville".to_string(),
+            Station::A15 => "Shady Grove".to_string(),
+            Station::B01 => "Gallery Pl-Chinatown".to_string(),
+            Station::B02 => "Judiciary Square".to_string(),
+            Station::B03 => "Union Station".to_string(),
+            Station::B04 => "Rhode Island Ave-Brentwood".to_string(),
+            Station::B05 => "Brookland-CUA".to_string(),
+            Station::B06 => "Fort Totten".to_string(),
+            Station::B07 => "Takoma".to_string(),
+            Station::B08 => "Silver Spring".to_string(),
+            Station::B09 => "Forest Glen".to_string(),
+            Station::B10 => "Wheaton".to_string(),
+            Station::B11 => "Glenmont".to_string(),
+            Station::B35 => "NoMa-Gallaudet U".to_string(),
+            Station::C01 => "Metro Center".to_string(),
+            Station::C02 => "McPherson Square".to_string(),
+            Station::C03 => "Farragut West".to_string(),
+            Station::C04 => "Foggy Bottom-GWU".to_string(),
+            Station::C05 => "Rosslyn".to_string(),
+            Station::C06 => "Arlington Cemetery".to_string(),
+            Station::C07 => "Pentagon".to_string(),
+            Station::C08 => "Pentagon City".to_string(),
+            Station::C09 => "Crystal City".to_string(),
+            Station::C10 => "Ronald Reagan Washington National Airport".to_string(),
+            Station::C12 => "Braddock Road".to_string(),
+            Station::C13 => "King St-Old Town".to_string(),
+            Station::C14 => "Eisenhower Avenue".to_string(),
+            Station::C15 => "Huntington".to_string(),
+            Station::D01 => "Federal Triangle".to_string(),
+            Station::D02 => "Smithsonian".to_string(),
+            Station::D03 => "L'Enfant Plaza".to_string(),
+            Station::D04 => "Federal Center SW".to_string(),
+            Station::D05 => "Capitol South".to_string(),
+            Station::D06 => "Eastern Market".to_string(),
+            Station::D07 => "Potomac Ave".to_string(),
+            Station::D08 => "Stadium-Armory".to_string(),
+            Station::D09 => "Minnesota Ave".to_string(),
+            Station::D10 => "Deanwood".to_string(),
+            Station::D11 => "Cheverly".to_string(),
+            Station::D12 => "Landover".to_string(),
+            Station::D13 => "New Carrollton".to_string(),
+            Station::E01 => "Mt Vernon Sq 7th St-Convention Center".to_string(),
+            Station::E02 => "Shaw-Howard U".to_string(),
+            Station::E03 => "U Street/African-Amer Civil War Memorial/Cardozo".to_string(),
+            Station::E04 => "Columbia Heights".to_string(),
+            Station::E05 => "Georgia Ave-Petworth".to_string(),
+            Station::E06 => "Fort Totten".to_string(),
+            Station::E07 => "West Hyattsville".to_string(),
+            Station::E08 => "Prince George's Plaza".to_string(),
+            Station::E09 => "College Park-U of Md".to_string(),
+            Station::E10 => "Greenbelt".to_string(),
+            Station::F01 => "Gallery Pl-Chinatown".to_string(),
+            Station::F02 => "Archives-Navy Memorial-Penn Quarter".to_string(),
+            Station::F03 => "L'Enfant Plaza".to_string(),
+            Station::F04 => "Waterfront".to_string(),
+            Station::F05 => "Navy Yard-Ballpark".to_string(),
+            Station::F06 => "Anacostia".to_string(),
+            Station::F07 => "Congress Heights".to_string(),
+            Station::F08 => "Southern Avenue".to_string(),
+            Station::F09 => "Naylor Road".to_string(),
+            Station::F10 => "Suitland".to_string(),
+            Station::F11 => "Branch Ave".to_string(),
+            Station::G01 => "Benning Road".to_string(),
+            Station::G02 => "Capitol Heights".to_string(),
+            Station::G03 => "Addison Road-Seat Pleasant".to_string(),
+            Station::G04 => "Morgan Boulevard".to_string(),
+            Station::G05 => "Largo Town Center".to_string(),
+            Station::J02 => "Van Dorn Street".to_string(),
+            Station::J03 => "Franconia-Springfield".to_string(),
+            Station::K01 => "Court House".to_string(),
+            Station::K02 => "Clarendon".to_string(),
+            Station::K03 => "Virginia Square-GMU".to_string(),
+            Station::K04 => "Ballston-MU".to_string(),
+            Station::K05 => "East Falls Church".to_string(),
+            Station::K06 => "West Falls Church-VT/UVA".to_string(),
+            Station::K07 => "Dunn Loring-Merrifield".to_string(),
+            Station::K08 => "Vienna/Fairfax-GMU".to_string(),
+            Station::N01 => "McLean".to_string(),
+            Station::N02 => "Tysons Corner".to_string(),
+            Station::N03 => "Greensboro".to_string(),
+            Station::N04 => "Spring Hill".to_string(),
+            Station::N06 => "Wiehle-Reston East".to_string(),
+        }
+    }
+
+    pub fn lines(&self) -> &[Line] {
+        match self {
+            Station::A01 | Station::C01 => &[Line::Blue, Line::Orange, Line::Silver, Line::Red],
+            Station::A02
+            | Station::A03
+            | Station::A04
+            | Station::A05
+            | Station::A06
+            | Station::A07
+            | Station::A08
+            | Station::A09
+            | Station::A10
+            | Station::A11
+            | Station::A12
+            | Station::A13
+            | Station::A14
+            | Station::A15
+            | Station::B02
+            | Station::B03
+            | Station::B04
+            | Station::B05
+            | Station::B07
+            | Station::B08
+            | Station::B09
+            | Station::B10
+            | Station::B11
+            | Station::B35 => &[Line::Red],
+            Station::B01 | Station::B06 | Station::E06 | Station::F01 => {
+                &[Line::Red, Line::Yellow, Line::Green]
+            }
+            Station::C02
+            | Station::C03
+            | Station::C04
+            | Station::C05
+            | Station::D01
+            | Station::D02
+            | Station::D04
+            | Station::D05
+            | Station::D06
+            | Station::D07
+            | Station::D08 => &[Line::Blue, Line::Orange, Line::Silver],
+            Station::C06 | Station::J02 | Station::J03 => &[Line::Blue],
+            Station::C07
+            | Station::C08
+            | Station::C09
+            | Station::C10
+            | Station::C12
+            | Station::C13 => &[Line::Blue, Line::Yellow],
+            Station::C14 | Station::C15 => &[Line::Yellow],
+            Station::D03 | Station::F03 => &[
+                Line::Green,
+                Line::Yellow,
+                Line::Blue,
+                Line::Orange,
+                Line::Silver,
+            ],
+            Station::D09
+            | Station::D10
+            | Station::D11
+            | Station::D12
+            | Station::D13
+            | Station::K06
+            | Station::K07
+            | Station::K08 => &[Line::Orange],
+            Station::E01
+            | Station::E02
+            | Station::E03
+            | Station::E04
+            | Station::E05
+            | Station::E07
+            | Station::E08
+            | Station::E09
+            | Station::E10
+            | Station::F02 => &[Line::Green, Line::Yellow],
+            Station::F04
+            | Station::F05
+            | Station::F06
+            | Station::F07
+            | Station::F08
+            | Station::F09
+            | Station::F10
+            | Station::F11 => &[Line::Green],
+            Station::G01 | Station::G02 | Station::G03 | Station::G04 | Station::G05 => {
+                &[Line::Blue, Line::Silver]
+            }
+            Station::K01 | Station::K02 | Station::K03 | Station::K04 | Station::K05 => {
+                &[Line::Orange, Line::Silver]
+            }
+            Station::N01 | Station::N02 | Station::N03 | Station::N04 | Station::N06 => {
+                &[Line::Silver]
+            }
+        }
     }
 }
 

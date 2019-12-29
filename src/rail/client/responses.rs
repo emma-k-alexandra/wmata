@@ -1,5 +1,5 @@
 //! MetroRail related responses from the WMATA API.
-use crate::{Line as LineCode, Station as StationCode};
+use crate::{Line, Station};
 use chrono::{DateTime, FixedOffset};
 use serde::Deserialize;
 
@@ -7,28 +7,31 @@ use serde::Deserialize;
 #[serde(rename_all = "PascalCase")]
 pub struct Lines {
     /// See [`Line`].
-    pub lines: Box<[Line]>,
+    pub lines: Box<[LineResponse]>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct Line {
+pub struct LineResponse {
     /// Two letter abbreviation of the line. See [`Line`].
-    pub line_code: LineCode,
+    #[serde(rename = "LineCode")]
+    pub line: Line,
     /// Full name of the Line.
     pub display_name: String,
     /// [`Station`] for start of the Line.
-    pub start_station_code: StationCode,
+    #[serde(rename = "StartStationCode")]
+    pub start_station: Station,
     /// [`Station`] for end of the Line.
-    pub end_station_code: StationCode,
+    #[serde(rename = "EndStationCode")]
+    pub end_station: Station,
     /// Intermediate terminal [`Station`]. Ex: Mt. Vernon for Yellow, Silver Spring for Red.
     #[serde(rename = "InternalDestination1")]
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
-    pub first_internal_destination: Option<StationCode>,
+    pub first_internal_destination: Option<Station>,
     /// Intermediate terminal [`Station`]. Ex: Mt. Vernon for Yellow, Silver Spring for Red.
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
     #[serde(rename = "InternalDestination2")]
-    pub second_internal_destination: Option<StationCode>,
+    pub second_internal_destination: Option<Station>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -56,11 +59,11 @@ pub struct StationEntrance {
     pub name: String,
     /// [`Station`] of this entrance.
     #[serde(rename = "StationCode1")]
-    pub first_station_code: StationCode,
+    pub first_station: Station,
     /// Second [`Station`] of this entrance.
     #[serde(rename = "StationCode2")]
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
-    pub second_station_code: Option<StationCode>,
+    pub second_station: Option<Station>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -85,9 +88,12 @@ pub struct TrainPosition {
     /// The circuit identifier the train is currently on.
     pub circuit_id: i32,
     /// Destination [`Station`].
-    pub destination_station_code: Option<StationCode>,
+    #[serde(rename = "DestinationStationCode")]
+    #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
+    pub destination_station: Option<Station>,
     /// [`Line`] for this train.
-    pub line_code: Option<LineCode>,
+    #[serde(rename = "LineCode")]
+    pub line: Option<Line>,
     /// Approximate "dwell time". This is not an exact value, but can be used to determine how long a train has been reported at the same track circuit.
     pub seconds_at_location: i32,
     /// Service Type of a train.
@@ -105,7 +111,8 @@ pub struct StandardRoutes {
 #[serde(rename_all = "PascalCase")]
 pub struct StandardRoute {
     /// [`Line`] for this route.
-    pub line_code: LineCode,
+    #[serde(rename = "LineCode")]
+    pub line: Line,
     #[serde(rename = "TrackNum")]
     /// Track number. 1 or 2.
     pub track_number: i32,
@@ -122,7 +129,9 @@ pub struct TrackCircuitWithStation {
     /// An internal system-wide uniquely identifiable circuit number.
     pub circuit_id: i32,
     /// [`Station`] if this circuit is at a station.
-    pub station_code: Option<StationCode>,
+    #[serde(rename = "StationCode")]
+    #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
+    pub station: Option<Station>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -170,7 +179,8 @@ pub struct ElevatorAndEscalatorIncident {
     /// Warning: Deprecated. If listed here, the unit is inoperational or otherwise impaired.
     pub unit_status: Option<String>,
     /// [`Station`] of the incident.
-    pub station_code: StationCode,
+    #[serde(rename = "StationCode")]
+    pub station: Station,
     /// Full station name, may include entrance information (e.g.: Metro Center, G and 11th St Entrance).
     pub station_name: String,
     /// Free-text description of the unit location within a station (e.g.: Escalator between mezzanine and platform).
@@ -242,13 +252,15 @@ pub struct StationToStationInfo {
     /// Average of distance traveled between two stations and straight-line distance (as used for WMATA fare calculations).
     pub composite_miles: f64,
     /// Destination [`Station`].
-    pub destination_station: StationCode,
+    #[serde(rename = "DestinationStation")]
+    pub destination_station: Station,
     /// Structure containing fare information.
     pub rail_fare: RailFare,
     /// Estimated travel time (schedule time) in minutes between the source and destination station. This is not correlated to minutes (Min) in Real-Time Rail Predictions.
     pub rail_time: i32,
     /// Origin [`Station`].
-    pub source_station: StationCode,
+    #[serde(rename = "SourceStation")]
+    pub source_station: Station,
 }
 
 #[derive(Deserialize, Debug)]
@@ -277,7 +289,9 @@ pub struct RailPrediction {
     /// Abbreviated version of the final destination for a train. This is similar to what is displayed on the signs at stations.
     pub destination: String,
     /// [`Station`] of destination station.
-    pub destination_code: Option<StationCode>,
+    #[serde(rename = "DestinationCode")]
+    #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
+    pub destination_station: Option<Station>,
     /// When DestinationCode is populated, this is the full name of the destination station, as shown on the WMATA website.
     pub destination_name: String,
     /// Denotes the track this train is on, but does not necessarily equate to Track 1 or Track 2. With the exception of terminal stations, predictions at the same station with different Group values refer to trains on different tracks.
@@ -285,7 +299,8 @@ pub struct RailPrediction {
     /// Two-letter abbreviation for the line (e.g.: RD, BL, YL, OR, GR, or SV). May also be blank or No for trains with no passengers.
     pub line: String,
     /// [`Station`] for where the train is arriving.
-    pub location_code: StationCode,
+    #[serde(rename = "LocationCode")]
+    pub location: Station,
     /// Full name of the station where the train is arriving.
     pub location_name: String,
     /// Minutes until arrival. Can be a numeric value, ARR (arriving), BRD (boarding), ---, or empty.
@@ -299,7 +314,8 @@ pub struct StationInformation {
     /// Structure describing address information.
     pub address: StationAddress,
     /// [`Station`] for this station.
-    pub code: StationCode,
+    #[serde(rename = "Code")]
+    pub station: Station,
     /// Latitude of this station.
     #[serde(rename = "Lat")]
     pub latitude: f64,
@@ -308,26 +324,26 @@ pub struct StationInformation {
     pub longitude: f64,
     /// First [`Line`] for this station.
     #[serde(rename = "LineCode1")]
-    pub first_line_code: LineCode,
+    pub first_line: Line,
     /// Second [`Line`] for this station.
     #[serde(rename = "LineCode2")]
-    pub second_line_code: Option<LineCode>,
+    pub second_line: Option<Line>,
     /// Third [`Line`] for this station.
     #[serde(rename = "LineCode3")]
-    pub third_line_code: Option<LineCode>,
+    pub third_line: Option<Line>,
     /// Fourth [`Line`] for this station.
     #[serde(rename = "LineCode4")]
-    pub fourth_line_code: Option<LineCode>,
+    pub fourth_line: Option<Line>,
     /// Station name.
     pub name: String,
     /// For stations with multiple platforms (e.g.: Gallery Place, Fort Totten, L'Enfant Plaza, and Metro Center), the additional [`Station`] will be listed here.
     #[serde(rename = "StationTogether1")]
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
-    pub first_station_together: Option<StationCode>,
+    pub first_station_together: Option<Station>,
     /// Similar in function to first_station_together. Currently not in use.
     #[serde(rename = "StationTogether2")]
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
-    pub second_station_together: Option<StationCode>,
+    pub second_station_together: Option<Station>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -354,7 +370,8 @@ pub struct StationsParking {
 #[serde(rename_all = "PascalCase")]
 pub struct StationParking {
     /// [`Station`] of this station.
-    pub code: StationCode,
+    #[serde(rename = "Code")]
+    pub station: Station,
     /// When not None, provides additional parking resources such as nearby lots.
     pub notes: Option<String>,
     /// See [`AllDayParking`].
@@ -401,12 +418,14 @@ pub struct Path {
     #[serde(rename = "DistanceToPrev")]
     pub distance_to_previous_station: i32,
     /// [`Line`] of this station.
-    pub line_code: LineCode,
+    #[serde(rename = "LineCode")]
+    pub line: Line,
     /// Ordered sequence number.
     #[serde(rename = "SeqNum")]
     pub sequence_number: i32,
     /// [`Station`] of this station.
-    pub station_code: StationCode,
+    #[serde(rename = "StationCode")]
+    pub station: Station,
     /// Full name for this station, as shown on the WMATA website.
     pub station_name: String,
 }
@@ -422,7 +441,8 @@ pub struct StationTimings {
 #[serde(rename_all = "PascalCase")]
 pub struct StationTime {
     /// [`Station`] of this station.
-    pub code: StationCode,
+    #[serde(rename = "Code")]
+    pub station: Station,
     /// Full name of the station.
     pub station_name: String,
     // You're gonna love this
@@ -459,23 +479,25 @@ pub struct TrainTime {
     /// Time the train leaves the station.
     pub time: String,
     /// [`Station`] for the destination station.
-    pub destination_station: StationCode,
+    #[serde(rename = "DestinationStation")]
+    pub destination: Station,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct Stations {
     /// See [`Station`].
-    pub stations: Box<[Station]>,
+    pub stations: Box<[StationResponse]>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct Station {
+pub struct StationResponse {
     /// See [`Address`].
     pub address: Address,
     /// [`Station`] of this station.
-    pub code: StationCode,
+    #[serde(rename = "Code")]
+    pub station: Station,
     /// Latitude of this station.
     #[serde(rename = "Lat")]
     pub latitude: f64,
@@ -484,26 +506,26 @@ pub struct Station {
     pub longitude: f64,
     /// First [`Line`] of this station.
     #[serde(rename = "LineCode1")]
-    pub first_line_code: LineCode,
+    pub first_line: Line,
     /// Second [`Line`] of this station.
     #[serde(rename = "LineCode2")]
-    pub second_line_code: Option<LineCode>,
+    pub second_line: Option<Line>,
     /// Third [`Line`] of this station.
     #[serde(rename = "LineCode3")]
-    pub third_line_code: Option<LineCode>,
+    pub third_line: Option<Line>,
     /// Fourth [`Line`] of this station.
     #[serde(rename = "LineCode4")]
-    pub fourth_line_code: Option<LineCode>,
+    pub fourth_line: Option<Line>,
     /// Station name.
     pub name: String,
     /// For stations with multiple platforms (e.g.: Gallery Place, Fort Totten, L'Enfant Plaza, and Metro Center), the additional [`Station`] will be listed here.
     #[serde(rename = "StationTogether1")]
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
-    pub first_station_together: Option<StationCode>,
+    pub first_station_together: Option<Station>,
     /// imilar in function to first_station_together. Currently not in use.
     #[serde(rename = "StationTogether2")]
     #[serde(deserialize_with = "crate::rail::station::empty_or_station")]
-    pub second_station_together: Option<StationCode>,
+    pub second_station_together: Option<Station>,
 }
 
 #[derive(Deserialize, Debug)]

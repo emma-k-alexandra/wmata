@@ -80,10 +80,7 @@ fn test_incidents_along_route() {
 fn test_path() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
 
-    assert_eq!(
-        client.path(Route::One0A, None).unwrap().route_id,
-        Route::One0A
-    );
+    assert_eq!(client.path(Route::One0A, None).unwrap().route, Route::One0A);
 }
 
 #[test]
@@ -94,7 +91,7 @@ fn test_path_with_date() {
         client
             .path(Route::One0A, Some(Date::new(2019, 10, 1)))
             .unwrap()
-            .route_id,
+            .route,
         Route::One0A
     );
 }
@@ -147,8 +144,9 @@ fn test_stop_schedule() {
             .stop_schedule(Stop::new("1001195"), None)
             .unwrap()
             .stop
-            .stop_id,
-        "1001195"
+            .stop
+            .unwrap(),
+        Stop("1001195".to_string())
     );
 }
 
@@ -161,7 +159,8 @@ fn test_stop_schedule_with_date() {
             .stop_schedule(Stop::new("1001195"), Some(Date::new(2019, 10, 2)))
             .unwrap()
             .stop
-            .stop_id,
-        "1001195"
+            .stop
+            .unwrap(),
+        Stop("1001195".to_string())
     );
 }

@@ -1,5 +1,5 @@
 //! Responses from MetroBus related methods from the WMATA API.
-use crate::{Route as RouteID, Stop as StopID};
+use crate::{Route, Stop};
 use chrono::{DateTime, FixedOffset};
 use serde::Deserialize;
 
@@ -31,7 +31,7 @@ pub struct BusPosition {
     pub longitude: f64,
     /// Base route name as shown on the bus. Note that the base route name could also refer to any variant, so a RouteID of 10A could refer to 10A, 10Av1, 10Av2, etc.
     #[serde(rename = "RouteID")]
-    pub route_id: RouteID,
+    pub route: Route,
     /// Scheduled end date and time (Eastern Standard Time) of the bus's current trip.
     #[serde(deserialize_with = "crate::date::deserialize")]
     pub trip_end_time: DateTime<FixedOffset>,
@@ -52,15 +52,15 @@ pub struct BusPosition {
 #[serde(rename_all = "PascalCase")]
 pub struct Routes {
     /// See [`Route`].
-    pub routes: Box<[Route]>,
+    pub routes: Box<[RouteResponse]>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct Route {
+pub struct RouteResponse {
     /// Unique identifier for a given route variant. Can be used in various other bus-related methods.
     #[serde(rename = "RouteID")]
-    pub route_id: RouteID,
+    pub route: Route,
     /// Descriptive name of the route variant.
     pub name: String,
     /// Denotes the route variant’s grouping – lines are a combination of routes which lie in the same corridor and which have significant portions of their paths along the same roadways.
@@ -71,15 +71,15 @@ pub struct Route {
 #[serde(rename_all = "PascalCase")]
 pub struct Stops {
     /// See [`Stop`].
-    pub stops: Box<[Stop]>,
+    pub stops: Box<[StopResponse]>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct Stop {
+pub struct StopResponse {
     /// 7-digit regional ID which can be used in various bus-related methods. If unavailable, the StopID will be 0 or NULL.
     #[serde(rename = "StopID")]
-    pub stop_id: Option<StopID>,
+    pub stop: Option<Stop>,
     /// Stop name. May be slightly different from what is spoken or displayed in the bus.
     pub name: String,
     /// Latitude of stop.
@@ -89,7 +89,7 @@ pub struct Stop {
     #[serde(rename = "Lon")]
     pub longitude: f64,
     /// String array of route variants which provide service at this stop. Note that these are not date-specific; any route variant which stops at this stop on any day will be listed.
-    pub routes: Box<[RouteID]>,
+    pub routes: Box<[Route]>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -114,7 +114,7 @@ pub struct Incident {
     /// Free-text description of the incident type. Usually Delay or Alert but is subject to change at any time.
     pub incident_type: String,
     /// Array containing routes affected. Routes listed are usually identical to base route names (i.e.: not 10Av1 or 10Av2, but 10A), but may differ from what our bus methods return.
-    pub routes_affected: Box<[RouteID]>,
+    pub routes_affected: Box<[Route]>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -122,7 +122,7 @@ pub struct Incident {
 pub struct PathDetails {
     /// [`Route`] of the route.
     #[serde(rename = "RouteID")]
-    pub route_id: RouteID,
+    pub route: Route,
     /// Descriptive name for the route.
     pub name: String,
     /// Structures describing path/stop information.
@@ -148,14 +148,14 @@ pub struct PathDirection {
     #[serde(rename = "DirectionNum")]
     pub direction_number: String,
     /// See [`PathStop`]
-    pub shape: Box<[PathStop]>,
+    pub shape: Box<[PathShape]>,
     /// See [`Stop`]
-    pub stops: Box<[Stop]>,
+    pub stops: Box<[StopRoutes]>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct PathStop {
+pub struct PathShape {
     /// Latitude of stop.
     #[serde(rename = "Lat")]
     pub latitude: f64,
@@ -188,7 +188,7 @@ pub struct Prediction {
     pub minutes: i32,
     #[serde(rename = "RouteID")]
     /// [`Route`] of the bus. Base route name as shown on the bus. This can be used in other bus-related methods. Note that all variants will be shown as their base route names (i.e.: 10Av1 and 10Av2 will be shown as 10A).
-    pub route_id: RouteID,
+    pub route: Route,
     /// Trip identifier. This can be correlated with the data in our bus schedule information as well as bus positions.
     #[serde(rename = "TripID")]
     pub trip_id: String,
@@ -224,7 +224,7 @@ pub struct Arrival {
     pub end_time: DateTime<FixedOffset>,
     /// [`Route`] of the bus. Bus route variant identifier (pattern). This variant can be used in several other bus methods which accept variants. Note that customers will never see anything other than the base route name, so variants 10A, 10Av1, 10Av2, etc. will be displayed as 10A on the bus.
     #[serde(rename = "RouteID")]
-    pub route_id: RouteID,
+    pub route: Route,
     /// General direction of the trip (e.g.: NORTH, SOUTH, EAST, WEST).
     pub trip_direction_text: String,
     /// Destination of the bus.
@@ -239,7 +239,7 @@ pub struct Arrival {
 pub struct StopRoutes {
     /// 7-digit regional ID which can be used in various bus-related methods. If unavailable, the StopID will be 0 or NULL.
     #[serde(rename = "StopID")]
-    pub stop_id: String,
+    pub stop: Option<Stop>,
     /// Stop name. May be slightly different from what is spoken or displayed in the bus.
     pub name: String,
     /// Latitude of stop.
@@ -249,7 +249,7 @@ pub struct StopRoutes {
     #[serde(rename = "Lon")]
     pub longitude: f64,
     /// String array of route variants which provide service at this stop. Note that these are not date-specific; any route variant which stops at this stop on any day will be listed.
-    pub routes: Box<[String]>,
+    pub routes: Box<[Route]>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -270,7 +270,7 @@ pub struct RouteSchedule {
 pub struct RouteInfo {
     /// [`Route`] of the route. Bus route variant. This can be used in several other bus methods which accept variants.
     #[serde(rename = "RouteID")]
-    pub route_id: RouteID,
+    pub route: Route,
     /// Warning: Deprecated. Use the TripDirectionText element to denote the general direction of the trip.
     #[serde(rename = "DirectionNum")]
     pub direction_number: String,
@@ -296,7 +296,7 @@ pub struct RouteInfo {
 pub struct StopInfo {
     /// 7-digit regional ID which can be used in various bus-related methods. If unavailable, the StopID will be 0 or NULL.
     #[serde(rename = "StopID")]
-    pub stop_id: String,
+    pub stop: Stop,
     /// Stop name. May be slightly different from what is spoken or displayed in the bus.
     pub stop_name: String,
     /// Order of the stop in the sequence of StopInfo.
