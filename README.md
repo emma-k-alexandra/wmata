@@ -1,5 +1,5 @@
 # wmata
-wmata is a high level Rust interface to the [Washington Metropolitan Area Transit Authority API](https://developer.wmata.com).
+wmata is a high level async Rust interface to the [Washington Metropolitan Area Transit Authority API](https://developer.wmata.com).
 
 ## Contents
 - [Requirements](#requirements)
@@ -15,13 +15,13 @@ wmata is a high level Rust interface to the [Washington Metropolitan Area Transi
 - [License](#license)
 
 ## Requirements
-- Rust 2018
+- Rust 1.39
 
 ## Installation
 
 ### Cargo
 ```toml
-wmata = "6.0.0"
+wmata = "7.0.0"
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ use wmata::{MetroRail, Station};
 
 let client = MetroRail::new(api_key);
 
-let trains = client.next_trains(Station::A01)?;
+let trains = client.next_trains(Station::A01).await?;
 ```
 
 ### Design
@@ -47,7 +47,7 @@ use wmata::{MetroRail, Station};
 
 let client = MetroRail::new(api_key);
 
-let trains = client.next_trains(Station::A01)?;
+let trains = client.next_trains(Station::A01).await?;
 ```
 
 #### `MetroBus`
@@ -60,7 +60,7 @@ use wmata::MetroBus;
 
 let client = MetroBus::new(api_key);
 
-let routes = client.routes()?;
+let routes = client.routes().await?;
 ```
 
 ## Testing
@@ -71,6 +71,8 @@ Note that tests must currently be run with `--test-threads 1` in order to pass, 
 - serde_json
 - reqwest
 - chrono
+- await_trait
+- tokio_test
 
 ## Contact
 Feel free to email questions and comments to [emma@emma.sh](mailto:emma@emma.sh)

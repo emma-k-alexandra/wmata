@@ -1,5 +1,7 @@
 #[cfg(test)]
 use super::*;
+#[cfg(test)]
+use tokio_test::block_on;
 
 #[test]
 fn test_constructor() {
@@ -11,100 +13,105 @@ fn test_constructor() {
 #[test]
 fn test_routes() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let routes = block_on(async { client.routes().await });
 
-    assert_eq!(client.routes().unwrap().routes.len(), 470);
+    assert_eq!(routes.unwrap().routes.len(), 470);
 }
 
 #[test]
 fn test_stops() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let stops = block_on(async { client.stops(None).await });
 
-    assert_eq!(client.stops(None).unwrap().stops.len(), 10299);
+    assert_eq!(stops.unwrap().stops.len(), 10299);
 }
 
 #[test]
 fn test_stops_lat_long_radius() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
-
-    assert_eq!(
+    let stops = block_on(async {
         client
             .stops(Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)))
-            .unwrap()
-            .stops
-            .len(),
-        58
-    );
+            .await
+    });
+
+    assert_eq!(stops.unwrap().stops.len(), 58);
 }
 
 #[test]
 fn test_positions_along() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let positions = block_on(async { client.positions_along(None, None).await });
 
-    assert!(client.positions_along(None, None).is_ok());
+    assert!(positions.is_ok());
 }
 
 #[test]
 fn test_positions_along_with_route() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let positions = block_on(async { client.positions_along(Some(Route::One0A), None).await });
 
-    assert!(client.positions_along(Some(Route::One0A), None).is_ok());
+    assert!(positions.is_ok());
 }
 
 #[test]
 fn test_positions_along_with_route_and_lat_long_radius() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let positions = block_on(async {
+        client
+            .positions_along(
+                Some(Route::One0A),
+                Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)),
+            )
+            .await
+    });
 
-    assert!(client
-        .positions_along(
-            Some(Route::One0A),
-            Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))
-        )
-        .is_ok());
+    assert!(positions.is_ok());
 }
 
 #[test]
 fn test_incidents_along() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let incidents = block_on(async { client.incidents_along(None).await });
 
-    assert!(client.incidents_along(None).is_ok());
+    assert!(incidents.is_ok());
 }
 
 #[test]
 fn test_incidents_along_route() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let incidents = block_on(async { client.incidents_along(Some(Route::One0A)).await });
 
-    assert!(client.incidents_along(Some(Route::One0A)).is_ok());
+    assert!(incidents.is_ok());
 }
 
 #[test]
 fn test_path() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let path = block_on(async { client.path(Route::One0A, None).await });
 
-    assert_eq!(client.path(Route::One0A, None).unwrap().route, Route::One0A);
+    assert_eq!(path.unwrap().route, Route::One0A);
 }
 
 #[test]
 fn test_path_with_date() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
-
-    assert_eq!(
+    let path = block_on(async {
         client
             .path(Route::One0A, Some(Date::new(2019, 10, 1)))
-            .unwrap()
-            .route,
-        Route::One0A
-    );
+            .await
+    });
+
+    assert_eq!(path.unwrap().route, Route::One0A);
 }
 
 #[test]
 fn test_route_schedule() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let route_schedule = block_on(async { client.route_schedule(Route::One0A, None, false).await });
 
     assert_eq!(
-        client
-            .route_schedule(Route::One0A, None, false)
-            .unwrap()
-            .name,
+        route_schedule.unwrap().name,
         "10A - PENTAGON - HUNTINGTON STA"
     );
 }
@@ -112,12 +119,10 @@ fn test_route_schedule() {
 #[test]
 fn test_route_schedule_with_variations() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let route_schedule = block_on(async { client.route_schedule(Route::One0A, None, true).await });
 
     assert_eq!(
-        client
-            .route_schedule(Route::One0A, None, true)
-            .unwrap()
-            .name,
+        route_schedule.unwrap().name,
         "10A - PENTAGON - HUNTINGTON STA"
     );
 }
@@ -125,12 +130,14 @@ fn test_route_schedule_with_variations() {
 #[test]
 fn test_route_schedule_with_date() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
-
-    assert_eq!(
+    let route_schedule = block_on(async {
         client
             .route_schedule(Route::One0A, Some(Date::new(2019, 10, 2)), true)
-            .unwrap()
-            .name,
+            .await
+    });
+
+    assert_eq!(
+        route_schedule.unwrap().name,
         "10A - PENTAGON - HUNTINGTON STA"
     );
 }
@@ -138,14 +145,10 @@ fn test_route_schedule_with_date() {
 #[test]
 fn test_stop_schedule() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let stop_schedule = block_on(async { client.stop_schedule(Stop::new("1001195"), None).await });
 
     assert_eq!(
-        client
-            .stop_schedule(Stop::new("1001195"), None)
-            .unwrap()
-            .stop
-            .stop
-            .unwrap(),
+        stop_schedule.unwrap().stop.stop.unwrap(),
         Stop("1001195".to_string())
     );
 }
@@ -153,14 +156,14 @@ fn test_stop_schedule() {
 #[test]
 fn test_stop_schedule_with_date() {
     let client: Client = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
-
-    assert_eq!(
+    let stop_schedule = block_on(async {
         client
             .stop_schedule(Stop::new("1001195"), Some(Date::new(2019, 10, 2)))
-            .unwrap()
-            .stop
-            .stop
-            .unwrap(),
+            .await
+    });
+
+    assert_eq!(
+        stop_schedule.unwrap().stop.stop.unwrap(),
         Stop("1001195".to_string())
     );
 }

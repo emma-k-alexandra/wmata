@@ -47,12 +47,14 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::MetroRail;
+    /// use tokio_test::block_on;
     ///
-    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.lines().is_ok());
+    /// let lines = block_on(async { MetroRail::new("9e38c3eab34c4e6c990828002828f5ed").lines().await });
+    /// assert!(lines.is_ok());
     /// ```
-    pub fn lines(&self) -> Result<responses::Lines, Error> {
+    pub async fn lines(&self) -> Result<responses::Lines, Error> {
         self.fetch::<responses::Lines>(WMATARequest::new(&self.key, &URLs::Lines.to_string(), None))
+            .await
     }
 
     /// A list of nearby station entrances based on latitude, longitude, and radius (meters).
@@ -61,11 +63,13 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::{MetroRail, RadiusAtLatLong};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.entrances(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)).is_ok());
+    /// let entrances = block_on(async { client.entrances(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)).await });
+    /// assert!(entrances.is_ok());
     /// ```
-    pub fn entrances(
+    pub async fn entrances(
         &self,
         radius_at_lat_long: RadiusAtLatLong,
     ) -> Result<responses::StationEntrances, Error> {
@@ -80,6 +84,7 @@ impl Client {
                     .collect(),
             ),
         ))
+        .await
     }
 
     /// Uniquely identifiable trains in service and what track circuits they currently occupy.
@@ -88,16 +93,19 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::MetroRail;
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.positions().is_ok());
+    /// let positions = block_on(async { client.positions().await });
+    /// assert!(positions.is_ok());
     /// ```
-    pub fn positions(&self) -> Result<responses::TrainPositions, Error> {
+    pub async fn positions(&self) -> Result<responses::TrainPositions, Error> {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Positions.to_string(),
             Some(vec![("contentType", "json".to_string())]),
         ))
+        .await
     }
 
     /// Returns an ordered list of mostly revenue (and some lead) track circuits, arranged by line and track number.
@@ -106,24 +114,40 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::MetroRail;
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.routes().is_ok());
+    /// let routes = block_on(async { client.routes().await });
+    /// assert!(routes.is_ok());
     /// ```
-    pub fn routes(&self) -> Result<responses::StandardRoutes, Error> {
+    pub async fn routes(&self) -> Result<responses::StandardRoutes, Error> {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Routes.to_string(),
             Some(vec![("contentType", "json".to_string())]),
         ))
+        .await
     }
 
-    pub fn circuits(&self) -> Result<responses::TrackCircuits, Error> {
+    /// All track circuits including those on pocket tracks and crossovers. Each track circuit may include references to its right and left neighbors.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5763fa6ff91823096cac1057/operations/57644238031f59363c586dcb?)
+    ///
+    /// # Example
+    /// ```
+    /// use wmata::MetroRail;
+    /// use tokio_test::block_on;
+    ///
+    /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
+    /// let circuits = block_on(async { client.circuits().await });
+    /// assert!(circuits.is_ok());
+    /// ````
+    pub async fn circuits(&self) -> Result<responses::TrackCircuits, Error> {
         self.fetch(WMATARequest::new(
             &self.key,
             &URLs::Circuits.to_string(),
             Some(vec![("contentType", "json".to_string())]),
         ))
+        .await
     }
 }
 
@@ -137,11 +161,13 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.station_to_station(Some(Station::A01), Some(Station::A02)).is_ok());
+    /// let station_to_station = block_on(async { client.station_to_station(Some(Station::A01), Some(Station::A02)).await });
+    /// assert!(station_to_station.is_ok());
     /// ```
-    pub fn station_to_station(
+    pub async fn station_to_station(
         &self,
         from_station: Option<Station>,
         to_destination_station: Option<Station>,
@@ -152,6 +178,7 @@ impl Client {
             to_destination_station,
             &self.key,
         )
+        .await
     }
 
     /// List of reported elevator and escalator outages at a given station.
@@ -160,15 +187,17 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.elevator_and_escalator_incidents_at(Some(Station::A01)).is_ok());
+    /// let incidents = block_on(async { client.elevator_and_escalator_incidents_at(Some(Station::A01)).await });
+    /// assert!(incidents.is_ok());
     /// ```
-    pub fn elevator_and_escalator_incidents_at(
+    pub async fn elevator_and_escalator_incidents_at(
         &self,
         station: Option<Station>,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
-        <Self as NeedsStation>::elevator_and_escalator_incidents_at(&self, station, &self.key)
+        <Self as NeedsStation>::elevator_and_escalator_incidents_at(&self, station, &self.key).await
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service)
@@ -176,15 +205,17 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.incidents_at(Some(Station::A01)).is_ok());
+    /// let incidents = block_on(async { client.incidents_at(Some(Station::A01)).await });
+    /// assert!(incidents.is_ok());
     /// ```
-    pub fn incidents_at(
+    pub async fn incidents_at(
         &self,
         station: Option<Station>,
     ) -> Result<responses::RailIncidents, Error> {
-        <Self as NeedsStation>::incidents_at(&self, station, &self.key)
+        <Self as NeedsStation>::incidents_at(&self, station, &self.key).await
     }
 
     /// Next train arrivals for the given station.
@@ -192,12 +223,17 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.next_trains(Station::A01).is_ok());
+    /// let next_trains = block_on(async { client.next_trains(Station::A01).await });
+    /// assert!(next_trains.is_ok());
     /// ```
-    pub fn next_trains(&self, station_code: Station) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStation>::next_trains(&self, station_code, &self.key)
+    pub async fn next_trains(
+        &self,
+        station_code: Station,
+    ) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStation>::next_trains(&self, station_code, &self.key).await
     }
 
     /// Location and address information at the given station.
@@ -205,15 +241,17 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.station_information(Station::A01).is_ok());
+    /// let station_information = block_on(async { client.station_information(Station::A01).await });
+    /// assert!(station_information.is_ok());
     /// ```
-    pub fn station_information(
+    pub async fn station_information(
         &self,
         station_code: Station,
     ) -> Result<responses::StationInformation, Error> {
-        <Self as NeedsStation>::station_information(&self, station_code, &self.key)
+        <Self as NeedsStation>::station_information(&self, station_code, &self.key).await
     }
 
     /// Parking information for the given station.
@@ -221,15 +259,17 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.parking_information(Station::A01).is_ok());
+    /// let parking_information = block_on(async { client.parking_information(Station::A01).await });
+    /// assert!(parking_information.is_ok());
     /// ```
-    pub fn parking_information(
+    pub async fn parking_information(
         &self,
         station_code: Station,
     ) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStation>::parking_information(&self, station_code, &self.key)
+        <Self as NeedsStation>::parking_information(&self, station_code, &self.key).await
     }
 
     /// Set of ordered stations and distances between two stations on the **same line**.
@@ -237,16 +277,18 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.path_from(Station::A01, Station::A02).is_ok());
+    /// let path = block_on(async { client.path_from(Station::A01, Station::A02).await });
+    /// assert!(path.is_ok());
     /// ```
-    pub fn path_from(
+    pub async fn path_from(
         &self,
         from_station: Station,
         to_station: Station,
     ) -> Result<responses::PathBetweenStations, Error> {
-        <Self as NeedsStation>::path_from(&self, from_station, to_station, &self.key)
+        <Self as NeedsStation>::path_from(&self, from_station, to_station, &self.key).await
     }
 
     /// Opening and scheduled first/last train times for the given station.
@@ -254,12 +296,14 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Station};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.timings(Station::A01).is_ok());
+    /// let timings = block_on(async { client.timings(Station::A01).await });
+    /// assert!(timings.is_ok());
     /// ```
-    pub fn timings(&self, station_code: Station) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStation>::timings(&self, station_code, &self.key)
+    pub async fn timings(&self, station_code: Station) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStation>::timings(&self, station_code, &self.key).await
     }
 }
 
@@ -273,12 +317,14 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroRail, Line};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroRail::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stations_on(Some(Line::Red)).is_ok());
+    /// let stations = block_on(async { client.stations_on(Some(Line::Red)).await });
+    /// assert!(stations.is_ok());
     /// ```
-    pub fn stations_on(&self, line: Option<Line>) -> Result<responses::Stations, Error> {
-        <Self as NeedsLine>::stations_on(&self, line, &self.key)
+    pub async fn stations_on(&self, line: Option<Line>) -> Result<responses::Stations, Error> {
+        <Self as NeedsLine>::stations_on(&self, line, &self.key).await
     }
 }
 

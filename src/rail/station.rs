@@ -121,15 +121,19 @@ impl Station {
     /// # Example
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.to_station(Some(Station::A02), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let path = block_on(async { Station::A01.to_station(Some(Station::A02), "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(path.is_ok());
+    ///
     /// ```
-    pub fn to_station(
+    pub async fn to_station(
         self,
         destination_station: Option<Station>,
         api_key: &str,
     ) -> Result<responses::StationToStationInfos, Error> {
         self.station_to_station(Some(self), destination_station, api_key)
+            .await
     }
 
     // List of reported elevator and escalator outages at this station.
@@ -138,14 +142,17 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.elevator_and_escalator_incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let incidents = block_on(async { Station::A01.elevator_and_escalator_incidents("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(incidents.is_ok());
     /// ```
-    pub fn elevator_and_escalator_incidents(
+    pub async fn elevator_and_escalator_incidents(
         self,
         api_key: &str,
     ) -> Result<responses::ElevatorAndEscalatorIncidents, Error> {
         self.elevator_and_escalator_incidents_at(Some(self), api_key)
+            .await
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service) at this station
@@ -153,11 +160,13 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let incidents = block_on(async { Station::A01.incidents("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(incidents.is_ok());
     /// ```
-    pub fn incidents(self, api_key: &str) -> Result<responses::RailIncidents, Error> {
-        self.incidents_at(Some(self), api_key)
+    pub async fn incidents(self, api_key: &str) -> Result<responses::RailIncidents, Error> {
+        self.incidents_at(Some(self), api_key).await
     }
 
     /// Next train arrivals for this station
@@ -165,11 +174,13 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.next_trains("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let next_trains = block_on(async { Station::A01.next_trains("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(next_trains.is_ok());
     /// ```
-    pub fn next_trains(self, api_key: &str) -> Result<responses::RailPredictions, Error> {
-        <Self as NeedsStation>::next_trains(&self, self, api_key)
+    pub async fn next_trains(self, api_key: &str) -> Result<responses::RailPredictions, Error> {
+        <Self as NeedsStation>::next_trains(&self, self, api_key).await
     }
 
     /// Location and address information at this station
@@ -177,11 +188,13 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let information = block_on(async { Station::A01.information("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(information.is_ok());
     /// ```
-    pub fn information(self, api_key: &str) -> Result<responses::StationInformation, Error> {
-        self.station_information(self, api_key)
+    pub async fn information(self, api_key: &str) -> Result<responses::StationInformation, Error> {
+        self.station_information(self, api_key).await
     }
 
     /// Parking information for this station
@@ -189,11 +202,16 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.parking_information("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let parking_information = block_on(async { Station::A01.parking_information("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(parking_information.is_ok());
     /// ```
-    pub fn parking_information(self, api_key: &str) -> Result<responses::StationsParking, Error> {
-        <Self as NeedsStation>::parking_information(&self, self, api_key)
+    pub async fn parking_information(
+        self,
+        api_key: &str,
+    ) -> Result<responses::StationsParking, Error> {
+        <Self as NeedsStation>::parking_information(&self, self, api_key).await
     }
 
     /// Set of ordered stations and distances between this station and another on the **same line**.
@@ -201,15 +219,17 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.path_to(Station::A02, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let path = block_on(async { Station::A01.path_to(Station::A02, "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(path.is_ok());
     /// ```
-    pub fn path_to(
+    pub async fn path_to(
         self,
         destination_station: Station,
         api_key: &str,
     ) -> Result<responses::PathBetweenStations, Error> {
-        self.path_from(self, destination_station, api_key)
+        self.path_from(self, destination_station, api_key).await
     }
 
     /// Opening and scheduled first/last train times for this station.
@@ -217,11 +237,13 @@ impl Station {
     /// # Examples
     /// ```
     /// use wmata::Station;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Station::A01.timings("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let timings = block_on(async { Station::A01.timings("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(timings.is_ok());
     /// ```
-    pub fn timings(self, api_key: &str) -> Result<responses::StationTimings, Error> {
-        <Self as NeedsStation>::timings(&self, self, api_key)
+    pub async fn timings(self, api_key: &str) -> Result<responses::StationTimings, Error> {
+        <Self as NeedsStation>::timings(&self, self, api_key).await
     }
 }
 
@@ -238,7 +260,7 @@ impl<'de> Deserialize<'de> for Station {
 }
 
 impl Station {
-    pub fn name(&self) -> String {
+    pub fn name(self) -> String {
         match self {
             Station::A01 => "Metro Center".to_string(),
             Station::A02 => "Farragut North".to_string(),

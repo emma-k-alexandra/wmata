@@ -1,6 +1,6 @@
 [package]
 name = "wmata"
-version = "6.0.0"
+version = "7.0.0"
 authors = ["Emma K Alexandra <emma@emma.sh>"]
 edition = "2018"
 repository = "https://github.com/emma-k-alexandra/wmata"
@@ -13,7 +13,9 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = "1.0.104"
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.44"
-reqwest = "0.9.24"
+reqwest = "0.10.0"
 chrono = "0.4.10"
+async-trait = "0.1.22"
+tokio-test = "0.2.0"

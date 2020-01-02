@@ -31,11 +31,13 @@ impl Stop {
     /// # Examples
     /// ```
     /// use wmata::Stop;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Stop::new("1001195").next_buses("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let next_buses = block_on(async { Stop::new("1001195").next_buses("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(next_buses.is_ok());
     /// ```
-    pub fn next_buses(&self, api_key: &str) -> Result<responses::Predictions, Error> {
-        <Self as NeedsStop>::next_buses(&self, self, api_key)
+    pub async fn next_buses(&self, api_key: &str) -> Result<responses::Predictions, Error> {
+        <Self as NeedsStop>::next_buses(&self, self, api_key).await
     }
 
     /// Buses scheduled at this stop for an optional given date.
@@ -47,22 +49,28 @@ impl Stop {
     /// # Examples
     /// ```
     /// use wmata::Stop;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Stop::new("1001195").schedule(None, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let schedule = block_on(async { Stop::new("1001195").schedule(None, "9e38c3eab34c4e6c990828002828f5ed").await });
+    ///
+    /// assert!(schedule.is_ok());
     /// ```
     ///
     /// with date
     /// ```
     /// use wmata::{Stop, Date};
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Stop::new("1001195").schedule(Some(Date::new(2019, 10, 2)), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let stop = Stop::new("1001195");
+    /// let schedule = block_on(async { stop.schedule(Some(Date::new(2019, 10, 2)), "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(schedule.is_ok());
     /// ```
-    pub fn schedule(
+    pub async fn schedule(
         &self,
         date: Option<Date>,
         api_key: &str,
     ) -> Result<responses::StopSchedule, Error> {
-        self.stop_schedule(self, date, api_key)
+        self.stop_schedule(self, date, api_key).await
     }
 }
 

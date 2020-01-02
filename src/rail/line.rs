@@ -33,11 +33,13 @@ impl Line {
     /// # Examples
     /// ```
     /// use wmata::Line;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Line::Red.stations("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let stations = block_on(async { Line::Red.stations("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(stations.is_ok());
     /// ```
-    pub fn stations(self, api_key: &str) -> Result<responses::Stations, Error> {
-        self.stations_on(Some(self), &api_key)
+    pub async fn stations(self, api_key: &str) -> Result<responses::Stations, Error> {
+        self.stations_on(Some(self), &api_key).await
     }
 }
 

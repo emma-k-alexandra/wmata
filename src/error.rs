@@ -1,5 +1,5 @@
 //! Errors used throughout the crate.
-use serde::{Deserialize, Serialize};
+use serde::{self, Deserialize, Serialize};
 use std::{error, fmt};
 
 /// An error, generated from the WMATA API
