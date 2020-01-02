@@ -1,3 +1,4 @@
+use tokio_test::block_on;
 use wmata::{Line, MetroRail, Station};
 
 #[test]
@@ -10,22 +11,27 @@ fn test_constructor() {
 #[test]
 fn test_lines() {
     let client: MetroRail = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let lines = block_on(async { client.lines().await });
 
-    assert!(client.lines().is_ok());
+    assert!(lines.is_ok());
 }
 
 #[test]
 fn test_station_to_station() {
     let client: MetroRail = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let station_to_station = block_on(async {
+        client
+            .station_to_station(Some(Station::A01), Some(Station::A02))
+            .await
+    });
 
-    assert!(client
-        .station_to_station(Some(Station::A01), Some(Station::A02))
-        .is_ok());
+    assert!(station_to_station.is_ok());
 }
 
 #[test]
 fn test_stations_on() {
     let client: MetroRail = "9e38c3eab34c4e6c990828002828f5ed".parse().unwrap();
+    let stations = block_on(async { client.stations_on(Some(Line::Red)).await });
 
-    assert!(client.stations_on(Some(Line::Red)).is_ok());
+    assert!(stations.is_ok());
 }

@@ -5,9 +5,11 @@ use crate::{
     requests::{Fetch, Request as WMATARequest},
     Date, RadiusAtLatLong, Route, Stop,
 };
+use async_trait::async_trait;
 
+#[async_trait]
 pub trait NeedsRoute: Fetch {
-    fn positions_along(
+    async fn positions_along(
         &self,
         route: Option<Route>,
         radius_at_lat_long: Option<RadiusAtLatLong>,
@@ -34,16 +36,18 @@ pub trait NeedsRoute: Fetch {
                 &URLs::Positions.to_string(),
                 Some(query),
             ))
+            .await
         } else {
             self.fetch::<responses::BusPositions>(WMATARequest::new(
                 &api_key,
                 &URLs::Positions.to_string(),
                 None,
             ))
+            .await
         }
     }
 
-    fn incidents_along(
+    async fn incidents_along(
         &self,
         route: Option<Route>,
         api_key: &str,
@@ -53,9 +57,10 @@ pub trait NeedsRoute: Fetch {
             &URLs::Incidents.to_string(),
             route.map(|r| vec![("Route", r.to_string())]),
         ))
+        .await
     }
 
-    fn path(
+    async fn path(
         &self,
         route: Route,
         date: Option<Date>,
@@ -72,9 +77,10 @@ pub trait NeedsRoute: Fetch {
             &URLs::PathDetails.to_string(),
             Some(query),
         ))
+        .await
     }
 
-    fn route_schedule(
+    async fn route_schedule(
         &self,
         route: Route,
         date: Option<Date>,
@@ -96,19 +102,26 @@ pub trait NeedsRoute: Fetch {
             &URLs::RouteSchedule.to_string(),
             Some(query),
         ))
+        .await
     }
 }
 
+#[async_trait]
 pub trait NeedsStop: Fetch {
-    fn next_buses(&self, stop: &Stop, api_key: &str) -> Result<responses::Predictions, Error> {
+    async fn next_buses(
+        &self,
+        stop: &Stop,
+        api_key: &str,
+    ) -> Result<responses::Predictions, Error> {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::NextBuses.to_string(),
             Some(vec![("StopID", stop.0.to_string())]),
         ))
+        .await
     }
 
-    fn stop_schedule(
+    async fn stop_schedule(
         &self,
         stop: &Stop,
         date: Option<Date>,
@@ -125,5 +138,6 @@ pub trait NeedsStop: Fetch {
             &URLs::StopSchedule.to_string(),
             Some(query),
         ))
+        .await
     }
 }

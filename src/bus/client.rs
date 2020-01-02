@@ -47,16 +47,19 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::MetroBus;
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.routes().is_ok());
+    /// let routes = block_on(async { client.routes().await });
+    /// assert!(routes.is_ok());
     /// ```
-    pub fn routes(&self) -> Result<responses::Routes, Error> {
+    pub async fn routes(&self) -> Result<responses::Routes, Error> {
         self.fetch::<responses::Routes>(WMATARequest::new(
             &self.key,
             &URLs::Routes.to_string(),
             None,
         ))
+        .await
     }
 
     /// Nearby bus stops based on latitude, longitude, and radius.
@@ -65,11 +68,13 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, RadiusAtLatLong};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stops(Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))).is_ok());
+    /// let stops = block_on(async { client.stops(Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))).await });
+    /// assert!(stops.is_ok());
     /// ```
-    pub fn stops(
+    pub async fn stops(
         &self,
         radius_at_lat_long: Option<RadiusAtLatLong>,
     ) -> Result<responses::Stops, Error> {
@@ -85,12 +90,14 @@ impl Client {
                         .collect(),
                 ),
             ))
+            .await
         } else {
             self.fetch::<responses::Stops>(WMATARequest::new(
                 &self.key,
                 &URLs::Stops.to_string(),
                 None,
             ))
+            .await
         }
     }
 }
@@ -105,19 +112,23 @@ impl Client {
     /// # Example
     /// ```
     /// use wmata::{MetroBus, Route, RadiusAtLatLong};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.positions_along(
-    ///     Some(Route::A2),
-    ///     Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))
-    /// ).is_ok());
+    /// let positions = block_on(async {
+    ///     client.positions_along(
+    ///         Some(Route::A2),
+    ///         Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426))
+    ///     ).await
+    /// });
+    /// assert!(positions.is_ok());
     /// ```
-    pub fn positions_along(
+    pub async fn positions_along(
         &self,
         route: Option<Route>,
         radius_at_lat_long: Option<RadiusAtLatLong>,
     ) -> Result<responses::BusPositions, Error> {
-        <Self as NeedsRoute>::positions_along(&self, route, radius_at_lat_long, &self.key)
+        <Self as NeedsRoute>::positions_along(&self, route, radius_at_lat_long, &self.key).await
     }
 
     /// Reported bus incidents/delays for a given route.
@@ -126,12 +137,17 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, Route};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.incidents_along(Some(Route::A2)).is_ok());
+    /// let incidents = block_on(async { client.incidents_along(Some(Route::A2)).await });
+    /// assert!(incidents.is_ok());
     /// ```
-    pub fn incidents_along(&self, route: Option<Route>) -> Result<responses::Incidents, Error> {
-        <Self as NeedsRoute>::incidents_along(&self, route, &self.key)
+    pub async fn incidents_along(
+        &self,
+        route: Option<Route>,
+    ) -> Result<responses::Incidents, Error> {
+        <Self as NeedsRoute>::incidents_along(&self, route, &self.key).await
     }
 
     /// For an optional given date, returns the set of ordered latitude/longitude
@@ -144,19 +160,27 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, Route};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.path(Route::A2, None).is_ok());
+    /// let path = block_on(async { client.path(Route::A2, None).await });
+    /// assert!(path.is_ok());
     /// ```
     /// With a date
     /// ```
     /// use wmata::{MetroBus, Route, Date};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.path(Route::A2, Some(Date::new(2019, 10, 2))).is_ok());
+    /// let path = block_on(async { client.path(Route::A2, Some(Date::new(2019, 10, 2))).await });
+    /// assert!(path.is_ok());
     /// ```
-    pub fn path(&self, route: Route, date: Option<Date>) -> Result<responses::PathDetails, Error> {
-        <Self as NeedsRoute>::path(&self, route, date, &self.key)
+    pub async fn path(
+        &self,
+        route: Route,
+        date: Option<Date>,
+    ) -> Result<responses::PathDetails, Error> {
+        <Self as NeedsRoute>::path(&self, route, date, &self.key).await
     }
 
     /// Schedules for a given route variant for an optional given date.
@@ -173,25 +197,30 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, Route};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.route_schedule(Route::A2, None, false).is_ok());
+    /// let route_schedule = block_on(async { client.route_schedule(Route::A2, None, false).await });
+    /// assert!(route_schedule.is_ok());
     /// ```
     ///
     /// with date and variations
     /// ```
     /// use wmata::{MetroBus, Route, Date};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.route_schedule(Route::A2, Some(Date::new(2019, 10, 2)), true).is_ok());
+    /// let route_schedule = block_on(async { client.route_schedule(Route::A2, Some(Date::new(2019, 10, 2)), true).await });
+    /// assert!(route_schedule.is_ok());
     /// ```
-    pub fn route_schedule(
+    pub async fn route_schedule(
         &self,
         route: Route,
         date: Option<Date>,
         including_variations: bool,
     ) -> Result<responses::RouteSchedule, Error> {
         <Self as NeedsRoute>::route_schedule(&self, route, date, including_variations, &self.key)
+            .await
     }
 }
 
@@ -205,12 +234,14 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, Stop};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.next_buses(Stop::new("1001195")).is_ok());
+    /// let next_buses = block_on(async { client.next_buses(Stop::new("1001195")).await });
+    /// assert!(next_buses.is_ok());
     /// ```
-    pub fn next_buses(&self, stop: Stop) -> Result<responses::Predictions, Error> {
-        <Self as NeedsStop>::next_buses(&self, &stop, &self.key)
+    pub async fn next_buses(&self, stop: Stop) -> Result<responses::Predictions, Error> {
+        <Self as NeedsStop>::next_buses(&self, &stop, &self.key).await
     }
 
     /// Buses scheduled at a stop for an optional given date.
@@ -222,24 +253,28 @@ impl Client {
     /// # Examples
     /// ```
     /// use wmata::{MetroBus, Stop};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stop_schedule(Stop::new("1001195"), None).is_ok());
+    /// let stop_schedule = block_on(async { client.stop_schedule(Stop::new("1001195"), None).await });
+    /// assert!(stop_schedule.is_ok());
     /// ```
     ///
     /// with date
     /// ```
     /// use wmata::{MetroBus, Stop, Date};
+    /// use tokio_test::block_on;
     ///
     /// let client = MetroBus::new("9e38c3eab34c4e6c990828002828f5ed");
-    /// assert!(client.stop_schedule(Stop::new("1001195"), Some(Date::new(2019, 10, 2))).is_ok());
+    /// let stop_schedule = block_on(async { client.stop_schedule(Stop::new("1001195"), Some(Date::new(2019, 10, 2))).await });
+    /// assert!(stop_schedule.is_ok());
     /// ```
-    pub fn stop_schedule(
+    pub async fn stop_schedule(
         &self,
         stop: Stop,
         date: Option<Date>,
     ) -> Result<responses::StopSchedule, Error> {
-        <Self as NeedsStop>::stop_schedule(&self, &stop, date, &self.key)
+        <Self as NeedsStop>::stop_schedule(&self, &stop, date, &self.key).await
     }
 }
 

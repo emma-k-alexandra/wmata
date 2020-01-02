@@ -5,19 +5,27 @@ use crate::{
     requests::{Fetch, Request as WMATARequest},
     Line, Station,
 };
+use async_trait::async_trait;
 
+#[async_trait]
 pub trait NeedsLine: Fetch {
-    fn stations_on(&self, line: Option<Line>, api_key: &str) -> Result<responses::Stations, Error> {
+    async fn stations_on(
+        &self,
+        line: Option<Line>,
+        api_key: &str,
+    ) -> Result<responses::Stations, Error> {
         self.fetch(WMATARequest::new(
             &api_key,
             &URLs::Stations.to_string(),
             line.map(|l| vec![("LineCode", l.to_string())]),
         ))
+        .await
     }
 }
 
+#[async_trait]
 pub trait NeedsStation: Fetch {
-    fn station_to_station(
+    async fn station_to_station(
         &self,
         from_station: Option<Station>,
         to_destination_station: Option<Station>,
@@ -39,16 +47,18 @@ pub trait NeedsStation: Fetch {
                 &URLs::StationToStation.to_string(),
                 Some(query),
             ))
+            .await
         } else {
             self.fetch::<responses::StationToStationInfos>(WMATARequest::new(
                 &api_key,
                 &URLs::StationToStation.to_string(),
                 None,
             ))
+            .await
         }
     }
 
-    fn elevator_and_escalator_incidents_at(
+    async fn elevator_and_escalator_incidents_at(
         &self,
         station: Option<Station>,
         api_key: &str,
@@ -58,9 +68,10 @@ pub trait NeedsStation: Fetch {
             &URLs::ElevatorAndEscalatorIncidents.to_string(),
             station.map(|s| vec![("StationCode", s.to_string())]),
         ))
+        .await
     }
 
-    fn incidents_at(
+    async fn incidents_at(
         &self,
         station: Option<Station>,
         api_key: &str,
@@ -70,9 +81,10 @@ pub trait NeedsStation: Fetch {
             &URLs::Incidents.to_string(),
             station.map(|s| vec![("StationCode", s.to_string())]),
         ))
+        .await
     }
 
-    fn next_trains(
+    async fn next_trains(
         &self,
         station: Station,
         api_key: &str,
@@ -82,9 +94,10 @@ pub trait NeedsStation: Fetch {
             &[URLs::NextTrains.to_string(), station.to_string()].join("/"),
             None,
         ))
+        .await
     }
 
-    fn station_information(
+    async fn station_information(
         &self,
         station_code: Station,
         api_key: &str,
@@ -94,9 +107,10 @@ pub trait NeedsStation: Fetch {
             &URLs::Information.to_string(),
             Some(vec![("StationCode", station_code.to_string())]),
         ))
+        .await
     }
 
-    fn parking_information(
+    async fn parking_information(
         &self,
         station_code: Station,
         api_key: &str,
@@ -106,9 +120,10 @@ pub trait NeedsStation: Fetch {
             &URLs::ParkingInformation.to_string(),
             Some(vec![("StationCode", station_code.to_string())]),
         ))
+        .await
     }
 
-    fn path_from(
+    async fn path_from(
         &self,
         from_station: Station,
         to_station: Station,
@@ -122,9 +137,10 @@ pub trait NeedsStation: Fetch {
                 ("ToStationCode", to_station.to_string()),
             ]),
         ))
+        .await
     }
 
-    fn timings(
+    async fn timings(
         &self,
         station_code: Station,
         api_key: &str,
@@ -134,5 +150,6 @@ pub trait NeedsStation: Fetch {
             &URLs::Timings.to_string(),
             Some(vec![("StationCode", station_code.to_string())]),
         ))
+        .await
     }
 }

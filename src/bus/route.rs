@@ -517,18 +517,25 @@ impl Route {
     /// # Example
     /// ```
     /// use wmata::{Route, RadiusAtLatLong};
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Route::A2.positions(
-    ///     Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)),
-    ///     "9e38c3eab34c4e6c990828002828f5ed"
-    /// ).is_ok());
+    /// let route = Route::A2;
+    /// let positions = block_on(async {
+    ///     route.positions(
+    ///         Some(RadiusAtLatLong::new(1000, 38.8817596, -77.0166426)),
+    ///         "9e38c3eab34c4e6c990828002828f5ed"
+    ///     ).await
+    /// });
+    ///
+    /// assert!(positions.is_ok());
     /// ```
-    pub fn positions(
+    pub async fn positions(
         self,
         radius_at_lat_long: Option<RadiusAtLatLong>,
         api_key: &str,
     ) -> Result<responses::BusPositions, Error> {
         self.positions_along(Some(self), radius_at_lat_long, api_key)
+            .await
     }
 
     /// Reported bus incidents/delays for this route.
@@ -537,11 +544,13 @@ impl Route {
     /// # Examples
     /// ```
     /// use wmata::Route;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Route::A2.incidents("9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let incidents = block_on(async { Route::A2.incidents("9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(incidents.is_ok());
     /// ```
-    pub fn incidents(self, api_key: &str) -> Result<responses::Incidents, Error> {
-        self.incidents_along(Some(self), api_key)
+    pub async fn incidents(self, api_key: &str) -> Result<responses::Incidents, Error> {
+        self.incidents_along(Some(self), api_key).await
     }
 
     /// For an optional given date, returns the set of ordered latitude/longitude
@@ -554,17 +563,25 @@ impl Route {
     /// # Examples
     /// ```
     /// use wmata::Route;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Route::A2.path(None, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let path = block_on(async { Route::A2.path(None, "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(path.is_ok());
     /// ```
     /// With a date
     /// ```
     /// use wmata::{Route, Date};
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Route::A2.path(Some(Date::new(2019, 10, 2)), "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let path = block_on(async { Route::A2.path(Some(Date::new(2019, 10, 2)), "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(path.is_ok());
     /// ```
-    pub fn path(self, date: Option<Date>, api_key: &str) -> Result<responses::PathDetails, Error> {
-        <Self as NeedsRoute>::path(&self, self, date, api_key)
+    pub async fn path(
+        self,
+        date: Option<Date>,
+        api_key: &str,
+    ) -> Result<responses::PathDetails, Error> {
+        <Self as NeedsRoute>::path(&self, self, date, api_key).await
     }
 
     /// Schedules for this route for an optional given date.
@@ -581,23 +598,28 @@ impl Route {
     /// # Examples
     /// ```
     /// use wmata::Route;
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Route::A2.schedule(None, false, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let schedule = block_on(async { Route::A2.schedule(None, false, "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(schedule.is_ok());
     /// ```
     ///
     /// with date and variations
     /// ```
     /// use wmata::{Route, Date};
+    /// use tokio_test::block_on;
     ///
-    /// assert!(Route::A2.schedule(Some(Date::new(2019, 10, 2)), true, "9e38c3eab34c4e6c990828002828f5ed").is_ok());
+    /// let schedule = block_on(async { Route::A2.schedule(Some(Date::new(2019, 10, 2)), true, "9e38c3eab34c4e6c990828002828f5ed").await });
+    /// assert!(schedule.is_ok());
     /// ```
-    pub fn schedule(
+    pub async fn schedule(
         self,
         date: Option<Date>,
         including_variations: bool,
         api_key: &str,
     ) -> Result<responses::RouteSchedule, Error> {
         self.route_schedule(self, date, including_variations, api_key)
+            .await
     }
 }
 

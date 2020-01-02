@@ -1,6 +1,7 @@
 //! Internal requests structs and traits.
 use crate::error::{Error, ErrorResponse};
 
+use async_trait::async_trait;
 use reqwest;
 use serde::de::DeserializeOwned;
 use serde_json;
@@ -23,33 +24,44 @@ impl<'a> Request<'a> {
 
 /// A trait indicating the implementor can request and deserialize data
 /// from the WMATA API.
+#[async_trait]
 pub trait Fetch: Requester + Deserializer {
     // / Requests and deserializes JSON data from a WMATA endpoint.
     // / Used internally by MetroRail and MetroBus clients.
-    fn fetch<U>(&self, wmata_request: Request) -> Result<U, Error>
+    async fn fetch<U>(&self, wmata_request: Request<'_>) -> Result<U, Error>
     where
         U: DeserializeOwned,
     {
-        self.request(wmata_request).and_then(Self::deserialize)
+        self.request(wmata_request)
+            .await
+            .and_then(Self::deserialize)
     }
 }
 
 /// A trait indicating the implementor can request data from the
 /// WMATA API.
+#[async_trait]
 pub trait Requester {
     /// Requests data JSON data from a WMATA endpoint.
-    fn request(&self, wmata_request: Request) -> Result<String, Error> {
+    async fn request(&self, wmata_request: Request<'_>) -> Result<String, Error> {
         let mut request = reqwest::Client::new().get(wmata_request.path);
 
         if let Some(query) = wmata_request.query {
             request = request.query(&query)
         }
 
-        request
+        let response = request
             .header("api_key", wmata_request.api_key)
             .send()
-            .and_then(|mut response| response.text())
-            .map_err(|err| Error::new(err.to_string()))
+            .await;
+
+        match response {
+            Ok(response) => response
+                .text()
+                .await
+                .map_err(|err| Error::new(err.to_string())),
+            Err(err) => Err(Error::new(err.to_string())),
+        }
     }
 }
 
