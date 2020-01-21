@@ -201,6 +201,7 @@ impl Client {
     }
 
     /// Reported rail incidents (significant disruptions and delays to normal service)
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/54763641281d83086473f232/operations/54763641281d830c946a3d77)
     ///
     /// # Examples
     /// ```
@@ -219,6 +220,7 @@ impl Client {
     }
 
     /// Next train arrivals for the given station.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/547636a6f9182302184cda78/operations/547636a6f918230da855363f)
     ///
     /// # Examples
     /// ```
@@ -237,6 +239,7 @@ impl Client {
     }
 
     /// Location and address information at the given station.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe3310)
     ///
     /// # Examples
     /// ```
@@ -255,6 +258,7 @@ impl Client {
     }
 
     /// Parking information for the given station.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330d)
     ///
     /// # Examples
     /// ```
@@ -273,6 +277,7 @@ impl Client {
     }
 
     /// Set of ordered stations and distances between two stations on the **same line**.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330e)
     ///
     /// # Examples
     /// ```
@@ -292,6 +297,7 @@ impl Client {
     }
 
     /// Opening and scheduled first/last train times for the given station.
+    /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe3312)
     ///
     /// # Examples
     /// ```

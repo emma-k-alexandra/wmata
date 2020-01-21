@@ -21,7 +21,7 @@ wmata is a high level async Rust interface to the [Washington Metropolitan Area 
 
 ### Cargo
 ```toml
-wmata = "7.0.0"
+wmata = "7.0.1"
 ```
 
 ## Usage
