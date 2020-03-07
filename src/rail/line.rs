@@ -27,6 +27,25 @@ impl Fetch for Line {}
 impl NeedsLine for Line {}
 
 impl Line {
+    /// Provides the hex code color for this line.
+    ///
+    /// # Example
+    /// ```
+    /// use wmata::Line;
+    /// assert_eq!(Line::Red.color(), "#4CAA61");
+    /// ```
+    pub fn color(self) -> String {
+        match self {
+            Line::Red => "#4CAA61".to_string(),
+            Line::Blue => "#357ABB".to_string(),
+            Line::Yellow => "#F0CD4E".to_string(),
+            Line::Orange => "#4CAA61".to_string(),
+            Line::Green => "#4CAA61".to_string(),
+            Line::Silver => "#A4A6A3".to_string(),
+            Line::YellowLineRushPlus => "#F0CD4E".to_string(),
+        }
+    }
+
     /// Station location and address information for all stations on this line.
     /// [WMATA Documentation](https://developer.wmata.com/docs/services/5476364f031f590f38092507/operations/5476364f031f5909e4fe330c)
     ///
